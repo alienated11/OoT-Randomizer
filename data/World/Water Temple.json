@@ -31,7 +31,15 @@
             "Fairy Pot": "has_bottle and can_use(Longshot)"
         },
         "exits": {
-            "Water Temple Falling Platform Room": "(Small_Key_Water_Temple, 4)"
+            "Water Temple Falling Platform Room": "(Small_Key_Water_Temple, 4)",
+            "Water Temple Boss": "Boss_Key_Water_Temple and can_use(Longshot)"
+        }
+    },
+    {
+        "region_name": "Water Temple Boss",
+        "dungeon":  "Water Temple",
+        "exits": {
+            "Water Temple Highest Water Level": "True"
         }
     },
     {

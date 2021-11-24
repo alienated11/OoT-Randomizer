@@ -1880,7 +1880,7 @@ setting_infos = [
         disable        = {
             True : {
                 'sections' : ['various_section', 'shuffle_section', 'shuffle_dungeon_section'],
-                'settings': ['starting_age', 'shuffle_interior_entrances', 'shuffle_grotto_entrances', 'shuffle_dungeon_entrances',
+                'settings': ['starting_age', 'shuffle_interior_entrances', 'shuffle_grotto_entrances', 'shuffle_dungeon_entrances', 'shuffle_dungeon_bosses',
                              'shuffle_overworld_entrances', 'mix_entrance_pools', 'decouple_entrances',
                              'owl_drops', 'warp_songs', 'spawn_positions'],
             }
@@ -2212,7 +2212,7 @@ setting_infos = [
         disable        = {
             'glitchless': {'settings' : ['tricks_list_msg']},
             'glitched'  : {'settings' : ['allowed_tricks', 'shuffle_interior_entrances', 'shuffle_grotto_entrances',
-                                         'shuffle_dungeon_entrances', 'shuffle_overworld_entrances', 'owl_drops',
+                                         'shuffle_dungeon_entrances', 'shuffle_dungeon_bosses','shuffle_overworld_entrances', 'owl_drops',
                                          'warp_songs', 'spawn_positions', 'mq_dungeons_random', 'mq_dungeons',
                                          'mix_entrance_pools', 'decouple_entrances' ]},
             'none'      : {'settings' : ['allowed_tricks', 'logic_no_night_tokens_without_suns_song', 'reachable_locations']},
@@ -2745,6 +2745,18 @@ setting_infos = [
 
             Additionally, the entrances of Deku Tree, Fire Temple and 
             Bottom of the Well are opened for both adult and child.
+        ''',
+        default        = False,
+        shared         = True,
+        gui_params     = {
+            'randomize_key': 'randomize_settings',
+        },
+    ),
+    Checkbutton(
+        name           = 'shuffle_dungeon_bosses',
+        gui_text       = 'Shuffle Dungeon Bosses',
+        gui_tooltip    = '''\
+            Shuffle the pool of dungeon bosses, meaning a boss door in a temple leads to a different fight
         ''',
         default        = False,
         shared         = True,

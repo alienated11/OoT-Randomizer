@@ -187,6 +187,19 @@
             "Twinrova": "
                 Mirror_Shield and has_explosives and 
                 Progressive_Hookshot and Boss_Key_Spirit_Temple"
+        },
+        "exits": {
+            "Spirit Temple Boss": "
+                Mirror_Shield and has_explosives and 
+                Progressive_Hookshot and Boss_Key_Spirit_Temple"
+        }
+    },
+    {
+        "region_name": "Spirit Temple Boss",
+        "dungeon": "Spirit Temple",
+        "locations": {},
+        "exits": {
+            "Spirit Temple Beyond Final Locked Door": "True"
         }
     }
 ]

@@ -27,7 +27,8 @@
             "DMC Fire Temple Entrance": "True",
             "Fire Temple Big Lava Room":"
                 (Small_Key_Fire_Temple, 2) and
-                (logic_fewer_tunic_requirements or can_use(Goron_Tunic))"
+                (logic_fewer_tunic_requirements or can_use(Goron_Tunic))",
+            "Fire Temple Boss": "Boss_Key_Fire_Temple"
         }
     },
     {
@@ -45,6 +46,14 @@
                 can_use(Goron_Tunic) and (Small_Key_Fire_Temple, 4) and
                 (Progressive_Strength_Upgrade or logic_fire_strength) and 
                 (has_explosives or Bow or Progressive_Hookshot)"
+        }
+    },
+    {
+        "region_name": "Fire Temple Boss",
+        "dungeon": "Fire Temple",
+        "locations": {},
+        "exits": {
+            "Fire Temple Lower":  "True"
         }
     },
     {
