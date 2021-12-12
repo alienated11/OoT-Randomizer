@@ -180,13 +180,7 @@
             "Spirit Temple Boss Key Chest": "
                 can_play(Zeldas_Lullaby) and Bow and 
                 Progressive_Hookshot",
-            "Spirit Temple Topmost Chest": "Mirror_Shield",
-            "Spirit Temple Twinrova Heart": "
-                Mirror_Shield and has_explosives and 
-                Progressive_Hookshot and Boss_Key_Spirit_Temple",
-            "Twinrova": "
-                Mirror_Shield and has_explosives and 
-                Progressive_Hookshot and Boss_Key_Spirit_Temple"
+            "Spirit Temple Topmost Chest": "Mirror_Shield"
         },
         "exits": {
             "Spirit Temple Boss": "
@@ -197,9 +191,12 @@
     {
         "region_name": "Spirit Temple Boss",
         "dungeon": "Spirit Temple",
-        "locations": {},
+        "locations": {
+            "Spirit Temple Twinrova Heart": "Mirror_Shield",
+            "Twinrova": "Mirror_Shield"
+        },
         "exits": {
-            "Spirit Temple Beyond Final Locked Door": "True"
+            "Spirit Temple Beyond Final Locked Door": "False"
         }
     }
 ]

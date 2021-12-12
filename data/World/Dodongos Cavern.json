@@ -91,18 +91,30 @@
         "region_name": "Dodongos Cavern Boss Area",
         "dungeon": "Dodongos Cavern",
         "locations": {
-            "Dodongos Cavern Boss Room Chest": "True",
-            "Dodongos Cavern King Dodongo Heart": "
-                (Bombs or Progressive_Strength_Upgrade) and 
-                (is_adult or Sticks or Kokiri_Sword)",
-            "King Dodongo": "
-                (Bombs or Progressive_Strength_Upgrade) and 
-                (is_adult or Sticks or Kokiri_Sword)",
             "Dodongos Cavern GS Back Room": "True",
             "Fairy Pot": "has_bottle"
         },
         "exits": {
-            "Dodongos Cavern Lobby": "True"
+            "Dodongos Cavern Lobby": "True",
+            "Dodongos Cavern Boss": "True"
+        }
+    },
+    {
+        "region_name": "Dodongos Cavern Boss",
+        "dungeon": "Dodongos Cavern",
+        "locations": {
+            "Dodongos Cavern Boss Room Chest": "True",
+            "Dodongos Cavern King Dodongo Heart": "
+                can_blast_or_smash and
+                (Bombs or Progressive_Strength_Upgrade) and
+                (is_adult or Sticks or Kokiri_Sword)",
+            "King Dodongo": "
+                can_blast_or_smash and
+                (Bombs or Progressive_Strength_Upgrade) and
+                (is_adult or Sticks or Kokiri_Sword)"
+        },
+        "exits": {
+            "Dodongos Cavern Boss Area": "True"
         }
     }
 ]

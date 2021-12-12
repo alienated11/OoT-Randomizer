@@ -9,14 +9,6 @@
                 ((Small_Key_Fire_Temple, 8) or not keysanity) and can_use(Megaton_Hammer)",
             "Fire Temple Boss Key Chest": "
                 ((Small_Key_Fire_Temple, 8) or not keysanity) and can_use(Megaton_Hammer)",
-            "Fire Temple Volvagia Heart": "
-                can_use(Goron_Tunic) and can_use(Megaton_Hammer) and Boss_Key_Fire_Temple and 
-                (logic_fire_boss_door_jump or Hover_Boots or
-                    at('Fire Temple Upper', can_play(Song_of_Time) or has_explosives))",
-            "Volvagia": "
-                can_use(Goron_Tunic) and can_use(Megaton_Hammer) and Boss_Key_Fire_Temple and 
-                (logic_fire_boss_door_jump or Hover_Boots or
-                    at('Fire Temple Upper', can_play(Song_of_Time) or has_explosives))",
             "Fire Temple GS Boss Key Loop": "
                 ((Small_Key_Fire_Temple, 8) or not keysanity) and can_use(Megaton_Hammer)",
             "Fairy Pot": "
@@ -28,7 +20,7 @@
             "Fire Temple Big Lava Room":"
                 (Small_Key_Fire_Temple, 2) and
                 (logic_fewer_tunic_requirements or can_use(Goron_Tunic))",
-            "Fire Temple Boss": "Boss_Key_Fire_Temple"
+            "Fire Temple Boss": "Boss_Key_Fire_Temple and (logic_fire_boss_door_jump or Hover_Boots or at('Fire Temple Upper', can_play(Song_of_Time) or has_explosives))"
         }
     },
     {
@@ -51,7 +43,10 @@
     {
         "region_name": "Fire Temple Boss",
         "dungeon": "Fire Temple",
-        "locations": {},
+        "locations": {
+            "Fire Temple Volvagia Heart": "can_use(Goron_Tunic) and can_use(Megaton_Hammer)",
+             "Volvagia": "can_use(Goron_Tunic) and can_use(Megaton_Hammer)"
+        },
         "exits": {
             "Fire Temple Lower":  "True"
         }
