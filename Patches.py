@@ -1575,6 +1575,7 @@ def patch_rom(spoiler:Spoiler, world:World, rom:Rom):
 
     if world.settings.shuffle_grotto_entrances:
         # Build the Grotto Load Table based on grotto entrance data
+        
         for entrance in world.get_shuffled_entrances(type='Grotto'):
             if entrance.primary:
                 load_table_pointer = rom.sym('GROTTO_LOAD_TABLE') + 4 * entrance.data['grotto_id']
@@ -1587,8 +1588,9 @@ def patch_rom(spoiler:Spoiler, world:World, rom:Rom):
                 rom.write_int16(return_table_pointer + 4, entrance.data['angle'])
                 rom.write_int32s(return_table_pointer + 8, entrance.data['pos'])
 
-        # Update grotto actors based on their new entrance
-        set_grotto_shuffle_data(rom, world)
+    # Update grotto actors based on their new entrance
+    #always run in case other grotto rando is on
+    set_grotto_shuffle_data(rom, world)
 
     if world.settings.shuffle_cows:
         rom.write_byte(rom.sym('SHUFFLE_COWS'), 0x01)
@@ -2017,10 +2019,10 @@ def set_cow_id_data(rom, world):
 
 def set_grotto_shuffle_data(rom, world):
     def override_grotto_data(rom, actor_id, actor, scene):
-        if actor_id == 0x009B: #Grotto
+        if actor_id == 0x009B:
             actor_zrot = rom.read_int16(actor + 12)
             actor_var = rom.read_int16(actor + 14)
-            grotto_type = (actor_var >> 8) & 0x0F
+            grotto_type = (actor_var >> 8) & 0x0F if not world.settings.shuffle_grotto_req else random.choice([0,1,2])
             grotto_actor_id = (scene << 8) + (actor_var & 0x00FF)
             if world.settings.shuffle_grotto_location:
                 grotto_x = rom.read_int16(actor + 2)
@@ -2054,28 +2056,21 @@ def set_grotto_shuffle_data(rom, world):
                     w = 1 - (u+v)
                     new_point = chosen_face.vertices[0]*u + chosen_face.vertices[1]*v + chosen_face.vertices[2]*w
                     safe_points.append(new_point)
-                    i+=1
+                    i += 1
                 chosen_vertex = random.choice(safe_points)
-                db = open("debug.txt","w")
-                db.write("{} {} {}".format(chosen_vertex.x, chosen_vertex.y, chosen_vertex.z))
-                grotto_x =  convert_to_unsigned(int(chosen_vertex.x)) if chosen_vertex.x < 0 else int(chosen_vertex.x)
-                grotto_y =  convert_to_unsigned(int(chosen_vertex.y)) if chosen_vertex.y < 0 else int(chosen_vertex.y)
-                grotto_z =  convert_to_unsigned(int(chosen_vertex.z)) if chosen_vertex.z < 0 else int(chosen_vertex.z)
+                grotto_x = convert_to_unsigned(int(chosen_vertex.x)) if chosen_vertex.x < 0 else int(chosen_vertex.x)
+                grotto_y = convert_to_unsigned(int(chosen_vertex.y)) if chosen_vertex.y < 0 else int(chosen_vertex.y)
+                grotto_z = convert_to_unsigned(int(chosen_vertex.z)) if chosen_vertex.z < 0 else int(chosen_vertex.z)
                 
-                db.write("{} {} {}".format(grotto_x, grotto_y, grotto_z))
-                db.close()
+                rom.write_int16(actor+2, grotto_x)
+                rom.write_int16(actor+4, grotto_y)
+                rom.write_int16(actor+6, grotto_z)
 
-                rom.write_int16(actor+2,grotto_x)
-                rom.write_int16(actor+4,grotto_y)
-                rom.write_int16(actor+6,grotto_z)
-
-
-
-
-                    #scene["mesh"].write_mesh()
-
-            rom.write_int16(actor + 12, grotto_entrances_override[grotto_actor_id])
-            rom.write_byte(actor + 14, grotto_type + 0x20)
+            if world.settings.shuffle_grotto_entrances:
+                rom.write_int16(actor + 12, grotto_entrances_override[grotto_actor_id])
+                rom.write_byte(actor + 14, grotto_type + 0x20)
+            else:
+                rom.write_byte(actor + 14, grotto_type)
 
     # Build the override table based on shuffled grotto entrances
     grotto_entrances_override = {}
