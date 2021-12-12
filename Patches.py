@@ -20,6 +20,9 @@ from OcarinaSongs import replace_songs
 from MQ import patch_files, File, update_dmadata, insert_space, add_relocations
 from SaveContext import SaveContext
 import StartingItems
+import Mesh
+from Mesh import convert_to_unsigned, Mesh
+from SceneList import scene_table
 
 
 def patch_rom(spoiler:Spoiler, world:World, rom:Rom):
@@ -2019,6 +2022,57 @@ def set_grotto_shuffle_data(rom, world):
             actor_var = rom.read_int16(actor + 14)
             grotto_type = (actor_var >> 8) & 0x0F
             grotto_actor_id = (scene << 8) + (actor_var & 0x00FF)
+            if world.settings.shuffle_grotto_location:
+                grotto_x = rom.read_int16(actor + 2)
+                grotto_y = rom.read_int16(actor + 4)
+                grotto_z = rom.read_int16(actor + 6)
+                chosen_face = None
+                safe_points = []
+                safe_faces = []
+                safe_area = 0
+                for scene_t in scene_table:
+                    if scene_t["scene_number"] != scene:
+                        continue
+                    scene_t["mesh"] = Mesh(scene_t["name"])
+                    scene_t["mesh"].read_from_rom(rom, scene_t["scene_data"], scene_t["collision_off"])
+
+                    for face in scene_t["mesh"].faces:
+                        if face.normal.x == 0 and face.normal.z == 0 and face.normal.y == 1:
+                            safe_faces.append(face)
+                for safe_face in safe_faces:
+                    safe_area += safe_face.area
+                chosen_face = random.choice(safe_faces)
+                for v in chosen_face.vertices:
+                    safe_points.append(v)
+                i = 0
+                while i < 5:
+                    u = random.random()
+                    v = random.random()
+                    if u+v > 1:
+                        u = 1-u
+                        v = 1-v
+                    w = 1 - (u+v)
+                    new_point = chosen_face.vertices[0]*u + chosen_face.vertices[1]*v + chosen_face.vertices[2]*w
+                    safe_points.append(new_point)
+                    i+=1
+                chosen_vertex = random.choice(safe_points)
+                db = open("debug.txt","w")
+                db.write("{} {} {}".format(chosen_vertex.x, chosen_vertex.y, chosen_vertex.z))
+                grotto_x =  convert_to_unsigned(int(chosen_vertex.x)) if chosen_vertex.x < 0 else int(chosen_vertex.x)
+                grotto_y =  convert_to_unsigned(int(chosen_vertex.y)) if chosen_vertex.y < 0 else int(chosen_vertex.y)
+                grotto_z =  convert_to_unsigned(int(chosen_vertex.z)) if chosen_vertex.z < 0 else int(chosen_vertex.z)
+                
+                db.write("{} {} {}".format(grotto_x, grotto_y, grotto_z))
+                db.close()
+
+                rom.write_int16(actor+2,grotto_x)
+                rom.write_int16(actor+4,grotto_y)
+                rom.write_int16(actor+6,grotto_z)
+
+
+
+
+                    #scene["mesh"].write_mesh()
 
             rom.write_int16(actor + 12, grotto_entrances_override[grotto_actor_id])
             rom.write_byte(actor + 14, grotto_type + 0x20)

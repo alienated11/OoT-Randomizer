@@ -173,6 +173,7 @@
             "starting_age",
             "shuffle_interior_entrances",
             "shuffle_grotto_entrances",
+            "shuffle_grotto_location",
             "shuffle_dungeon_entrances",
             "shuffle_dungeon_bosses",
             "shuffle_overworld_entrances",

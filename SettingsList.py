@@ -1880,7 +1880,7 @@ setting_infos = [
         disable        = {
             True : {
                 'sections' : ['various_section', 'shuffle_section', 'shuffle_dungeon_section'],
-                'settings': ['starting_age', 'shuffle_interior_entrances', 'shuffle_grotto_entrances', 'shuffle_dungeon_entrances', 'shuffle_dungeon_bosses',
+                'settings': ['starting_age', 'shuffle_interior_entrances', 'shuffle_grotto_entrances', 'shuffle_grotto_location', 'shuffle_dungeon_entrances', 'shuffle_dungeon_bosses',
                              'shuffle_overworld_entrances', 'mix_entrance_pools', 'decouple_entrances',
                              'owl_drops', 'warp_songs', 'spawn_positions'],
             }
@@ -2211,7 +2211,7 @@ setting_infos = [
         ''',
         disable        = {
             'glitchless': {'settings' : ['tricks_list_msg']},
-            'glitched'  : {'settings' : ['allowed_tricks', 'shuffle_interior_entrances', 'shuffle_grotto_entrances',
+            'glitched'  : {'settings' : ['allowed_tricks', 'shuffle_interior_entrances', 'shuffle_grotto_entrances', 'shuffle_grotto_location',
                                          'shuffle_dungeon_entrances', 'shuffle_dungeon_bosses','shuffle_overworld_entrances', 'owl_drops',
                                          'warp_songs', 'spawn_positions', 'mq_dungeons_random', 'mq_dungeons',
                                          'mix_entrance_pools', 'decouple_entrances' ]},
@@ -2728,6 +2728,18 @@ setting_infos = [
         gui_tooltip    = '''\
             Shuffle the pool of grotto entrances, including all graves, 
             small Fairy Fountains and the Lost Woods Stage.
+        ''',
+        default        = False,
+        shared         = True,
+        gui_params     = {
+            'randomize_key': 'randomize_settings',
+        },
+    ),
+    Checkbutton(
+        name           = 'shuffle_grotto_location',
+        gui_text       = 'Shuffle Grotto Location',
+        gui_tooltip    = '''\
+            MOVE! THAT! HOLE!
         ''',
         default        = False,
         shared         = True,

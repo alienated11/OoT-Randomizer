@@ -1,10 +1,13 @@
 from Rom import Rom
-
+from SceneList import scene_table
 
 def convert_to_signed(value):        
     if value >= 0x8000:
         value -= 0x10000
     return value
+
+def convert_to_unsigned(value):
+    return value + 0x10000
 
 class Mesh():
     def __init__(self,name=None):
@@ -49,12 +52,14 @@ class Mesh():
             a = rom.read_int16() & 0x1FFF
             b = rom.read_int16() & 0x1FFF
             c = rom.read_int16() & 0x1FFF
-            n_x = convert_to_signed(rom.read_int16())
-            n_y = convert_to_signed(rom.read_int16())
-            n_z = convert_to_signed(rom.read_int16())
+            n_x = convert_to_signed(rom.read_int16())/0x7FFF
+            n_y = convert_to_signed(rom.read_int16())/0x7FFF
+            n_z = convert_to_signed(rom.read_int16())/0x7FFF
             normal = Vertex3d(n_x,n_y,n_z)
             distance = rom.read_int16()
-            self.faces.append(Face([a,b,c],normal,i))
+            self.faces.append(Face([self.vertices[a],self.vertices[b],self.vertices[c]],normal,i))
+            #if n_x == 0 and n_z == 0 and n_y == 1:
+               #print("{} ({}) -- Normal: {} {} {}".format(self.name, i, n_x, n_y, n_z))
             i+=1
 
         polygon_type_segment_offset = rom.read_int32() & 0x00FFFFFF
@@ -71,7 +76,9 @@ class Mesh():
         for v in self.vertices:
             m.write("v {} {} {}\n".format(v.x, v.y, v.z))
         for f in self.faces:
-            m.write("f {} {} {}\n".format(f.vertices[0]+1, f.vertices[1]+1, f.vertices[2]+1))
+            m.write("vn {} {} {}\n".format(f.normal.x, f.normal.y, f.normal.z))
+            #m.write("f {0}/{3} {1}/{3} {2}/{3}\n".format(f.vertices[0]+1, f.vertices[1]+1, f.vertices[2]+1,f.index+1))
+            m.write("f {0} {1} {2}\n".format(f.vertices[0].index+1, f.vertices[1].index+1, f.vertices[2].index+1))
         m.close()
 
 class Vertex3d():
@@ -81,6 +88,16 @@ class Vertex3d():
         self.z = z
         self.faces = {}
         self.index = index
+    def __sub__(self, other):
+        return Vertex3d(self.x-other.x, self.y-other.y, self.z-other.z)
+    def __add__(self, other):
+        return Vertex3d(self.x+other.x, self.y+other.y, self.z+other.z)
+    def __mul__(self,scalar):
+        return Vertex3d(self.x*scalar,self.y*scalar,self.z*scalar)
+    def cross(self, other):
+        return Vertex3d((self.y*other.z - self.z*other.y),-1*(self.x*other.z-self.z*other.x),(self.x*other.y-self.y*other.x))
+    def mag(self):
+        return (self.x**2 + self.y**2 + self.z**2)**(1/2)
     def add_face(face):
         self.faces[len(self.faces)] = face
     def set_index(index):
@@ -91,33 +108,23 @@ class Face():
         self.vertices = vertices
         self.normal = normal
         self.index = index
+        self.area = 0
     def add_vertex(vertex_index):
         self.vertices.append(vertex_index)
     def set_index(index):
         self.index = index
+    def area(self):
+        if len(self.vertices == 3):
+            self.area = 0.5*(self.vertices[1] - self.vertices[0]).cross((self.vertices[2] - self.vertices[0])).mag()
 
 
 
-scene_table = [
-    {"scene_number":0x51, "name":"Hyrule Field",            "scene_data": 0x01FB8000, "collision_off":0x00008464, "mesh":Mesh("Hyrule Field")},
-    {"scene_number":0x52, "name":"Kakariko Village",        "scene_data": 0x01FF9000, "collision_off":0x00004A1C, "mesh":Mesh("Kakariko Village")},
-    {"scene_number":0x54, "name":"Zora's River",            "scene_data": 0x0204D000, "collision_off":0x00006580, "mesh":Mesh("Zora's River")},
-    {"scene_number":0x55, "name":"Kokiri Forest",           "scene_data": 0x0206F000, "collision_off":0x00008918, "mesh":Mesh("Kokiri Forest")},
-    {"scene_number":0x56, "name":"Sacred Forest Meadow",    "scene_data": 0x020AC000, "collision_off":0x00003F4C, "mesh":Mesh("Sacred Forest Meadow")},
-    {"scene_number":0x57, "name":"Lake Hylia",              "scene_data": 0x020CB000, "collision_off":0x000055AC, "mesh":Mesh("Lake Hylia")},
-    {"scene_number":0x58, "name":"Zora's Domain",           "scene_data": 0x020F2000, "collision_off":0x00003824, "mesh":Mesh("Zora's Domain")},
-    {"scene_number":0x5A, "name":"Gerudo Valley",           "scene_data": 0x0212B000, "collision_off":0x00002128, "mesh":Mesh("Gerudo Valley")},
-    {"scene_number":0x5B, "name":"Lost Woods",              "scene_data": 0x02146000, "collision_off":0x000001A8, "mesh":Mesh("Lost Woods")},
-    {"scene_number":0x5C, "name":"Desert Colossus",         "scene_data": 0x02186000, "collision_off":0x00004EE4, "mesh":Mesh("Desert Colossus")},
-    {"scene_number":0x5D, "name":"Gerudo Fortress",         "scene_data": 0x021AD000, "collision_off":0x00005030, "mesh":Mesh("Gerudo Fortress")},
-    {"scene_number":0x5F, "name":"Hyrule Castle Grounds",   "scene_data": 0x021F6000, "collision_off":0x00003CE8, "mesh":Mesh("Hyrule Castle Grounds")},
-    {"scene_number":0x60, "name":"Death Mountain Trail",    "scene_data": 0x0221D000, "collision_off":0x00003D10, "mesh":Mesh("Death Mountain Trail")},
-    {"scene_number":0x61, "name":"Death Mountain Crater",   "scene_data": 0x02247000, "collision_off":0x000045A4, "mesh":Mesh("Death Mountain Crater")},
-    {"scene_number":0x62, "name":"Goron City",              "scene_data": 0x02271000, "collision_off":0x000059AC, "mesh":Mesh("Goron City")},
-    {"scene_number":0x63, "name":"Lon Lon Ranch",           "scene_data": 0x029BC000, "collision_off":0x00002948, "mesh":Mesh("Lon Lon Ranch")}
-]
+
+
+
 
 rom = Rom("")
 for scene in scene_table:
+    scene["mesh"] = Mesh(scene["name"])
     scene["mesh"].read_from_rom(rom, scene["scene_data"], scene["collision_off"])
     scene["mesh"].write_mesh()
