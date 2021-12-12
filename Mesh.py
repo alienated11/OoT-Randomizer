@@ -113,9 +113,10 @@ class Face():
         self.vertices.append(vertex_index)
     def set_index(index):
         self.index = index
-    def area(self):
-        if len(self.vertices == 3):
+    def get_area(self):
+        if len(self.vertices) == 3 and self.area <= 0:
             self.area = 0.5*(self.vertices[1] - self.vertices[0]).cross((self.vertices[2] - self.vertices[0])).mag()
+        return self.area
 
 
 
