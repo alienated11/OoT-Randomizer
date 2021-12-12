@@ -80,9 +80,9 @@ def build_one_way_targets(world, types_to_include, exclude=(), target_region_nam
 
 entrance_shuffle_table = [
     ('Boss', ('Deku Tree Lobby -> Deku Tree Boss Room',{'index':0x040F}),('Deku Tree Boss Room -> Deku Tree Lobby',{'index':0x0252})),
-    ('Boss', ('Dodongos Cavern Lobby -> Dodongos Cavern Boss Area',{'index':0x040B}),('Dodongos Cavern Boss Area -> Dodongos Cavern Lobby',{'index':0x00C5})),
-    ('Boss', ('Jabu Jabus Belly Main -> Jabu Jabus Belly Boss Area',{'index':0x0301}),('Jabu Jabus Belly Boss Area -> Jabu Jabus Belly Main',{'index':0x0407})),
-    ('Boss', ('Forest Temple Lobby -> Forest Temple Boss Region',{'index':0x000C}),('Forest Temple Boss Region -> Forest Temple Lobby',{'index':0x024E})),
+    ('Boss', ('Dodongos Cavern Boss Area -> Dodongos Cavern Boss',{'index':0x040B}),('Dodongos Cavern Boss -> Dodongos Cavern Boss Area',{'index':0x00C5})),
+    ('Boss', ('Jabu Jabus Belly Boss Area -> Jabu Jabus Belly Boss',{'index':0x0301}),('Jabu Jabus Belly Boss -> Jabu Jabus Belly Boss Area',{'index':0x0407})),
+    ('Boss', ('Forest Temple Boss Region -> Forest Temple Boss',{'index':0x000C}),('Forest Temple Boss -> Forest Temple Boss Region',{'index':0x024E})),
     ('Boss', ('Fire Temple Lower -> Fire Temple Boss',{'index':0x0305}),('Fire Temple Boss -> Fire Temple Lower',{'index':0x0175})),
     ('Boss', ('Water Temple Highest Water Level -> Water Temple Boss',{'index':0x0417}),('Water Temple Boss -> Water Temple Highest Water Level',{'index':0x0423})),
     ('Boss', ('Spirit Temple Beyond Final Locked Door -> Spirit Temple Boss',{'index':0x008D}),('Spirit Temple Boss -> Spirit Temple Beyond Final Locked Door',{'index':0x02F5})),

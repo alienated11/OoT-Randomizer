@@ -1,4 +1,4 @@
-[    
+[
     {
         "region_name": "Water Temple Lobby",
         "dungeon": "Water Temple",
@@ -22,12 +22,7 @@
     {
         "region_name": "Water Temple Highest Water Level",
         "dungeon":  "Water Temple",
-        "events": {
-            "Water Temple Clear": "Boss_Key_Water_Temple and can_use(Longshot)"
-        },
         "locations": {
-            "Morpha": "Boss_Key_Water_Temple and can_use(Longshot)",
-            "Water Temple Morpha Heart": "Boss_Key_Water_Temple and can_use(Longshot)",
             "Fairy Pot": "has_bottle and can_use(Longshot)"
         },
         "exits": {
@@ -38,8 +33,15 @@
     {
         "region_name": "Water Temple Boss",
         "dungeon":  "Water Temple",
+        "events": {
+            "Water Temple Clear": "can_use(Longshot)"
+        },
+        "locations": {
+            "Morpha": "can_use(Longshot)",
+            "Water Temple Morpha Heart": "can_use(Longshot)"
+        },
         "exits": {
-            "Water Temple Highest Water Level": "True"
+            "Water Temple Highest Water Level": "False"
         }
     },
     {
