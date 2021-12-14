@@ -140,8 +140,8 @@ class Face:
 
 
 
-rom = Rom("")
-for scene in scene_table:
-    scene["mesh"] = Mesh(scene["name"])
-    scene["mesh"].read_from_rom(rom, scene["scene_data"], scene["collision_off"])
-    scene["mesh"].write_mesh()
+# rom = Rom("")
+# for scene in scene_table:
+#     scene["mesh"] = Mesh(scene["name"])
+#     scene["mesh"].read_from_rom(rom, scene["scene_data"], scene["collision_off"])
+#     scene["mesh"].write_mesh()
