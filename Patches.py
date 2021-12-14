@@ -1614,7 +1614,7 @@ def patch_rom(spoiler:Spoiler, world:World, rom:Rom):
                 rom.write_int32s(return_table_pointer + 8, entrance.data['pos'])
 
     # Update grotto actors based on their new entrance
-    #always run in case other grotto rando is on
+    # always run in case other grotto rando is on
     set_grotto_shuffle_data(rom, world)
 
     if world.settings.shuffle_cows:
@@ -2077,11 +2077,6 @@ def set_grotto_shuffle_data(rom, world):
                     for safe_face in safe_faces:
                         safe_area += safe_face.get_area()
                     chosen_face = random.choice(safe_faces)
-                    db = open("debug.txt","w")
-                    db.write(str(len(safe_faces)))
-                    db.write(str(chosen_face.area))
-                    db.write(str(safe_area))
-                    db.close()
                     pts_sample = (chosen_face.get_area()/safe_area)*250
                     i = 0
                     while i < pts_sample:
