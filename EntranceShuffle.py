@@ -88,6 +88,8 @@ entrance_shuffle_table = [
     ('Boss', ('Spirit Temple Beyond Final Locked Door -> Spirit Temple Boss',{'index':0x008D}),('Spirit Temple Boss -> Spirit Temple Beyond Final Locked Door',{'index':0x02F5})),
     ('Boss',            ('Shadow Temple Beyond Boat -> Shadow Temple Boss',                 {'index':0x0413}),
                         ('Shadow Temple Boss -> Shadow Temple Beyond Boat',                 {'index':0x02B6})),
+    ('Ganon',           ('Ganons Castle Tower -> Ganons Boss Room',                         {'index':0x041F}),
+                        ('Ganons Boss Room -> Ganons Castle Tower',                         {'index':0x534})),
     ('Dungeon',         ('KF Outside Deku Tree -> Deku Tree Lobby',                         { 'index': 0x0000 }),
                         ('Deku Tree Lobby -> KF Outside Deku Tree',                         { 'index': 0x0209, 'blue_warp': 0x0457 })),
     ('Dungeon',         ('Death Mountain -> Dodongos Cavern Beginning',                     { 'index': 0x0004 }),
@@ -418,8 +420,11 @@ def shuffle_random_entrances(worlds):
                 entrance_pools['Dungeon'].remove(world.get_entrance('KF Outside Deku Tree -> Deku Tree Lobby'))
             if worlds[0].settings.decouple_entrances:
                 entrance_pools['DungeonReverse'] = [entrance.reverse for entrance in entrance_pools['Dungeon']]
-        if worlds[0].settings.shuffle_dungeon_bosses:
+        if worlds[0].settings.shuffle_dungeon_bosses != "off":
             entrance_pools['Boss'] = world.get_shufflable_entrances(type='Boss', only_primary=True)
+            if worlds[0].settings.shuffle_dungeon_bosses == "ganon":
+                entrance_pools['Boss'].append(world.get_entrance('Ganons Castle Tower -> Ganons Boss Room'))
+                # entrance_pools['Boss'].append(world.get_entrance('Ganons Boss Room -> Ganons Castle Tower'))
 
         if worlds[0].shuffle_interior_entrances:
             entrance_pools['Interior'] = world.get_shufflable_entrances(type='Interior', only_primary=True)
