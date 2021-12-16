@@ -119,5 +119,29 @@
             "Ganons Castle Light Trial Lullaby Chest": "
                 can_play(Zeldas_Lullaby) and (Small_Key_Ganons_Castle, 1)"
         }
+    },
+    {
+        "region_name": "Ganons Castle Tower",
+        "pretty_name": "Ganon's Castle",
+        "dungeon": "Ganons Castle",
+        "exits": {
+            "Ganons Castle Lobby": "True",
+            "Ganons Boss Room": "Boss_Key_Ganons_Castle"
+        },
+        "locations": {
+            "Ganons Tower Boss Key Chest": "True"
+        }
+    },
+    {
+        "region_name": "Ganons Boss Room",
+        "pretty_name": "Ganon's Boss Room",
+        "dungeon": "Ganons Castle",
+        "exits": {
+            "Ganons Castle Tower": "True"
+        },
+        "locations": {
+            "Ganondorf Hint": "Boss_Key_Ganons_Castle",
+            "Ganon": "Boss_Key_Ganons_Castle and can_use(Light_Arrows)"
+        }
     }
 ]

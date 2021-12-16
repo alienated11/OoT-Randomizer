@@ -2752,16 +2752,32 @@ setting_infos = [
             'randomize_key': 'randomize_settings',
         },
     ),
-    Checkbutton(
-        name           = 'shuffle_dungeon_bosses',
-        gui_text       = 'Shuffle Dungeon Bosses',
-        gui_tooltip    = '''\
-            Shuffle the pool of dungeon bosses, meaning a boss door in a temple leads to a different fight
-        ''',
-        default        = False,
-        shared         = True,
-        gui_params     = {
+    Combobox(
+        name='shuffle_dungeon_bosses',
+        gui_text='Shuffle Dungeon Bosses',
+        default='off',
+        choices={
+            'off': 'Off',
+            'boss': 'Normal Bosses',
+            'ganon': 'Include Ganon',
+        },
+        gui_tooltip='''\
+               Shuffle boss arenas inside of dungeons.
+
+               'Normal Bosses':
+               Bosses that give dungeon rewards (stones/medallions)
+
+               'Include Ganon':
+               Throw 'dorf himself into the pool
+           ''',
+        shared=True,
+        gui_params={
             'randomize_key': 'randomize_settings',
+            'distribution': [
+                ('off', 2),
+                ('boss', 1),
+                ('ganon', 1),
+            ],
         },
     ),
     Checkbutton(

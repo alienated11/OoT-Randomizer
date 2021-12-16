@@ -1988,16 +1988,6 @@
         }
     },
     {
-        "region_name": "Ganons Castle Tower",
-        "pretty_name": "Ganon's Castle",
-        "dungeon": "Ganons Castle",
-        "locations": {
-            "Ganons Tower Boss Key Chest": "True",
-            "Ganondorf Hint": "Boss_Key_Ganons_Castle",
-            "Ganon": "Boss_Key_Ganons_Castle and can_use(Light_Arrows)"
-        }
-    },
-    {
         "region_name": "GF Storms Grotto",
         "pretty_name": "a Fairy Fountain",
         "scene": "GF Storms Grotto",
