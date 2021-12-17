@@ -100,14 +100,24 @@ class Vertex3d:
     def __add__(self, other):
         return Vertex3d(self.x+other.x, self.y+other.y, self.z+other.z)
 
-    def __mul__(self,scalar):
-        return Vertex3d(self.x*scalar, self.y*scalar, self.z*scalar)
+    def __mul__(self, other):
+        if isinstance(other, Vertex3d):
+            return Vertex3d(self.x*other.x, self.y*other.y, self.z*other.z)
+        else:
+            return Vertex3d(self.x * other, self.y * other, self.z * other)
+
+    def __truediv__(self, scalar):
+        return Vertex3d(self.x/scalar, self.y/scalar, self.z/scalar)
 
     def cross(self, other):
         return Vertex3d((self.y*other.z - self.z*other.y), -1*(self.x*other.z-self.z*other.x), (self.x*other.y-self.y*other.x))
 
     def mag(self):
         return (self.x**2 + self.y**2 + self.z**2)**(1/2)
+
+    def unit(self):
+        m = self.mag()
+        return self/m
 
     def add_face(self, face):
         self.faces[len(self.faces)] = face

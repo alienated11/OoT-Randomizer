@@ -21,7 +21,7 @@ from MQ import patch_files, File, update_dmadata, insert_space, add_relocations
 from SaveContext import SaveContext
 import StartingItems
 import Mesh
-from Mesh import convert_to_unsigned, Mesh
+from Mesh import convert_to_unsigned, Mesh, Vertex3d
 from SceneList import scene_table
 
 
@@ -2025,7 +2025,7 @@ def set_grotto_shuffle_data(rom, world):
             grotto_type = (actor_var >> 8) & 0x0F if not world.settings.shuffle_grotto_req else random.choice([0,1,2])
             grotto_actor_id = (scene << 8) + (actor_var & 0x00FF)
             if world.settings.shuffle_grotto_location:
-                # grotto_x = rom.read_int16(actor + 2)
+                # grotto_x = rom.read_int16(actor + 2`)
                 # grotto_y = rom.read_int16(actor + 4)
                 # grotto_z = rom.read_int16(actor + 6)
                 chosen_face = None
@@ -2061,6 +2061,18 @@ def set_grotto_shuffle_data(rom, world):
                     grotto_x = convert_to_unsigned(int(chosen_vertex.x)) if chosen_vertex.x < 0 else int(chosen_vertex.x)
                     grotto_y = convert_to_unsigned(int(chosen_vertex.y)) if chosen_vertex.y < 0 else int(chosen_vertex.y)
                     grotto_z = convert_to_unsigned(int(chosen_vertex.z)) if chosen_vertex.z < 0 else int(chosen_vertex.z)
+                    for grotto in world.get_shufflable_entrances(type="Grotto"):
+                        if grotto.primary \
+                                and grotto.data["actor_id"] == actor_var \
+                                and grotto.data["scene"] == scene:
+                            # figure out new position for this, use single-prec float
+                            exit_position = chosen_vertex - chosen_vertex.unit()*Vertex3d(2, 0, 2)
+                            exit_position_x = struct.unpack('>i', struct.pack('>f', exit_position.x))[0]
+                            exit_position_y = struct.unpack('>i', struct.pack('>f', exit_position.y))[0]
+                            exit_position_z = struct.unpack('>i', struct.pack('>f', exit_position.z))[0]
+                            grotto.reverse.data['pos'] = (exit_position_x, exit_position_y, exit_position_z)
+                            return_table_pointer = rom.sym('GROTTO_RETURN_TABLE') + 32 * grotto.reverse.data['grotto_id']
+                            rom.write_int32s(return_table_pointer + 8, grotto.reverse.data['pos'])
 
                     rom.write_int16(actor+2, grotto_x)
                     rom.write_int16(actor+4, grotto_y)
