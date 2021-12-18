@@ -2087,12 +2087,13 @@ def set_grotto_shuffle_data(rom, world):
             actor_var = rom.read_int16(actor + 14)
             grotto_actor_id = (scene << 8) + (actor_var & 0x00FF)
             if world.settings.shuffle_grotto_req != "off":
-                if grotto_entrances_override[grotto_actor_id]['req'] == "open":
-                    grotto_type = 0
-                if grotto_entrances_override[grotto_actor_id]['req'] == "hit":
-                    grotto_type = 1
-                if grotto_entrances_override[grotto_actor_id]['req'] == "storms":
-                    grotto_type = 2
+                if 'req' in grotto_entrances_override[grotto_actor_id]:
+                    if grotto_entrances_override[grotto_actor_id]['req'] == "open":
+                        grotto_type = 0
+                    if grotto_entrances_override[grotto_actor_id]['req'] == "hit":
+                        grotto_type = 1
+                    if grotto_entrances_override[grotto_actor_id]['req'] == "storms":
+                        grotto_type = 2
             else:
                 grotto_type = (actor_var >> 8) & 0x0F # if not world.settings.shuffle_grotto_req else random.choice([0,1,2])
             if world.settings.shuffle_grotto_location:
@@ -2124,7 +2125,8 @@ def set_grotto_shuffle_data(rom, world):
                 if world.settings.shuffle_grotto_location:
                     grotto_entrances_override[grotto_actor_id]['pos'] = entrance.data['pos']
         else:
-            rom.write_int16(rom.sym('GROTTO_EXIT_LIST') + 2 * entrance.data['grotto_id'], entrance.replaces.data['index'])
+            if entrance.shuffled:
+                rom.write_int16(rom.sym('GROTTO_EXIT_LIST') + 2 * entrance.data['grotto_id'], entrance.replaces.data['index'])
 
     # Override grotto actors data with the new data
     get_actor_list(rom, override_grotto_data)
