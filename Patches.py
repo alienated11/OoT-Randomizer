@@ -1573,6 +1573,69 @@ def patch_rom(spoiler:Spoiler, world:World, rom:Rom):
         if world.settings.shuffle_scrubs == 'random':
             shuffle_messages.scrubs_message_ids.append(text_id)
 
+    grotto_info = open("grottos.txt","w")
+
+    for entrance in world.get_shufflable_entrances(type='Grotto'):
+        if entrance.primary:
+            if world.settings.shuffle_grotto_location:
+                grotto_info.write("{}\n".format(entrance))
+                chosen_face = None
+                safe_points = []
+                safe_faces = []
+                safe_area = 0
+                for scene_t in scene_table:
+                    if scene_t["scene_number"] != entrance.data["scene"]:
+                        continue
+                    scene_t["mesh"] = Mesh(scene_t["name"])
+                    scene_t["mesh"].read_from_rom(rom, scene_t["scene_data"], scene_t["collision_off"])
+
+                    for face in scene_t["mesh"].faces:
+                        if face.normal.x == 0 and face.normal.z == 0 and face.normal.y == 1:
+                            safe_faces.append(face)
+                if len(safe_faces) > 0:
+                    for safe_face in safe_faces:
+                        safe_area += safe_face.get_area()
+                    chosen_face = random.choice(safe_faces)
+                    pts_sample = (chosen_face.get_area() / safe_area) * 250
+                    i = 0
+                    while i < pts_sample:
+                        u = random.random()
+                        v = random.random()
+                        if u + v > 1:
+                            u = 1 - u
+                            v = 1 - v
+                        w = 1 - (u + v)
+                        new_point = chosen_face.vertices[0] * u + chosen_face.vertices[1] * v + chosen_face.vertices[2] * w
+                        safe_points.append(new_point)
+                        i += 1
+                    chosen_vertex = random.choice(safe_points)
+                    grotto_info.write("new pos -- {} {} {}\n".format(chosen_vertex.x, chosen_vertex.y, chosen_vertex.z))
+                    exit_position = chosen_vertex - chosen_vertex.unit() * Vertex3d(2, 0, 2)
+                    grotto_info.write("exit pos (conv) -- {} {} {}\n".format(exit_position.x, exit_position.y, exit_position.z))
+                    grotto_x = convert_to_unsigned(int(chosen_vertex.x)) if chosen_vertex.x < 0 else int(chosen_vertex.x)
+                    grotto_y = convert_to_unsigned(int(chosen_vertex.y)) if chosen_vertex.y < 0 else int(chosen_vertex.y)
+                    grotto_z = convert_to_unsigned(int(chosen_vertex.z)) if chosen_vertex.z < 0 else int(chosen_vertex.z)
+                    # grotto_x = struct.unpack('>i', struct.pack('>f', chosen_vertex.x))[0]
+                    # grotto_y = struct.unpack('>i', struct.pack('>f', chosen_vertex.y))[0]
+                    # grotto_z = struct.unpack('>i', struct.pack('>f', chosen_vertex.z))[0]
+                    grotto_info.write("new pos (conv) -- {} {} {}\n".format(grotto_x, grotto_y, grotto_z))
+                    exit_position_x = struct.unpack('>i', struct.pack('>f', exit_position.x))[0]
+                    exit_position_y = struct.unpack('>i', struct.pack('>f', exit_position.y))[0]
+                    exit_position_z = struct.unpack('>i', struct.pack('>f', exit_position.z))[0]
+                    grotto_info.write("exit pos (conv) -- {} {} {}\n".format(exit_position_x, exit_position_y, exit_position_z))
+                    entrance.data['pos'] = (grotto_x, grotto_y, grotto_z)
+                    entrance.reverse.data['pos'] = (exit_position_x, exit_position_y, exit_position_z)
+                if world.settings.shuffle_grotto_req != 'off':
+                    if world.settings.shuffle_grotto_req == 'open':
+                        entrance.data['req'] = "open"
+                    elif world.settings.shuffle_grotto_req == 'hit':
+                        entrance.data['req'] = "hit"
+                    elif world.settings.shuffle_grotto_req == 'storms':
+                        entrance.data['req'] = "storms"
+                    elif world.settings.shuffle_grotto_req == 'random':
+                        entrance.data['req'] = random.choice(["open", "hit", "storms"])
+    grotto_info.close()
+
     if world.settings.shuffle_grotto_entrances:
         # Build the Grotto Load Table based on grotto entrance data
         
@@ -2022,74 +2085,44 @@ def set_grotto_shuffle_data(rom, world):
         if actor_id == 0x009B:
             actor_zrot = rom.read_int16(actor + 12)
             actor_var = rom.read_int16(actor + 14)
-            grotto_type = (actor_var >> 8) & 0x0F if not world.settings.shuffle_grotto_req else random.choice([0,1,2])
             grotto_actor_id = (scene << 8) + (actor_var & 0x00FF)
+            if world.settings.shuffle_grotto_req != "off":
+                if grotto_entrances_override[grotto_actor_id]['req'] == "open":
+                    grotto_type = 0
+                if grotto_entrances_override[grotto_actor_id]['req'] == "hit":
+                    grotto_type = 1
+                if grotto_entrances_override[grotto_actor_id]['req'] == "storms":
+                    grotto_type = 2
+            else:
+                grotto_type = (actor_var >> 8) & 0x0F # if not world.settings.shuffle_grotto_req else random.choice([0,1,2])
             if world.settings.shuffle_grotto_location:
-                # grotto_x = rom.read_int16(actor + 2`)
+                # grotto_x = rom.read_int16(actor + 2)
                 # grotto_y = rom.read_int16(actor + 4)
                 # grotto_z = rom.read_int16(actor + 6)
-                chosen_face = None
-                safe_points = []
-                safe_faces = []
-                safe_area = 0
-                for scene_t in scene_table:
-                    if scene_t["scene_number"] != scene:
-                        continue
-                    scene_t["mesh"] = Mesh(scene_t["name"])
-                    scene_t["mesh"].read_from_rom(rom, scene_t["scene_data"], scene_t["collision_off"])
-
-                    for face in scene_t["mesh"].faces:
-                        if face.normal.x == 0 and face.normal.z == 0 and face.normal.y == 1:
-                            safe_faces.append(face)
-                if len(safe_faces) > 0:
-                    for safe_face in safe_faces:
-                        safe_area += safe_face.get_area()
-                    chosen_face = random.choice(safe_faces)
-                    pts_sample = (chosen_face.get_area()/safe_area)*250
-                    i = 0
-                    while i < pts_sample:
-                        u = random.random()
-                        v = random.random()
-                        if u+v > 1:
-                            u = 1-u
-                            v = 1-v
-                        w = 1 - (u+v)
-                        new_point = chosen_face.vertices[0]*u + chosen_face.vertices[1]*v + chosen_face.vertices[2]*w
-                        safe_points.append(new_point)
-                        i += 1
-                    chosen_vertex = random.choice(safe_points)
-                    grotto_x = convert_to_unsigned(int(chosen_vertex.x)) if chosen_vertex.x < 0 else int(chosen_vertex.x)
-                    grotto_y = convert_to_unsigned(int(chosen_vertex.y)) if chosen_vertex.y < 0 else int(chosen_vertex.y)
-                    grotto_z = convert_to_unsigned(int(chosen_vertex.z)) if chosen_vertex.z < 0 else int(chosen_vertex.z)
-                    for grotto in world.get_shufflable_entrances(type="Grotto"):
-                        if grotto.primary \
-                                and grotto.data["actor_id"] == actor_var \
-                                and grotto.data["scene"] == scene:
-                            # figure out new position for this, use single-prec float
-                            exit_position = chosen_vertex - chosen_vertex.unit()*Vertex3d(2, 0, 2)
-                            exit_position_x = struct.unpack('>i', struct.pack('>f', exit_position.x))[0]
-                            exit_position_y = struct.unpack('>i', struct.pack('>f', exit_position.y))[0]
-                            exit_position_z = struct.unpack('>i', struct.pack('>f', exit_position.z))[0]
-                            grotto.reverse.data['pos'] = (exit_position_x, exit_position_y, exit_position_z)
-                            return_table_pointer = rom.sym('GROTTO_RETURN_TABLE') + 32 * grotto.reverse.data['grotto_id']
-                            rom.write_int32s(return_table_pointer + 8, grotto.reverse.data['pos'])
-
-                    rom.write_int16(actor+2, grotto_x)
-                    rom.write_int16(actor+4, grotto_y)
-                    rom.write_int16(actor+6, grotto_z)
+                rom.write_int16(actor+2, grotto_entrances_override[grotto_actor_id]['pos'][0])
+                rom.write_int16(actor+4, grotto_entrances_override[grotto_actor_id]['pos'][1])
+                rom.write_int16(actor+6, grotto_entrances_override[grotto_actor_id]['pos'][2])
 
             if world.settings.shuffle_grotto_entrances:
-                rom.write_int16(actor + 12, grotto_entrances_override[grotto_actor_id])
+                rom.write_int16(actor + 12, grotto_entrances_override[grotto_actor_id]['index'])
                 rom.write_byte(actor + 14, grotto_type + 0x20)
             else:
                 rom.write_byte(actor + 14, grotto_type)
 
     # Build the override table based on shuffled grotto entrances
     grotto_entrances_override = {}
-    for entrance in world.get_shuffled_entrances(type='Grotto'):
+    for entrance in world.get_shufflable_entrances(type='Grotto'):
         if entrance.primary:
             grotto_actor_id = (entrance.data['scene'] << 8) + entrance.data['content']
-            grotto_entrances_override[grotto_actor_id] = entrance.replaces.data['index']
+            grotto_entrances_override[grotto_actor_id] = {'req': entrance.data['req']}
+            if entrance.shuffled:
+                grotto_entrances_override[grotto_actor_id]['index'] = entrance.replaces.data['index']
+                if world.settings.shuffle_grotto_location:
+                    grotto_entrances_override[grotto_actor_id]['pos'] = entrance.data['pos']
+            else:
+                grotto_entrances_override[grotto_actor_id]['index'] = entrance.data['index']
+                if world.settings.shuffle_grotto_location:
+                    grotto_entrances_override[grotto_actor_id]['pos'] = entrance.data['pos']
         else:
             rom.write_int16(rom.sym('GROTTO_EXIT_LIST') + 2 * entrance.data['grotto_id'], entrance.replaces.data['index'])
 

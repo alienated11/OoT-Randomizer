@@ -2747,16 +2747,43 @@ setting_infos = [
             'randomize_key': 'randomize_settings',
         },
     ),
-    Checkbutton(
+    Combobox(
         name           = 'shuffle_grotto_req',
         gui_text       = 'Shuffle Grotto Requirements',
         gui_tooltip    = '''\
-            OPEN! THAT! HOLE!
+            Changes how grottos are opened.
+            
+            'Open':
+            All grottos are open
+            
+            'Hit':
+            All grottos are hidden and opened with Bombs or Hammer
+            
+            'Storms':
+            All grottos are hidden and opened by playing Song of Storms
+            
+            'Random':
+            Grotto opening requirements are completely random
+            
         ''',
-        default        = False,
+        default        = 'off',
+        choices        = {
+            'off':    'Off',
+            'open':   'All Open',
+            'hit':    'All Hit',
+            'storms': 'All Song of Storms',
+            'random': 'Random'
+        },
         shared         = True,
         gui_params     = {
             'randomize_key': 'randomize_settings',
+            'distribution':  [
+                ('off', 2),
+                ('open', 1),
+                ('hit', 1),
+                ('storms', 1),
+                ('random', 1)
+            ],
         },
     ),
     Checkbutton(
