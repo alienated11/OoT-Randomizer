@@ -371,6 +371,9 @@ def set_entrances(worlds):
 
     if worlds[0].entrance_shuffle:
         shuffle_random_entrances(worlds)
+    else:
+        for world in worlds:
+            set_all_entrances_data(world)
 
     set_entrances_based_rules(worlds)
 
