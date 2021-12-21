@@ -16,6 +16,7 @@ class Mesh:
     def __init__(self, name=None):
         self.vertices = []
         self.faces = []
+        self.water = []
         self.bound_x = [0, 0]
         self.bound_y = [0, 0]
         self.bound_z = [0, 0]
@@ -35,6 +36,11 @@ class Mesh:
         number_of_polygons = rom.read_int16()
         rom.seek_address(delta=2)
         polygon_segment_offset = rom.read_int32() & 0x00FFFFFF
+        polygon_type_segment_offset = rom.read_int32() & 0x00FFFFFF
+        camera_data_segment_offset = rom.read_int32() & 0x00FFFFFF
+        number_of_water_boxes = rom.read_int16()
+        rom.seek_address(delta=2)
+        water_box_segment_offset = rom.read_int32() & 0x00FFFFFF
 
         # read vertices
         rom.seek_address(scene_offset + vertex_segment_offset)
@@ -61,17 +67,24 @@ class Mesh:
             n_z = convert_to_signed(rom.read_int16())/0x7FFF
             normal = Vertex3d(n_x,n_y,n_z)
             distance = rom.read_int16()
-            self.faces.append(Face([self.vertices[a], self.vertices[b], self.vertices[c]], normal, i))
+            self.faces.append(Face([self.vertices[a], self.vertices[b], self.vertices[c]], normal, i, poly_type))
             # if n_x == 0 and n_z == 0 and n_y == 1:
             # print("{} ({}) -- Normal: {} {} {}".format(self.name, i, n_x, n_y, n_z))
             i += 1
 
-        polygon_type_segment_offset = rom.read_int32() & 0x00FFFFFF
-        camera_data_segment_offset = rom.read_int32() & 0x00FFFFFF
-       
-        number_of_water_boxes = rom.read_int16()
-        rom.seek_address(delta=2)
-        water_box_segment_offset = rom.read_int32() & 0x00FFFFFF
+        rom.seek_address(scene_offset + water_box_segment_offset)
+        i = 0
+        water_polygons = []
+        while i < number_of_water_boxes:
+            x_min = convert_to_signed(rom.read_int16())
+            y_surface = convert_to_signed(rom.read_int16())
+            z_min = convert_to_signed(rom.read_int16())
+            x_len = convert_to_signed(rom.read_int16())
+            z_len = convert_to_signed(rom.read_int16())
+            rom.seek_address(delta=6)
+            self.water.append([Vertex3d(x_min, y_surface, z_min), Vertex3d(x_min+x_len, y_surface, z_min+z_len)])
+
+            i += 1
 
     def write_mesh(self):
         file_name = self.name if self.name != "" else "mesh"
@@ -127,10 +140,11 @@ class Vertex3d:
 
 
 class Face:
-    def __init__(self, vertices=None, normal=None, index=None):
+    def __init__(self, vertices=None, normal=None, index=None, polytype=None):
         self.vertices = vertices
         self.normal = normal
         self.index = index
+        self.polytype = polytype
         self.area = 0
 
     def add_vertex(self, vertex_index):
