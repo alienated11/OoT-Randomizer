@@ -1657,63 +1657,64 @@ def patch_rom(spoiler:Spoiler, world:World, rom:Rom):
                                     else:
                                         poly_types[face.polytype] = 0
                                     max_face_area = max_face_area if max_face_area > face_area else face_area
-                most_common_poly_type = max(poly_types, key=poly_types.get)
-                grotto_info.write("number of safe faces: {}\n".format(len(safe_faces)))
-                grotto_info.write("most common poly type: {}\n".format(most_common_poly_type))
-                grotto_info.write("number of water: {}\n".format(len(scene_mesh.water)))
-                if len(safe_faces) > 0:
-                    safe_faces_weights = []
-                    f = 0
-                    for safe_face in safe_faces:
-                        if not safe_face.polytype == most_common_poly_type:
-                            continue
-                        a = safe_face.get_area()
-                        safe_faces_weights.append(a/safe_area)
-                        grotto_info.write("face type: {}\n".format(safe_face.polytype))
-                        pts_sample = int((safe_area/10000) * (a/safe_area))
-                        # pts_sample = int(10*a/max_face_area)
-                        f += 1
-                        i = 0
-                        while i < pts_sample:
-                            u = random.random()
-                            v = random.random()
-                            if u + v > 1:
-                                u = 1 - u
-                                v = 1 - v
-                            w = 1 - (u + v)
-                            new_point = safe_face.vertices[0] * u + safe_face.vertices[1] * v + safe_face.vertices[2] * w
-                            potential_points.append(new_point)
-                            i += 1
-                            # check point is not underwater
-                    for p in potential_points:
-                        underwater = False
-                        if len(scene_mesh.water) > 0:
-                            for water_plane in scene_mesh.water:
-                                if p.y <= water_plane[0].y - 50 \
-                                    and water_plane[0].x <= p.x <= water_plane[1].x \
-                                        and water_plane[0].z <= p.z <= water_plane[1].z:
-                                    underwater = True
-                                    break
-                        if not underwater:
-                            safe_points.append(p)
-                    grotto_info.write("number of safe points: {}\n".format(len(safe_points)))
-                    chosen_vertex = random.choice(safe_points)
-                    grotto_info.write("new pos -- {} {} {}\n".format(chosen_vertex.x, chosen_vertex.y, chosen_vertex.z))
-                    exit_position = chosen_vertex - chosen_vertex.unit() * Vertex3d(2, 0, 2)
-                    grotto_info.write("exit pos (conv) -- {} {} {}\n".format(exit_position.x, exit_position.y, exit_position.z))
-                    grotto_x = convert_to_unsigned(int(chosen_vertex.x)) if chosen_vertex.x < 0 else int(chosen_vertex.x)
-                    grotto_y = convert_to_unsigned(int(chosen_vertex.y)) if chosen_vertex.y < 0 else int(chosen_vertex.y)
-                    grotto_z = convert_to_unsigned(int(chosen_vertex.z)) if chosen_vertex.z < 0 else int(chosen_vertex.z)
-                    # grotto_x = struct.unpack('>i', struct.pack('>f', chosen_vertex.x))[0]
-                    # grotto_y = struct.unpack('>i', struct.pack('>f', chosen_vertex.y))[0]
-                    # grotto_z = struct.unpack('>i', struct.pack('>f', chosen_vertex.z))[0]
-                    grotto_info.write("new pos (conv) -- {} {} {}\n".format(grotto_x, grotto_y, grotto_z))
-                    exit_position_x = struct.unpack('>i', struct.pack('>f', exit_position.x))[0]
-                    exit_position_y = struct.unpack('>i', struct.pack('>f', exit_position.y))[0]
-                    exit_position_z = struct.unpack('>i', struct.pack('>f', exit_position.z))[0]
-                    grotto_info.write("exit pos (conv) -- {} {} {}\n".format(exit_position_x, exit_position_y, exit_position_z))
-                    entrance.data['pos'] = (grotto_x, grotto_y, grotto_z)
-                    entrance.reverse.data['pos'] = (exit_position_x, exit_position_y, exit_position_z)
+                if scene_mesh is not None:
+                    most_common_poly_type = max(poly_types, key=poly_types.get)
+                    grotto_info.write("number of safe faces: {}\n".format(len(safe_faces)))
+                    grotto_info.write("most common poly type: {}\n".format(most_common_poly_type))
+                    grotto_info.write("number of water: {}\n".format(len(scene_mesh.water)))
+                    if len(safe_faces) > 0:
+                        safe_faces_weights = []
+                        f = 0
+                        for safe_face in safe_faces:
+                            if not safe_face.polytype == most_common_poly_type:
+                                continue
+                            a = safe_face.get_area()
+                            safe_faces_weights.append(a/safe_area)
+                            grotto_info.write("face type: {}\n".format(safe_face.polytype))
+                            pts_sample = int((safe_area/10000) * (a/safe_area))
+                            # pts_sample = int(10*a/max_face_area)
+                            f += 1
+                            i = 0
+                            while i < pts_sample:
+                                u = random.random()
+                                v = random.random()
+                                if u + v > 1:
+                                    u = 1 - u
+                                    v = 1 - v
+                                w = 1 - (u + v)
+                                new_point = safe_face.vertices[0] * u + safe_face.vertices[1] * v + safe_face.vertices[2] * w
+                                potential_points.append(new_point)
+                                i += 1
+                                # check point is not underwater
+                        for p in potential_points:
+                            underwater = False
+                            if len(scene_mesh.water) > 0:
+                                for water_plane in scene_mesh.water:
+                                    if p.y <= water_plane[0].y - 50 \
+                                        and water_plane[0].x <= p.x <= water_plane[1].x \
+                                            and water_plane[0].z <= p.z <= water_plane[1].z:
+                                        underwater = True
+                                        break
+                            if not underwater:
+                                safe_points.append(p)
+                        grotto_info.write("number of safe points: {}\n".format(len(safe_points)))
+                        chosen_vertex = random.choice(safe_points)
+                        grotto_info.write("new pos -- {} {} {}\n".format(chosen_vertex.x, chosen_vertex.y, chosen_vertex.z))
+                        exit_position = chosen_vertex - chosen_vertex.unit() * Vertex3d(2, 0, 2)
+                        grotto_info.write("exit pos (conv) -- {} {} {}\n".format(exit_position.x, exit_position.y, exit_position.z))
+                        grotto_x = convert_to_unsigned(int(chosen_vertex.x)) if chosen_vertex.x < 0 else int(chosen_vertex.x)
+                        grotto_y = convert_to_unsigned(int(chosen_vertex.y)) if chosen_vertex.y < 0 else int(chosen_vertex.y)
+                        grotto_z = convert_to_unsigned(int(chosen_vertex.z)) if chosen_vertex.z < 0 else int(chosen_vertex.z)
+                        # grotto_x = struct.unpack('>i', struct.pack('>f', chosen_vertex.x))[0]
+                        # grotto_y = struct.unpack('>i', struct.pack('>f', chosen_vertex.y))[0]
+                        # grotto_z = struct.unpack('>i', struct.pack('>f', chosen_vertex.z))[0]
+                        grotto_info.write("new pos (conv) -- {} {} {}\n".format(grotto_x, grotto_y, grotto_z))
+                        exit_position_x = struct.unpack('>i', struct.pack('>f', exit_position.x))[0]
+                        exit_position_y = struct.unpack('>i', struct.pack('>f', exit_position.y))[0]
+                        exit_position_z = struct.unpack('>i', struct.pack('>f', exit_position.z))[0]
+                        grotto_info.write("exit pos (conv) -- {} {} {}\n".format(exit_position_x, exit_position_y, exit_position_z))
+                        entrance.data['pos'] = (grotto_x, grotto_y, grotto_z)
+                        entrance.reverse.data['pos'] = (exit_position_x, exit_position_y, exit_position_z)
             if world.settings.shuffle_grotto_req != 'off':
                 if world.settings.shuffle_grotto_req == 'open':
                     entrance.data['req'] = "open"
@@ -2192,7 +2193,7 @@ def set_grotto_shuffle_data(rom, world):
                         grotto_type = 0x0002
             else:
                 grotto_type = (actor_var >> 8) & 0x0F # if not world.settings.shuffle_grotto_req else random.choice([0,1,2])
-            if world.settings.shuffle_grotto_location:
+            if world.settings.shuffle_grotto_location and 'pos' in grotto_entrances_override[grotto_actor_id]:
                 # grotto_x = rom.read_int16(actor + 2)
                 # grotto_y = rom.read_int16(actor + 4)
                 # grotto_z = rom.read_int16(actor + 6)
@@ -2214,11 +2215,11 @@ def set_grotto_shuffle_data(rom, world):
             grotto_entrances_override[grotto_actor_id] = {'req': entrance.data['req']}
             if entrance.shuffled:
                 grotto_entrances_override[grotto_actor_id]['index'] = entrance.replaces.data['index']
-                if world.settings.shuffle_grotto_location:
+                if world.settings.shuffle_grotto_location and 'pos' in grotto_entrances_override[grotto_actor_id]:
                     grotto_entrances_override[grotto_actor_id]['pos'] = entrance.data['pos']
             else:
                 grotto_entrances_override[grotto_actor_id]['index'] = entrance.data['index']
-                if world.settings.shuffle_grotto_location:
+                if world.settings.shuffle_grotto_location and 'pos' in grotto_entrances_override[grotto_actor_id]:
                     grotto_entrances_override[grotto_actor_id]['pos'] = entrance.data['pos']
         else:
             if entrance.shuffled:
