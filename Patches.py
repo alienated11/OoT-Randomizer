@@ -21,7 +21,7 @@ from MQ import patch_files, File, update_dmadata, insert_space, add_relocations
 from SaveContext import SaveContext
 import StartingItems
 import Mesh
-from Mesh import convert_to_unsigned, Mesh, Vertex3d
+from Mesh import convert_to_unsigned, Mesh, Vertex3d, Face
 from SceneList import scene_table
 
 
@@ -1597,55 +1597,63 @@ def patch_rom(spoiler:Spoiler, world:World, rom:Rom):
                         for face in scene_mesh.faces:
                             # check face is flat
                             if face.normal.x == 0 and face.normal.z == 0 and face.normal.y == 1:
-                                # check no other face covers this one
-                                d = 0
-                                for face2 in scene_mesh.faces:
-                                    fx0 = face2.vertices[0].x
-                                    fy0 = face2.vertices[0].y
-                                    fz0 = face2.vertices[0].z
-                                    fx1 = face2.vertices[1].x
-                                    fy1 = face2.vertices[1].y
-                                    fz1 = face2.vertices[1].z
-                                    fx2 = face2.vertices[2].x
-                                    fy2 = face2.vertices[2].y
-                                    fz2 = face2.vertices[2].z
-
-                                    fy3 = face.vertices[0].y
-
-                                    # since face is flat, only y matters
-                                    # | x0 x1 x2 0  |
-                                    # | y0 y1 y2 y3 |
-                                    # | z0 z1 z2 0  |
-                                    # | 1  1  1  1  |
-                                    d = fx0*(fy1*fz2 + fy3*fz1 - fy3*fz2 - fy2*fz1) \
-                                        - fy0*(fx1*fz2 - fx2*fy1) \
-                                        + fz0*(fx1*fy2 + fx2*fy3 - fx2*fy1 - fx1*fy3) \
-                                        - 1*(fx2*fy3*fz1 - fx1*fy3*fz2)
-                                    if d == 0 and not fy3 < min(fy0, fy1, fy2):
-                                        d = 1
-                                if d != 0:
-                                    safe_faces.append(face)
-                                    face_area = face.get_area()
-                                    safe_area += face_area
-                                    if face.polytype in poly_types:
-                                        poly_types[face.polytype] += 1
-                                    else:
-                                        poly_types[face.polytype] = 0
-                                    max_face_area = max_face_area if max_face_area > face_area else face_area
+                                safe_faces.append(face)
+                                face_area = face.get_area()
+                                safe_area += face_area
+                                if face.polytype in poly_types:
+                                    poly_types[face.polytype] += 1
+                                else:
+                                    poly_types[face.polytype] = 0
+                                max_face_area = max_face_area if max_face_area > face_area else face_area
                 if scene_mesh is not None:
-                    most_common_poly_type = max(poly_types, key=poly_types.get)
                     grotto_info.write("number of safe faces: {}\n".format(len(safe_faces)))
-                    grotto_info.write("most common poly type: {}\n".format(most_common_poly_type))
                     grotto_info.write("number of water: {}\n".format(len(scene_mesh.water)))
+                    most_common_poly_type = max(poly_types, key=poly_types.get)
+                    grotto_info.write("most common poly type: {}\n".format(most_common_poly_type))
                     if len(safe_faces) > 0:
                         safe_faces_weights = []
                         f = 0
                         for safe_face in safe_faces:
                             if not safe_face.polytype == most_common_poly_type:
                                 continue
+                            covered = False
+                            for face2 in scene_mesh.faces:
+                                if safe_face.vertices == face2.vertices or covered:
+                                    # grotto_info.write("same face\n")
+                                    continue
+                                p1 = face2.vertices[0]
+                                p2 = face2.vertices[1]
+                                p3 = face2.vertices[2]
+                                # grotto_info.write("checking against -- {} {} {}\n".format(p1.x, p1.y, p1.z))
+                                # grotto_info.write("checking against -- {} {} {}\n".format(p2.x, p2.y, p2.z))
+                                # grotto_info.write("checking against -- {} {} {}\n".format(p3.x, p3.y, p3.z))
+                                for v in safe_face.vertices:
+                                    q1 = Vertex3d(v.x, v.y, v.z)
+                                    q2 = Vertex3d(v.x, scene_mesh.bound_y[1], v.z)
+                                    # grotto_info.write("checking from -- {} {} {}\n".format(q1.x, q1.y, q1.z))
+                                    # grotto_info.write("checking from -- {} {} {}\n".format(q2.x, q2.y, q2.z))
+                                    # signed_volume(a,b,c,d) = (1.0/6.0)*dot(cross(b-a,c-a),d-a)
+                                    s1 = Face.signed_volume(q1, p1, p2, p3)
+                                    s2 = Face.signed_volume(q2, p1, p2, p3)
+                                    if ((s1 > 0) - (s1 < 0)) != ((s2 > 0) - (s2 < 0)):
+                                        s3 = Face.signed_volume(q1, q2, p1, p2)
+                                        s4 = Face.signed_volume(q1, q2, p2, p3)
+                                        s5 = Face.signed_volume(q1, q2, p3, p1)
+                                        if ((s3 > 0) - (s3 < 0)) == ((s4 > 0) - (s4 < 0)) == ((s5 > 0) - (s5 < 0)):
+                                            covered = True
+                                    # grotto_info.write("signed vol: {}\n".format(s1))
+                                    # grotto_info.write("signed vol: {}\n".format(s2))
+                                    # grotto_info.write("signed vol: {}\n".format(s3))
+                                    # grotto_info.write("signed vol: {}\n".format(s4))
+                                    # grotto_info.write("signed vol: {}\n".format(s5))
+                                    # if ((s1 > 0) - (s1 < 0)) != ((s2 > 0) - (s2 < 0)) \
+                                    #         and ((s3 > 0) - (s3 < 0)) == ((s4 > 0) - (s4 < 0)) == ((s5 > 0) - (s5 < 0)):
+                                    #     covered = True
+                            if covered:
+                                continue
                             a = safe_face.get_area()
                             safe_faces_weights.append(a/safe_area)
-                            grotto_info.write("face type: {}\n".format(safe_face.polytype))
+                            # grotto_info.write("face type: {}\n".format(safe_face.polytype))
                             pts_sample = int((safe_area/10000) * (a/safe_area))
                             # pts_sample = int(10*a/max_face_area)
                             f += 1
@@ -1676,7 +1684,7 @@ def patch_rom(spoiler:Spoiler, world:World, rom:Rom):
                         chosen_vertex = random.choice(safe_points)
                         grotto_info.write("new pos -- {} {} {}\n".format(chosen_vertex.x, chosen_vertex.y, chosen_vertex.z))
                         exit_position = chosen_vertex - chosen_vertex.unit() * Vertex3d(2, 0, 2)
-                        grotto_info.write("exit pos (conv) -- {} {} {}\n".format(exit_position.x, exit_position.y, exit_position.z))
+                        grotto_info.write("exit pos -- {} {} {}\n".format(exit_position.x, exit_position.y, exit_position.z))
                         grotto_x = convert_to_unsigned(int(chosen_vertex.x)) if chosen_vertex.x < 0 else int(chosen_vertex.x)
                         grotto_y = convert_to_unsigned(int(chosen_vertex.y)) if chosen_vertex.y < 0 else int(chosen_vertex.y)
                         grotto_z = convert_to_unsigned(int(chosen_vertex.z)) if chosen_vertex.z < 0 else int(chosen_vertex.z)
@@ -2183,11 +2191,11 @@ def set_grotto_shuffle_data(rom, world):
             grotto_entrances_override[grotto_actor_id] = {'req': entrance.data['req']}
             if entrance.shuffled:
                 grotto_entrances_override[grotto_actor_id]['index'] = entrance.replaces.data['index']
-                if world.settings.shuffle_grotto_location and 'pos' in grotto_entrances_override[grotto_actor_id]:
+                if world.settings.shuffle_grotto_location and 'pos' in entrance.data:
                     grotto_entrances_override[grotto_actor_id]['pos'] = entrance.data['pos']
             else:
                 grotto_entrances_override[grotto_actor_id]['index'] = entrance.data['index']
-                if world.settings.shuffle_grotto_location and 'pos' in grotto_entrances_override[grotto_actor_id]:
+                if world.settings.shuffle_grotto_location and 'pos' in entrance.data:
                     grotto_entrances_override[grotto_actor_id]['pos'] = entrance.data['pos']
         else:
             if entrance.shuffled:
