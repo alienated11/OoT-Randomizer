@@ -65,9 +65,9 @@ class Mesh:
             n_x = convert_to_signed(rom.read_int16())/0x7FFF
             n_y = convert_to_signed(rom.read_int16())/0x7FFF
             n_z = convert_to_signed(rom.read_int16())/0x7FFF
-            normal = Vertex3d(n_x,n_y,n_z)
-            distance = rom.read_int16()
-            self.faces.append(Face([self.vertices[a], self.vertices[b], self.vertices[c]], normal, i, poly_type))
+            normal = Vertex3d(n_x, n_y, n_z)
+            distance = convert_to_signed(rom.read_int16())
+            self.faces.append(Face([self.vertices[a], self.vertices[b], self.vertices[c]], normal, i, poly_type, distance))
             # if n_x == 0 and n_z == 0 and n_y == 1:
             # print("{} ({}) -- Normal: {} {} {}".format(self.name, i, n_x, n_y, n_z))
             i += 1
@@ -88,7 +88,7 @@ class Mesh:
 
     def write_mesh(self):
         file_name = self.name if self.name != "" else "mesh"
-        m = open("{}.obj".format(file_name),"w")
+        m = open("{}.obj".format(file_name), "w")
         m.write("#{}\n".format(self.name))
         for v in self.vertices:
             m.write("v {} {} {}\n".format(v.x, v.y, v.z))
@@ -122,6 +122,9 @@ class Vertex3d:
     def __truediv__(self, scalar):
         return Vertex3d(self.x/scalar, self.y/scalar, self.z/scalar)
 
+    def dot(self, other):
+        return self.x*other.x + self.y*other.y + self.z*other.z
+
     def cross(self, other):
         return Vertex3d((self.y*other.z - self.z*other.y), -1*(self.x*other.z-self.z*other.x), (self.x*other.y-self.y*other.x))
 
@@ -140,11 +143,13 @@ class Vertex3d:
 
 
 class Face:
-    def __init__(self, vertices=None, normal=None, index=None, polytype=None):
+    def __init__(self, vertices=None, normal=None, index=None, polytype=None, distance=None):
         self.vertices = vertices
         self.normal = normal
         self.index = index
         self.polytype = polytype
+        self.material = None
+        self.distance = distance
         self.area = 0
 
     def add_vertex(self, vertex_index):
@@ -157,6 +162,11 @@ class Face:
         if len(self.vertices) == 3 and self.area <= 0:
             self.area = 0.5*(self.vertices[1] - self.vertices[0]).cross((self.vertices[2] - self.vertices[0])).mag()
         return self.area
+
+    @staticmethod
+    def signed_volume(a, b, c, d):
+        vol = (1/6)*((b-a).cross((c-a))).dot(d-a)
+        return vol
 
 
 
