@@ -3882,6 +3882,7 @@ setting_infos = [
             'major_only': 'Major Items Only',
             'junk_only':  'Junk Items Only',
             'anything':   'Anything',
+            'Rupee (1)':  'Green Rupee'
         },
         gui_tooltip    = '''\
             Changes the categories of items Ice Traps may
@@ -3899,15 +3900,15 @@ setting_infos = [
         shared         = True,
     ),
     Combobox(
-        name           = 'junk_ice_traps',
-        gui_text       = 'Ice Traps',
+        name           = 'junk_items',
+        gui_text       = 'Junk Item Level',
         default        = 'normal',
         choices        = {
-            'off':       'No Ice Traps',
-            'normal':    'Normal Ice Traps',
-            'on':        'Extra Ice Traps',
-            'mayhem':    'Ice Trap Mayhem',
-            'onslaught': 'Ice Trap Onslaught',
+            'off':       'No Junk Items',
+            'normal':    'Normal Junk Items',
+            'on':        'Extra Junk Items',
+            'mayhem':    'Junk Items Mayhem',
+            'onslaught': 'Junk Items Onslaught',
         },
         gui_tooltip    = '''\
             'Off': All Ice Traps are removed.
@@ -3924,6 +3925,28 @@ setting_infos = [
             'Ice Trap Onslaught': All junk items will be
             replaced by Ice Traps, even those in the
             base pool.
+        ''',
+        shared         = True,
+    ),
+    Combobox(
+        name           = 'junk_item',
+        gui_text       = 'Junk Item',
+        default        = 'Ice Trap',
+        choices        = {
+            'Bombs (5)':       'Bombs',
+            'Arrows (5)':       'Arrows',
+            'Deku Stick (1)':       'Deku Stick',
+            'Deku Nuts (5)':       'Deku Nuts',
+            'Deku Seeds (30)':       'Deku Seeds',
+            'Rupee (1)':       'Green Rupee',
+            'Rupees (5)':       'Blue Rupee',
+            'Rupees (20)':       'Red Rupee',
+            'Rupees (50)':       'Gold Rupee',
+            'Chicken':       'Chicken',
+            'Ice Arrows':       'Ice Arrows',
+            'Ice Trap':       'Ice Traps'
+        },
+        gui_tooltip    = '''\
         ''',
         shared         = True,
     ),

@@ -88,18 +88,23 @@ def distribute_items_restrictive(window, worlds, fill_locations=None):
     itempool = progitempool + prioitempool + restitempool
 
     # set ice traps to have the appearance of other random items in the item pool
-    ice_traps = [item for item in itempool if item.name == 'Ice Trap']
+    ice_traps = [item for item in itempool if item.name == worlds[0].settings.junk_item]
     # Extend with ice traps manually placed in plandomizer
     ice_traps.extend(
         location.item for location in cloakable_locations
         if (location.has_preview()
             and location.item is not None
-            and location.item.name == 'Ice Trap'
+            and location.item.name == worlds[0].settings.junk_item
             and location.item.looks_like_item is None))
     junk_items = remove_junk_items.copy()
     junk_items.remove('Ice Trap')
+    all_items = ItemFactory([item for (item, data) in item_table.items() if data[0] == 'Item' and data[2] is not None])
     major_items = [item for (item, data) in item_table.items() if data[0] == 'Item' and data[1] and data[2] is not None]
     fake_items = []
+    mod = open('models.txt','w')
+    mod.write(world.settings.ice_trap_appearance)
+    for item in all_items:
+        mod.write("{}\n".format(item.name))
     if worlds[0].settings.ice_trap_appearance == 'major_only':
         model_items = [item for item in itempool if item.majoritem]
         if len(model_items) == 0:  # All major items were somehow removed from the pool (can happen in plando)
@@ -108,6 +113,11 @@ def distribute_items_restrictive(window, worlds, fill_locations=None):
         model_items = [item for item in itempool if item.name in junk_items]
         if len(model_items) == 0:  # All junk was removed
             model_items = ItemFactory(junk_items)
+    elif world.settings.junk_item in [item.name for item in all_items]:
+        model_items = [item for item in all_items if item.name == world.settings.ice_trap_appearance]
+        mod.write("\nNEW ITEM\n")
+        if len(model_items) == 0:  # All junk was removed
+            model_items = ItemFactory(major_items) + ItemFactory(junk_items)
     else:  # world[0].settings.ice_trap_appearance == 'anything':
         model_items = [item for item in itempool if item.name != 'Ice Trap']
         if len(model_items) == 0:  # All major items and junk were somehow removed from the pool (can happen in plando)
@@ -118,6 +128,7 @@ def distribute_items_restrictive(window, worlds, fill_locations=None):
     for random_item in random.sample(fake_items, len(ice_traps)):
         ice_trap = ice_traps.pop(0)
         ice_trap.looks_like_item = random_item
+    mod.close()
 
     # Start a search cache here.
     search = Search([world.state for world in worlds])

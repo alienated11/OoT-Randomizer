@@ -353,7 +353,8 @@
           "row_span": [1,1,1],
           "settings": [
             "item_pool_value",
-            "junk_ice_traps",
+            "junk_items",
+            "junk_item",
             "ice_trap_appearance",
             "logic_earliest_adult_trade",
             "logic_latest_adult_trade"

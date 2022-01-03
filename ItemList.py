@@ -19,6 +19,7 @@ item_table = {
     'Magic Bean':                                      ('Item',     True,  0x16, None),
     'Skull Mask':                                      ('Item',     None,  0x17, None),
     'Spooky Mask':                                     ('Item',     None,  0x18, None),
+    'Chicken':                                         ('Item',     None,  0x19, None),
     'Keaton Mask':                                     ('Item',     None,  0x1A, None),
     'Bunny Hood':                                      ('Item',     None,  0x1B, None),
     'Mask of Truth':                                   ('Item',     None,  0x1C, None),

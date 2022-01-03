@@ -651,9 +651,12 @@ junk_pool_base = [
     ('Deku Stick (1)',  5),
     ('Deku Nuts (5)',   5),
     ('Deku Seeds (30)', 5),
-    ('Rupees (5)',      10),
+    ('Rupee (1)',       5),
+    ('Rupees (5)',      5),
     ('Rupees (20)',     4),
     ('Rupees (50)',     1),
+    ('Chicken',         1),
+    ('Ice Arrows',         1),
 ]
 
 pending_junk_pool = []
@@ -747,10 +750,16 @@ def replace_max_item(items, item, max):
 
 def generate_itempool(world):
     junk_pool[:] = list(junk_pool_base)
-    if world.settings.junk_ice_traps == 'on':
-        junk_pool.append(('Ice Trap', 10))
-    elif world.settings.junk_ice_traps in ['mayhem', 'onslaught']:
-        junk_pool[:] = [('Ice Trap', 1)]
+    if world.settings.junk_items == 'on':
+        if any(world.settings.junk_item in junk_item for junk_item in junk_pool):
+            junk_pool.append((world.settings.junk_item, 10))
+        else:
+            junk_pool.append(('Ice Trap', 10))
+    elif world.settings.junk_items in ['mayhem', 'onslaught']:
+        if any(world.settings.junk_item in junk_item for junk_item in junk_pool):
+            junk_pool[:] = [(world.settings.junk_item, 1)]
+        else:
+            junk_pool[:] = [('Ice Trap', 1)]
 
     fixed_locations = list(filter(lambda loc: loc.name in fixedlocations, world.get_locations()))
     for location in fixed_locations:
@@ -1328,9 +1337,12 @@ def get_pool_core(world):
     if not world.settings.shuffle_kokiri_sword:
         replace_max_item(pool, 'Kokiri Sword', 0)
 
-    if world.settings.junk_ice_traps == 'off':
-        replace_max_item(pool, 'Ice Trap', 0)
-    elif world.settings.junk_ice_traps == 'onslaught':
+    if world.settings.junk_items == 'off':
+        if any(world.settings.junk_item in junk_item for junk_item in junk_pool):
+            replace_max_item(pool, world.settings.junk_item, 0)
+        else:
+            replace_max_item(pool, 'Ice Trap', 0)
+    elif world.settings.junk_items == 'onslaught':
         for item in [item for item, weight in junk_pool_base] + ['Recovery Heart', 'Bombs (20)', 'Arrows (30)']:
             replace_max_item(pool, item, 0)
 

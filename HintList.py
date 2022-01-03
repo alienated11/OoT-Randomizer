@@ -250,6 +250,7 @@ hintTable = {
     'Pocket Egg':                                               (["a Cucco container", "a Cucco, eventually", "a fowl youth"], "the Pocket Egg", 'item'),
     'Pocket Cucco':                                             (["a little clucker"], "the Pocket Cucco", 'item'),
     'Cojiro':                                                   (["a cerulean capon"], "Cojiro", 'item'),
+    'Chicken':                                                  (["chicken?"], "Chicken", 'item'),
     'Odd Mushroom':                                             (["a powder ingredient"], "an Odd Mushroom", 'item'),
     'Odd Potion':                                               (["Granny's goodies"], "an Odd Potion", 'item'),
     'Poachers Saw':                                             (["a tree killer"], "the Poacher's Saw", 'item'),
