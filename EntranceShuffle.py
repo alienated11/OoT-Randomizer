@@ -1,5 +1,6 @@
 import random
 import logging
+import struct
 from itertools import chain
 from Fill import ShuffleError
 from collections import OrderedDict
@@ -10,6 +11,10 @@ from Entrance import Entrance
 from State import State
 from Item import ItemFactory
 from Hints import get_hint_area, HintAreaNotFound
+from Rom import Rom
+import Mesh
+from Mesh import convert_to_unsigned, Mesh, Vertex3d, Face
+from SceneList import scene_table
 
 
 def set_all_entrances_data(world):
@@ -29,6 +34,175 @@ def set_all_entrances_data(world):
             if type == 'Grotto':
                 return_entrance.data['index'] = 0x2000 + return_entrance.data['grotto_id']
 
+
+def set_grotto_entrances(world):
+    grotto_info = open("grottos.txt", "w")
+    grotto_info.write("{}\n".format(len(world.get_shufflable_entrances(type='Grotto'))))
+
+    for entrance in world.get_shufflable_entrances(type='Grotto'):
+        if entrance.primary:
+            if world.settings.shuffle_grotto_location:
+                grotto_info.write("{}\n".format(entrance))
+                chosen_face = None
+                potential_points = []
+                safe_points = []
+                safe_faces = []
+                poly_types = {}
+                safe_area = 0
+                max_face_area = 0
+                scene_mesh = None
+                rom = Rom(world.settings.rom)
+                for scene_t in scene_table:
+                    if scene_t["scene_number"] == entrance.data["scene"]:
+                        if scene_t["mesh"] is None:
+                            scene_t["mesh"] = Mesh(scene_t["name"])
+                            scene_t["mesh"].read_from_rom(rom, scene_t["scene_data"], scene_t["collision_off"])
+
+                        scene_mesh = scene_t["mesh"]
+                        for face in scene_mesh.faces:
+                            # check face is flat
+                            if face.normal.x == 0 and face.normal.z == 0 and face.normal.y == 1:
+                                safe_faces.append(face)
+                                face_area = face.get_area()
+                                safe_area += face_area
+                                if face.polytype in poly_types:
+                                    poly_types[face.polytype] += 1
+                                else:
+                                    poly_types[face.polytype] = 0
+                                max_face_area = max_face_area if max_face_area > face_area else face_area
+                if scene_mesh is not None:
+                    grotto_info.write("number of safe faces: {}\n".format(len(safe_faces)))
+                    grotto_info.write("number of water: {}\n".format(len(scene_mesh.water)))
+                    most_common_poly_type = max(poly_types, key=poly_types.get)
+                    grotto_info.write("most common poly type: {}\n".format(most_common_poly_type))
+                    if len(safe_faces) > 0:
+                        safe_faces_weights = []
+                        f = 0
+                        for safe_face in safe_faces:
+                            if not safe_face.polytype == most_common_poly_type:
+                                continue
+                            covered = False
+                            for face2 in scene_mesh.faces:
+                                if safe_face.vertices == face2.vertices or covered:
+                                    # grotto_info.write("same face\n")
+                                    continue
+                                p1 = face2.vertices[0]
+                                p2 = face2.vertices[1]
+                                p3 = face2.vertices[2]
+                                # grotto_info.write("checking against -- {} {} {}\n".format(p1.x, p1.y, p1.z))
+                                # grotto_info.write("checking against -- {} {} {}\n".format(p2.x, p2.y, p2.z))
+                                # grotto_info.write("checking against -- {} {} {}\n".format(p3.x, p3.y, p3.z))
+                                for v in safe_face.vertices:
+                                    q1 = Vertex3d(v.x, v.y, v.z)
+                                    q2 = Vertex3d(v.x, scene_mesh.bound_y[1], v.z)
+                                    # grotto_info.write("checking from -- {} {} {}\n".format(q1.x, q1.y, q1.z))
+                                    # grotto_info.write("checking from -- {} {} {}\n".format(q2.x, q2.y, q2.z))
+                                    # signed_volume(a,b,c,d) = (1.0/6.0)*dot(cross(b-a,c-a),d-a)
+                                    s1 = Face.signed_volume(q1, p1, p2, p3)
+                                    s2 = Face.signed_volume(q2, p1, p2, p3)
+                                    if ((s1 > 0) - (s1 < 0)) != ((s2 > 0) - (s2 < 0)):
+                                        s3 = Face.signed_volume(q1, q2, p1, p2)
+                                        s4 = Face.signed_volume(q1, q2, p2, p3)
+                                        s5 = Face.signed_volume(q1, q2, p3, p1)
+                                        if ((s3 > 0) - (s3 < 0)) == ((s4 > 0) - (s4 < 0)) == ((s5 > 0) - (s5 < 0)):
+                                            covered = True
+                                    # grotto_info.write("signed vol: {}\n".format(s1))
+                                    # grotto_info.write("signed vol: {}\n".format(s2))
+                                    # grotto_info.write("signed vol: {}\n".format(s3))
+                                    # grotto_info.write("signed vol: {}\n".format(s4))
+                                    # grotto_info.write("signed vol: {}\n".format(s5))
+                                    # if ((s1 > 0) - (s1 < 0)) != ((s2 > 0) - (s2 < 0)) \
+                                    #  and ((s3 > 0) - (s3 < 0)) == ((s4 > 0) - (s4 < 0)) == ((s5 > 0) - (s5 < 0)):
+                                    #     covered = True
+                            if covered:
+                                continue
+                            a = safe_face.get_area()
+                            safe_faces_weights.append(a/safe_area)
+                            # grotto_info.write("face type: {}\n".format(safe_face.polytype))
+                            pts_sample = int((safe_area/10000) * (a/safe_area))
+                            # pts_sample = int(10*a/max_face_area)
+                            f += 1
+                            i = 0
+                            while i < pts_sample:
+                                u = random.random()
+                                v = random.random()
+                                if u + v > 1:
+                                    u = 1 - u
+                                    v = 1 - v
+                                w = 1 - (u + v)
+                                new_point = safe_face.vertices[0] * u + safe_face.vertices[1] * v + safe_face.vertices[2] * w
+                                potential_points.append(new_point)
+                                i += 1
+                                # check point is not underwater
+                        for p in potential_points:
+                            underwater = False
+                            if len(scene_mesh.water) > 0:
+                                for water_plane in scene_mesh.water:
+                                    if p.y <= water_plane[0].y - 50 \
+                                        and water_plane[0].x <= p.x <= water_plane[1].x \
+                                            and water_plane[0].z <= p.z <= water_plane[1].z:
+                                        underwater = True
+                                        break
+                            if not underwater:
+                                safe_points.append(p)
+                        grotto_info.write("number of safe points: {}\n".format(len(safe_points)))
+                        chosen_vertex = random.choice(safe_points)
+                        grotto_info.write("new pos -- {} {} {}\n".format(chosen_vertex.x, chosen_vertex.y, chosen_vertex.z))
+                        exit_position = chosen_vertex - chosen_vertex.unit() * Vertex3d(2, 0, 2)
+                        grotto_info.write("exit pos -- {} {} {}\n".format(exit_position.x, exit_position.y, exit_position.z))
+                        grotto_x = convert_to_unsigned(int(chosen_vertex.x)) if chosen_vertex.x < 0 else int(chosen_vertex.x)
+                        grotto_y = convert_to_unsigned(int(chosen_vertex.y)) if chosen_vertex.y < 0 else int(chosen_vertex.y)
+                        grotto_z = convert_to_unsigned(int(chosen_vertex.z)) if chosen_vertex.z < 0 else int(chosen_vertex.z)
+                        # grotto_x = struct.unpack('>i', struct.pack('>f', chosen_vertex.x))[0]
+                        # grotto_y = struct.unpack('>i', struct.pack('>f', chosen_vertex.y))[0]
+                        # grotto_z = struct.unpack('>i', struct.pack('>f', chosen_vertex.z))[0]
+                        grotto_info.write("new pos (conv) -- {} {} {}\n".format(grotto_x, grotto_y, grotto_z))
+                        exit_position_x = struct.unpack('>i', struct.pack('>f', exit_position.x))[0]
+                        exit_position_y = struct.unpack('>i', struct.pack('>f', exit_position.y))[0]
+                        exit_position_z = struct.unpack('>i', struct.pack('>f', exit_position.z))[0]
+                        grotto_info.write("exit pos (conv) -- {} {} {}\n".format(exit_position_x, exit_position_y, exit_position_z))
+                        entrance.data['pos'] = (grotto_x, grotto_y, grotto_z)
+                        entrance.reverse.data['pos'] = (exit_position_x, exit_position_y, exit_position_z)
+            if world.settings.shuffle_grotto_req != 'off':
+                grotto_info.write("Grotto req ({}) \n".format(entrance.name))
+                if world.settings.shuffle_grotto_req == 'open':
+                    entrance.data['req'] = "open"
+
+                elif world.settings.shuffle_grotto_req == 'hit':
+                    entrance.data['req'] = "hit"
+                elif world.settings.shuffle_grotto_req == 'storms':
+                    entrance.data['req'] = "storms"
+                elif world.settings.shuffle_grotto_req == 'random':
+                    new_req = random.choice(["open", "hit", "storms"])
+                    entrance.data['req'] = new_req
+                new_entrance_rule = ""
+                if entrance.data['req'] == "open":
+                    new_entrance_rule = "True"
+                elif entrance.data['req'] == "hit":
+                    new_entrance_rule = "can_open_bomb_grotto"
+                elif entrance.data['req'] == "storms":
+                    new_entrance_rule = "can_open_storm_grotto"
+                if "can_blast_or_smash" in entrance.rule_string :
+                    new_entrance_rule = entrance.rule_string + " and " + new_entrance_rule
+                if "Megaton_Hammer" in entrance.rule_string:
+                    if "child" in entrance.rule_string:
+                        new_entrance_rule = "(can_use(Megaton_Hammer) or is_child) and " + new_entrance_rule
+                    else:
+                        new_entrance_rule = "can_use(Megaton_Hammer) and " + new_entrance_rule
+                elif "child" in entrance.rule_string:
+                    new_entrance_rule = "is_child and " + new_entrance_rule
+                if "adult" in entrance.rule_string:
+                    new_entrance_rule = "is_adult and " + new_entrance_rule
+                grotto_info.write("\told rule: {}\n".format(entrance.rule_string))
+                for rule in entrance.access_rules:
+                    grotto_info.write("\taccess rule: {}\n".format(rule))
+                grotto_info.write("\tnew rule: {}\n".format(new_entrance_rule))
+                entrance.rule_string = new_entrance_rule
+                world.parser.parse_spot_rule(entrance)
+                for rule in entrance.access_rules:
+                    grotto_info.write("\taccess rule: {}\n".format(rule))
+
+    grotto_info.close()
 
 def assume_entrance_pool(entrance_pool):
     assumed_pool = []
@@ -368,6 +542,9 @@ class EntranceShuffleError(ShuffleError):
 def set_entrances(worlds):
     for world in worlds:
         world.initialize_entrances()
+        # Set entrance data for all entrances, even those we aren't shuffling
+        set_all_entrances_data(world)
+        set_grotto_entrances(world)
 
     if worlds[0].entrance_shuffle:
         shuffle_random_entrances(worlds)
@@ -391,8 +568,6 @@ def shuffle_random_entrances(worlds):
 
     # Shuffle all entrances within their own worlds
     for world in worlds:
-        # Set entrance data for all entrances, even those we aren't shuffling
-        set_all_entrances_data(world)
 
         # Determine entrance pools based on settings, to be shuffled in the order we set them by
         one_way_entrance_pools = OrderedDict()
