@@ -101,8 +101,6 @@ def distribute_items_restrictive(window, worlds, fill_locations=None):
     all_items = ItemFactory([item for (item, data) in item_table.items() if data[0] == 'Item' and data[2] is not None])
     major_items = [item for (item, data) in item_table.items() if data[0] == 'Item' and data[1] and data[2] is not None]
     fake_items = []
-    mod = open('models.txt','w')
-    mod.write(world.settings.ice_trap_appearance)
     for item in all_items:
         mod.write("{}\n".format(item.name))
     if worlds[0].settings.ice_trap_appearance == 'major_only':
@@ -115,7 +113,6 @@ def distribute_items_restrictive(window, worlds, fill_locations=None):
             model_items = ItemFactory(junk_items)
     elif world.settings.junk_item in [item.name for item in all_items]:
         model_items = [item for item in all_items if item.name == world.settings.ice_trap_appearance]
-        mod.write("\nNEW ITEM\n")
         if len(model_items) == 0:  # All junk was removed
             model_items = ItemFactory(major_items) + ItemFactory(junk_items)
     else:  # world[0].settings.ice_trap_appearance == 'anything':
@@ -128,7 +125,6 @@ def distribute_items_restrictive(window, worlds, fill_locations=None):
     for random_item in random.sample(fake_items, len(ice_traps)):
         ice_trap = ice_traps.pop(0)
         ice_trap.looks_like_item = random_item
-    mod.close()
 
     # Start a search cache here.
     search = Search([world.state for world in worlds])
