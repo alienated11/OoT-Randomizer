@@ -112,6 +112,11 @@ entrance_shuffle_table = [
                         ('Ice Cavern Beginning -> ZF Ice Ledge',                            { 'index': 0x03D4 })),
     ('Dungeon',         ('Gerudo Fortress -> Gerudo Training Ground Lobby',                 { 'index': 0x0008 }),
                         ('Gerudo Training Ground Lobby -> Gerudo Fortress',                 { 'index': 0x03A8 })),
+    ('Ganon Dungeon',   ('Ganons Castle Grounds -> Ganons Castle Lobby',                    { 'index': 0x0467 }),
+                        ('Ganons Castle Lobby -> Ganons Castle Grounds',                    { 'index': 0x023D }),
+                        ('Ganons Castle Lobby -> Castle Grounds',                           { 'index': 0x023F })),
+    ('Ganon Interior',  ('Ganons Castle Lobby -> Ganons Castle Tower',                      { 'index': 0x041B }),
+                        ('Ganons Castle Tower -> Ganons Castle Lobby',                      { 'index': 0x0534 })),
 
     ('Interior',        ('Kokiri Forest -> KF Midos House',                                 { 'index': 0x0433 }),
                         ('KF Midos House -> Kokiri Forest',                                 { 'index': 0x0443 })),
@@ -413,6 +418,8 @@ def shuffle_random_entrances(worlds):
 
         if worlds[0].settings.shuffle_dungeon_entrances:
             entrance_pools['Dungeon'] = world.get_shufflable_entrances(type='Dungeon', only_primary=True)
+            if worlds[0].settings.shuffle_ganon_castle_entrances:
+                entrance_pools['Dungeon'].append(world.get_entrance('Ganons Castle Grounds -> Ganons Castle Lobby'))
             # The fill algorithm will already make sure gohma is reachable, however it can end up putting
             # a forest escape via the hands of spirit on Deku leading to Deku on spirit in logic. This is
             # not really a closed forest anymore, so specifically remove Deku Tree from closed forest.
@@ -430,6 +437,8 @@ def shuffle_random_entrances(worlds):
             entrance_pools['Interior'] = world.get_shufflable_entrances(type='Interior', only_primary=True)
             if worlds[0].shuffle_special_interior_entrances:
                 entrance_pools['Interior'] += world.get_shufflable_entrances(type='SpecialInterior', only_primary=True)
+            if worlds[0].settings.shuffle_ganon_castle_entrances:
+                entrance_pools['Interior'].append(world.get_entrance('Ganons Castle Lobby -> Ganons Castle Tower'))
             if worlds[0].settings.decouple_entrances:
                 entrance_pools['InteriorReverse'] = [entrance.reverse for entrance in entrance_pools['Interior']]
 
