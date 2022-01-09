@@ -2802,13 +2802,31 @@ setting_infos = [
             'randomize_key': 'randomize_settings',
         },
     ),
-    Checkbutton(
+    Combobox(
         name           = 'shuffle_ganon_castle_entrances',
         gui_text       = 'Shuffle Ganon Castle Entrances',
         gui_tooltip    = '''\
             Add Ganon's Castle and Ganon's Tower to dungeon entrance pool
+            
+            'Off':
+            Do not shuffle Ganon's Castle or Ganon's Tower
+            
+            'Separate Pools':
+            Shuffle Ganon's Castle and Tower
+            Consider Ganon's Castle to be a Dungeon and Ganon's Tower an Interior
+            
+            'Same Pool':
+            Shuffle Ganon's Castle and Tower
+            Consider Ganon's Castle and Tower to both be a Dungeon
+            
+            Note: These entrances only get shuffled when the corresponding ER (Dungeon/Interior) is enabled
         ''',
-        default        = False,
+        default        = 'off',
+        choices        = {
+            'off':       'Off',
+            'separate':    'Separate Pools',
+            'together':    'Same Pool'
+        },
         shared         = True,
         gui_params     = {
             'randomize_key': 'randomize_settings',

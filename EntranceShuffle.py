@@ -418,8 +418,11 @@ def shuffle_random_entrances(worlds):
 
         if worlds[0].settings.shuffle_dungeon_entrances:
             entrance_pools['Dungeon'] = world.get_shufflable_entrances(type='Dungeon', only_primary=True)
-            if worlds[0].settings.shuffle_ganon_castle_entrances:
+            if worlds[0].settings.shuffle_ganon_castle_entrances == 'separate':
                 entrance_pools['Dungeon'].append(world.get_entrance('Ganons Castle Grounds -> Ganons Castle Lobby'))
+            if worlds[0].settings.shuffle_ganon_castle_entrances == 'together':
+                entrance_pools['Dungeon'].append(world.get_entrance('Ganons Castle Grounds -> Ganons Castle Lobby'))
+                entrance_pools['Dungeon'].append(world.get_entrance('Ganons Castle Lobby -> Ganons Castle Tower'))
             # The fill algorithm will already make sure gohma is reachable, however it can end up putting
             # a forest escape via the hands of spirit on Deku leading to Deku on spirit in logic. This is
             # not really a closed forest anymore, so specifically remove Deku Tree from closed forest.
@@ -437,7 +440,7 @@ def shuffle_random_entrances(worlds):
             entrance_pools['Interior'] = world.get_shufflable_entrances(type='Interior', only_primary=True)
             if worlds[0].shuffle_special_interior_entrances:
                 entrance_pools['Interior'] += world.get_shufflable_entrances(type='SpecialInterior', only_primary=True)
-            if worlds[0].settings.shuffle_ganon_castle_entrances:
+            if worlds[0].settings.shuffle_ganon_castle_entrances == 'separate':
                 entrance_pools['Interior'].append(world.get_entrance('Ganons Castle Lobby -> Ganons Castle Tower'))
             if worlds[0].settings.decouple_entrances:
                 entrance_pools['InteriorReverse'] = [entrance.reverse for entrance in entrance_pools['Interior']]
