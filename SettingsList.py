@@ -2853,6 +2853,18 @@ setting_infos = [
             'randomize_key': 'randomize_settings',
         },
     ),
+    Checkbutton(
+        name           = 'shuffle_ganon_castle_entrances',
+        gui_text       = 'Shuffle Ganon Castle Entrances',
+        gui_tooltip    = '''\
+            Add Ganon's Castle and Ganon's Tower to dungeon entrance pool
+        ''',
+        default        = False,
+        shared         = True,
+        gui_params     = {
+            'randomize_key': 'randomize_settings',
+        },
+    ),
     Combobox(
         name           = 'mix_entrance_pools',
         gui_text       = 'Mix Entrance Pools',

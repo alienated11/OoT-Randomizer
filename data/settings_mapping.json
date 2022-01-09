@@ -178,6 +178,7 @@
             "shuffle_dungeon_entrances",
             "shuffle_dungeon_bosses",
             "shuffle_overworld_entrances",
+            "shuffle_ganon_castle_entrances",
             "mix_entrance_pools",
             "decouple_entrances",
             "owl_drops",
