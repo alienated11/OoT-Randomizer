@@ -2348,7 +2348,7 @@ def place_shop_items(rom, world, shop_items, messages, locations, init_shop_id=F
                 split_item_name = item_display.name.split('(')
                 split_item_name[1] = '(' + split_item_name[1]
 
-                if location.item.name == 'Ice Trap':
+                if location.item.name == world.settings.junk_item:
                     split_item_name[0] = create_fake_name(split_item_name[0])
 
                 if world.settings.world_count > 1:
@@ -2358,7 +2358,7 @@ def place_shop_items(rom, world, shop_items, messages, locations, init_shop_id=F
                 purchase_text = '\x08%s  %d Rupees\x09\x01%s\x01\x1B\x05\x42Buy\x01Don\'t buy\x05\x40\x02' % (split_item_name[0], location.price, split_item_name[1])
             else:
                 shop_item_name = getSimpleHintNoPrefix(item_display)
-                if location.item.name == 'Ice Trap':
+                if location.item.name == world.settings.junk_item:
                     shop_item_name = create_fake_name(shop_item_name)
 
                 if world.settings.world_count > 1:
