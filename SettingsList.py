@@ -2521,6 +2521,82 @@ setting_infos = [
             'no_line_break': True,
         },
     ),
+    Combobox(
+        name           = 'talon_level',
+        gui_text       = 'Super Cucco Minigame Difficulty Level',
+        default        = 'normal',
+        choices        = {
+            'easy':   'Easy',
+            'normal': 'Normal',
+            'hard':   'Hard',
+            'mean':   'Mean'
+            },
+        gui_tooltip    = '''\
+            Modifies the difficulty level for Child and Adult Target Shooting Minigame, by changing the amount of ammo given
+            
+            'Easy':
+            Plenty of time: 20 seconds per Super Cucco needed
+            
+            'Normal':
+            Vanilla amount of time: 10 seconds per Super Cucco needed (default: 30s)
+            
+            'Hard':
+            Reduced amount of time: 7 seconds per Super Cucco needed
+            
+            'Mean':
+            Very little time: 3 seconds per Super Cucco needed
+            
+        ''',
+        gui_params     = {
+            'randomize_key': 'randomize_settings',
+            'distribution':  [
+                ('easy', 1),
+                ('normal', 2),
+                ('hard', 1),
+                ('mean', 0)
+            ],
+        },
+        shared         = True,
+
+    ),
+    Checkbutton(
+        name           = 'talon_count_random',
+        gui_text       = 'Random Super Cucco Count',
+        gui_tooltip    = '''\
+            Talon will give a reward for collecting a random amount of Super Cuccos
+        ''',
+        disable        = {
+            True : {'settings' : ['talon_count']}
+        },
+        shared         = True,
+    ),
+    Scale(
+        name           = 'talon_count',
+        gui_text       = 'Super Cucco Count',
+        default        = 3,
+        min            = 1,
+        max            = 3,
+        gui_tooltip    = '''\
+            Talon will give a reward for turning
+            in the chosen number of Super Cuccos.
+        ''',
+        shared         = True,
+        gui_params     = {
+            'no_line_break': True,
+        },
+    ),
+    Checkbutton(
+        name           = 'talon_cost',
+        gui_text       = 'Talon Cost',
+        gui_tooltip    = '''\
+            Randomize cost to play Super Cucco Minigame
+        ''',
+        default        = False,
+        shared         = True,
+        gui_params     = {
+            'randomize_key': 'randomize_settings',
+        },
+    ),
     Checkbutton(
         name           = 'big_poe_count_random',
         gui_text       = 'Random Big Poe Target Count',
@@ -2545,6 +2621,112 @@ setting_infos = [
         ''',
         disabled_default = 1,
         shared         = True,
+    ),
+    Combobox(
+        name           = 'target_minigame_level',
+        gui_text       = 'Target Minigame Difficulty Level',
+        default        = 'normal',
+        choices        = {
+            'easy':   'Easy',
+            'normal': 'Normal',
+            'hard':   'Hard',
+            'mean':   'Mean'
+            },
+        gui_tooltip    = '''\
+            Modifies the difficulty level for Child and Adult Target Shooting Minigame, by changing the amount of ammo given
+            
+            'Easy':
+            Plenty of ammo (30)
+            
+            'Normal':
+            Vanilla amount of ammo (15)
+            
+            'Hard':
+            Reduced amount of ammo (12)
+            
+            'Mean':
+            No extra ammo (10)
+            
+        ''',
+        gui_params     = {
+            'randomize_key': 'randomize_settings',
+            'distribution':  [
+                ('easy', 1),
+                ('normal', 2),
+                ('hard', 1),
+                ('mean', 0)
+            ],
+        },
+        shared         = True,
+
+    ),
+    Checkbutton(
+        name           = 'target_minigame_cost',
+        gui_text       = 'Target Cost',
+        gui_tooltip    = '''\
+            Randomize cost to play Target Shooting Minigame
+        ''',
+        default        = False,
+        shared         = True,
+        gui_params     = {
+            'randomize_key': 'randomize_settings',
+        },
+    ),
+    Checkbutton(
+        name           = 'target_minigame_colors',
+        gui_text       = 'Target Colors',
+        gui_tooltip    = '''\
+            Randomize colors of Rupees in Target Shooting Minigame
+            Note: this does NOT affect the order, it is purely cosmetic
+        ''',
+        default        = False,
+        shared         = True,
+        gui_params     = {
+            'randomize_key': 'randomize_settings',
+        },
+    ),
+    Combobox(
+        name           = 'dampe_race_level',
+        gui_text       = 'Dampé Race Difficulty Level',
+        default        = 'normal',
+        choices        = {
+            'easy':   'Easy',
+            'normal': 'Normal',
+            'hard':   'Hard',
+            'mean':   'Mean',
+            'why':    'WHY?'
+            },
+        gui_tooltip    = '''\
+            Modifies the difficulty level for Dampé's Race by modifying time allowed for second prize and how often Dampé sends fire attacks
+            
+            'Easy':
+            Dampé's chance to throw fire is reduced and 15 extra seconds are given to win the second prize
+            
+            'Normal':
+            Normal chance for Dampé to attack and normal amount of time (60s) to receive second prize
+            
+            'Hard':
+            Slightly increased chance for Dampé attacks and normal amount of time
+            
+            'Mean':
+            Increased chance for Dampé attacks and reduced amount of time (53s)
+            
+            'WHY?':
+            Don't
+            
+        ''',
+        gui_params     = {
+            'randomize_key': 'randomize_settings',
+            'distribution':  [
+                ('easy', 1),
+                ('normal', 2),
+                ('hard', 1),
+                ('mean', 0),
+                ('why', 0)
+            ],
+        },
+        shared         = True,
+
     ),
     Checkbutton(
         name           = 'shuffle_kokiri_sword',

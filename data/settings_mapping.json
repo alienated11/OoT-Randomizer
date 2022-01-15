@@ -317,17 +317,32 @@
             "skip_child_zelda",
             "no_escape_sequence",
             "no_guard_stealth",
-            "no_epona_race",
-            "skip_some_minigame_phases",
             "complete_mask_quest",
             "useful_cutscenes",
             "fast_chests",
             "free_scarecrow",
-            "fast_bunny_hood",
+            "fast_bunny_hood"
+          ]
+        },
+        {
+          "name": "minigame_section",
+          "text": "Minigames",
+          "row_span": [1,1,1],
+          "settings": [
+            "skip_some_minigame_phases",
+            "no_epona_race",
             "chicken_count_random",
             "chicken_count",
             "big_poe_count_random",
-            "big_poe_count"
+            "big_poe_count",
+            "talon_level",
+            "talon_count_random",
+            "talon_count",
+            "talon_cost",
+            "target_minigame_level",
+            "target_minigame_cost",
+            "target_minigame_colors",
+            "dampe_race_level"
           ]
         },
         {

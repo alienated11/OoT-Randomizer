@@ -752,6 +752,131 @@ def patch_rom(spoiler:Spoiler, world:World, rom:Rom):
     # Speed dig text for Dampe
     rom.write_bytes(0x9532F8, [0x08, 0x08, 0x08, 0x59])
 
+    # randomize Talon's chickens
+    super_cucco_count = world.settings.talon_count
+    if world.settings.talon_count_random:
+        super_cucco_count = random.randint(1, 3)
+
+    if super_cucco_count > 0:
+        # point value of super cucco
+        super_cucco_value = divmod(12, super_cucco_count)[0]
+        rom.write_int16(0xCC07F6, super_cucco_value)
+
+    if world.settings.talon_cost:
+        # don't mess up logic, so keep cost under 100 rupees
+        talon_cost = random.randint(0, 99)
+        # cost of game, used in two sections
+        rom.write_int16(0xCC1652, talon_cost)
+        rom.write_int16(0xCC1712, talon_cost)
+        # actually subtract rupees
+        rom.write_int16(0xCC168A, 0xFFFF - talon_cost + 1)
+
+    super_cucco_time = 10 * super_cucco_count
+    if super_cucco_count != 3 or world.settings.talon_level != 'normal':
+        # time given
+        if world.settings.talon_level == 'easy':
+            super_cucco_time = 20 * super_cucco_count
+        elif world.settings.talon_level == 'hard':
+            super_cucco_time = 7 * super_cucco_count
+        elif world.settings.talon_level == 'mean':
+            super_cucco_time = 3 * super_cucco_count
+
+        rom.write_int16(0xCC108E, super_cucco_time)
+
+    target_cost = 20
+    if world.settings.target_minigame_cost:
+        target_cost = random.randint(0, 99)
+        # game cost
+        rom.write_int16(0xD35A8A, target_cost)
+        rom.write_int16(0xD35A9A, 0xFFFF - target_cost + 1)
+
+    if world.settings.target_minigame_colors:
+        # target colors
+        target_rupees = [0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000]
+        i = 0
+        while i < len(target_rupees):
+            target_rupees[i] = random.randint(0, 5)
+            i += 1
+        # type 5 target rupees (silver colored) don't have a corresponding color for the markers, they look cool though
+        marker_rupees = [0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000]
+        # marker actor
+        # rom.write_int16(0xD34AF2, 0x0019)
+        # make markers correspond to the round colors
+        marker_rupees[0] = target_rupees[0]
+        marker_rupees[1] = target_rupees[1]
+        marker_rupees[2] = target_rupees[1]
+        marker_rupees[3] = target_rupees[2]
+        marker_rupees[4] = target_rupees[3]
+        marker_rupees[5] = target_rupees[3]
+        marker_rupees[6] = target_rupees[4]
+        marker_rupees[7] = target_rupees[4]
+        marker_rupees[8] = target_rupees[5]
+        marker_rupees[9] = target_rupees[5]
+        rom.write_int16s(0xD35580, target_rupees)
+        rom.write_int16s(0xD3558C, marker_rupees)
+
+    target_ammo = 15
+    if world.settings.target_minigame_level != 'normal':
+        if world.settings.target_minigame_level == 'easy':
+            target_ammo = 30
+        if world.settings.target_minigame_level == 'hard':
+            target_ammo = 12
+        if world.settings.target_minigame_level == 'mean':
+            target_ammo = 10
+            # modify order of animation (doesn't currently work)
+            # target_minigame_labels = [0x809A02B4, 0x809A02E8, 0x809A033C, 0x809A0370, 0x809A03C4, 0x809A0418]
+            # random.shuffle(target_minigame_labels)
+            # rom.write_int32s(0xD35634, target_minigame_labels)
+        # ammo amount
+        rom.write_int16(0xD34C12, target_ammo)
+
+
+
+    target_message_sign = """
+    Shooting Gallery
+    \x05\x42{cost} Rupees\x05\x40 for one play
+    There are 10 targets. You have \x05\x45{ammo}\x05\x40
+    chances. Hit all 10 targets!
+    /
+    Hit 10 targets -- Perfect Prize
+    Hit 8 or more -- Free Retry
+    Hit less than 8 -- Game Over
+    /
+    Rules at this Shooting Gallery
+    Don't lean on the counter.
+    Don't disturb other customers. 
+    """.format(cost=target_cost, ammo=target_ammo)
+    target_message = """
+    Do you want to play a game?
+    It's \x05\x42{cost}\x05\x40 Rupees per play.
+    Yes
+    Nope 
+    """.format(cost=target_cost)
+
+    if world.settings.world_count > 1:
+        target_message_sign = make_player_message(target_message_sign)
+        target_message = make_player_message(target_message)
+    messages = read_messages(rom)
+    update_message_by_id(messages, 0x0329, target_message_sign)
+    update_message_by_id(messages, 0x002B, target_message)
+
+    dampe_race_time = 60
+    dampe_race_fire_frames = 32
+    if world.settings.dampe_race_level != 'normal':
+        if world.settings.dampe_race_level == 'easy':
+            dampe_race_time = 75
+            dampe_race_fire_frames = 3600
+        elif world.settings.dampe_race_level == 'hard':
+            dampe_race_fire_frames = 22
+        elif world.settings.dampe_race_level == 'mean':
+            dampe_race_time = 53
+            dampe_race_fire_frames = 12
+        elif world.settings.dampe_race_level == 'why':
+            dampe_race_time = 45
+            dampe_race_fire_frames = 2
+        rom.write_int16(0xDFF962, dampe_race_time)
+        rom.write_int16(0xDFEF12, dampe_race_fire_frames)
+
     # Make item descriptions into a single box
     Short_item_descriptions = [0x92EC84, 0x92F9E3, 0x92F2B4, 0x92F37A, 0x92F513, 0x92F5C6, 0x92E93B, 0x92EA12]
     for address in Short_item_descriptions:
