@@ -830,52 +830,36 @@ def patch_rom(spoiler:Spoiler, world:World, rom:Rom):
         # ammo amount
         rom.write_int16(0xD34C12, target_ammo)
 
+    rom.write_byte(0xBC77BC, 0x09)
 
 
-    target_message_sign = """
-    Shooting Gallery
-    \x05\x42{cost} Rupees\x05\x40 for one play
-    There are 10 targets. You have \x05\x45{ammo}\x05\x40
-    chances. Hit all 10 targets!
-    /
-    Hit 10 targets -- Perfect Prize
-    Hit 8 or more -- Free Retry
-    Hit less than 8 -- Game Over
-    /
-    Rules at this Shooting Gallery
-    Don't lean on the counter.
-    Don't disturb other customers. 
-    """.format(cost=target_cost, ammo=target_ammo)
-    target_message = """
-    Do you want to play a game?
-    It's \x05\x42{cost}\x05\x40 Rupees per play.
-    Yes
-    Nope 
-    """.format(cost=target_cost)
-
-    if world.settings.world_count > 1:
-        target_message_sign = make_player_message(target_message_sign)
-        target_message = make_player_message(target_message)
-    messages = read_messages(rom)
-    update_message_by_id(messages, 0x0329, target_message_sign)
-    update_message_by_id(messages, 0x002B, target_message)
+    # repack_messages(rom, messages)
 
     dampe_race_time = 60
     dampe_race_fire_frames = 32
+    dampe_race_fire_color = [0x8B, 0x2A, 0xCB]
+    dampe_race_fire_frames_string = "\x05\43normal\x05\x40"
     if world.settings.dampe_race_level != 'normal':
         if world.settings.dampe_race_level == 'easy':
             dampe_race_time = 75
             dampe_race_fire_frames = 3600
+            dampe_race_fire_frames_string = "\x05\42kind\x05\x40"
         elif world.settings.dampe_race_level == 'hard':
             dampe_race_fire_frames = 22
+            dampe_race_fire_frames_string = "\x05\46grumpy\x05\x40"
         elif world.settings.dampe_race_level == 'mean':
             dampe_race_time = 53
             dampe_race_fire_frames = 12
+            dampe_race_fire_frames_string = "\x05\41mean\x05\x40"
         elif world.settings.dampe_race_level == 'why':
             dampe_race_time = 45
             dampe_race_fire_frames = 2
+            dampe_race_fire_frames_string = "\x05\41r\x05\42u\x05\43t\x05\44h\x05\45l\x05\46e\x05\41s\x05\42s\x05\x40"
         rom.write_int16(0xDFF962, dampe_race_time)
         rom.write_int16(0xDFEF12, dampe_race_fire_frames)
+        rom.write_byte(0xDFA09A, dampe_race_fire_color[0])
+        rom.write_byte(0xDFA09B, dampe_race_fire_color[1])
+        rom.write_byte(0xDFA09E, dampe_race_fire_color[2])
 
     # Make item descriptions into a single box
     Short_item_descriptions = [0x92EC84, 0x92F9E3, 0x92F2B4, 0x92F37A, 0x92F513, 0x92F5C6, 0x92E93B, 0x92EA12]
@@ -1720,7 +1704,20 @@ def patch_rom(spoiler:Spoiler, world:World, rom:Rom):
         if world.settings.shuffle_scrubs == 'random':
             shuffle_messages.scrubs_message_ids.append(text_id)
 
+    # Update target game messages
+    target_message_sign = "\x08\x05\x44Shooting Gallery\x01\x05\x40\x05\x42{cost} Rupees\x05\x40 for one play\x01There are \x05\x4110 targets\x05\x40. You have \x05\x45{ammo}\x05\x40\x01chances. Hit all 10 targets!\x09\x04\x08Hit 10 targets -- Perfect Prize\x01Hit 8 or more -- Free Retry\x01Hit less than 8 -- Game Over\x09\x04\x08\x05\x44Rules at this Shooting Gallery\x01\x05\x40Don't lean on the counter.\x01Don't disturb other customers.\x09".format(cost=target_cost, ammo=target_ammo)
+    target_message = "Do you want to play a game?\x01It's \x05\x42{cost}\x05\x40 Rupees per play.\x01\x1B\x05\x42Yes\x01\x05\x42Nope\x05\x40".format(cost=target_cost)
+    target_message_confirm="\x08OKAY!!\x09\x01This is a game for grownups!\x01Hyrule's famous \x05\x41Shooting Gallery\x05\x40!\x04Take aim at the targets from that\x01platform over there! Can you hit\x01\x05\x41ten targets\x05\x40? You get \x05\x45{ammo} \x05\x40shots!\x04Draw your weapon with \xA0.\x01Are you ready?\x01Go for a perfect score!\x01Good Luck!\x0B\x02".format(ammo=target_ammo)
 
+    dampe_race_message = "Heh heh heh, young man!\x01Are you fast on your feet?\x04I may not look like it, but I'm\x01confident in my speed!\x01Let's have a race!\x01Follow me if you dare!\x04If you are faster than \x05\x45{time}\x05\x40\x01seconds, I'll give you a prize!\x01Oh, and I'm feeling {mood} today!\x04".format(time=dampe_race_time, mood=dampe_race_fire_frames_string)
+
+    if world.settings.world_count > 1:
+        target_message_sign = make_player_message(target_message_sign)
+        target_message = make_player_message(target_message)
+    update_message_by_id(messages, 0x0329, target_message_sign)
+    update_message_by_id(messages, 0x002B, target_message)
+    update_message_by_id(messages, 0x002E, target_message_confirm)
+    update_message_by_id(messages, 0x5041, dampe_race_message)
 
     if world.settings.shuffle_grotto_entrances:
         # Build the Grotto Load Table based on grotto entrance data
