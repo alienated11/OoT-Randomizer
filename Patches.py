@@ -754,6 +754,7 @@ def patch_rom(spoiler:Spoiler, world:World, rom:Rom):
 
     # randomize Talon's chickens
     super_cucco_count = world.settings.talon_count
+    talon_count_string = "these \x05\x44three\x05\x40"
     if world.settings.talon_count_random:
         super_cucco_count = random.randint(1, 3)
 
@@ -761,6 +762,12 @@ def patch_rom(spoiler:Spoiler, world:World, rom:Rom):
         # point value of super cucco
         super_cucco_value = divmod(12, super_cucco_count)[0]
         rom.write_int16(0xCC07F6, super_cucco_value)
+        if super_cucco_count == 1:
+            talon_count_string = "\x05\x44one\x05\x40 of these"
+        if super_cucco_count == 2:
+            talon_count_string = "\x05\x44two\x05\x40 of these"
+        if super_cucco_count == 3:
+            talon_count_string = "these \x05\x44three\x05\x40"
 
     if world.settings.talon_cost:
         # don't mess up logic, so keep cost under 100 rupees
@@ -832,7 +839,6 @@ def patch_rom(spoiler:Spoiler, world:World, rom:Rom):
 
     rom.write_byte(0xBC77BC, 0x09)
 
-
     # repack_messages(rom, messages)
 
     dampe_race_time = 60
@@ -861,9 +867,64 @@ def patch_rom(spoiler:Spoiler, world:World, rom:Rom):
         rom.write_byte(0xDFA09B, dampe_race_fire_color[1])
         rom.write_byte(0xDFA09E, dampe_race_fire_color[2])
 
+
+    hba_small_target = [20, 40, 60]
+    hba_med_target = [40, 80, 120]
+    hba_large_target = [40, 120, 160]
+    hba_score_1 = 1000
+    hba_score_2 = 1500
+    hba_ammo = 2*hba_score_1/100
+    hba_cost = 20
+
+    if world.settings.hba_cost:
+        hba_cost = random.randint(0, 99)
+
+    if world.settings.hba_score:
+        hba_score_1 = random.randint(400, 1200)
+        hba_score_2 = random.randint(hba_score_1+100, hba_score_1+1000)
+
+    if world.settings.hba_ammo:
+        hba_ammo = random.randint(20, 50)
+
+    if world.settings.hba_level != 'normal':
+        difficulty = world.settings.hba_level
+        if difficulty == 'easy':
+            hba_small_target = [60, 60, 60]
+            hba_med_target = [120, 120, 120]
+            hba_large_target = [160, 160, 160]
+            hba_ammo = max(3*divmod(hba_score_1/100)[0], 50)
+        if difficulty == 'hard':
+            hba_small_target = [10, 40, 60]
+            hba_med_target = [30, 100, 120]
+            hba_large_target = [30, 140, 160]
+            hba_ammo = max(2*divmod(hba_score_1/100)[0], 50)
+        if difficulty == 'mean':
+            hba_small_target = [5, 20, 60]
+            hba_med_target = [10, 40, 120]
+            hba_large_target = [10, 40, 160]
+            hba_ammo = max(1*divmod(hba_score_2/100)[0], 50)
+
+
+
+    rom.write_int16(0xAE5A1E, hba_ammo)
+    rom.write_int16(0xE12F56, hba_score_1)
+    rom.write_int16(0xE12F62, hba_score_1)
+    rom.write_int16(0xE12F8E, hba_score_2)
+    rom.write_int16(0xE12D52, hba_cost)
+    rom.write_int16(0xE12D7A, 0xFFFF - hba_cost + 1)
+    rom.write_f32(0xE0B03C, hba_small_target[0])
+    rom.write_f32(0xE0B040, hba_small_target[1])
+    rom.write_f32(0xE0B044, hba_small_target[2])
+    rom.write_f32(0xE0B04C, hba_med_target[0])
+    rom.write_f32(0xE0B050, hba_med_target[1])
+    rom.write_f32(0xE0B054, hba_med_target[2])
+    rom.write_f32(0xE0B05C, hba_large_target[0])
+    rom.write_f32(0xE0B060, hba_large_target[1])
+    rom.write_f32(0xE0B064, hba_large_target[2])
+
     # Make item descriptions into a single box
-    Short_item_descriptions = [0x92EC84, 0x92F9E3, 0x92F2B4, 0x92F37A, 0x92F513, 0x92F5C6, 0x92E93B, 0x92EA12]
-    for address in Short_item_descriptions:
+    short_item_descriptions = [0x92EC84, 0x92F9E3, 0x92F2B4, 0x92F37A, 0x92F513, 0x92F5C6, 0x92E93B, 0x92EA12]
+    for address in short_item_descriptions:
         rom.write_byte(address,0x02)
 
     et_original = rom.read_bytes(0xB6FBF0, 4 * 0x0614)
@@ -1437,11 +1498,19 @@ def patch_rom(spoiler:Spoiler, world:World, rom:Rom):
         symbol = rom.sym('JABU_ELEVATOR_ENABLE')
         rom.write_byte(symbol, 0x01)
 
+    hba_first_message = "Hey newcomer, you have a fine \x01horse!\x04I don't know where you stole \x01it from, but..."
+    hba_first_message += "\x04OK, how about challenging this \x01\x05\x41horseback archery\x05\x40?\x04"
+    hba_first_message += "Once the horse starts galloping,\x01shoot the targets with your\x01arrows. \x04Let's see how "
+    hba_first_message += "many points you \x01can score. You get \x05\x46{} arrows.\x05\x40\x04If you ".format(hba_ammo)
+    hba_first_message += "can score \x05\x41{} points\x05\x40, I will \x01give you something good!".format(hba_score_1)
     if world.settings.skip_some_minigame_phases:
         save_context.write_bits(0x00D4 + 0x48 * 0x1C + 0x08 + 0x3, 0x10) # Beat First Dampe Race (& Chest Spawned)
         rom.write_byte(rom.sym('CHAIN_HBA_REWARDS'), 1)
         # Update the first horseback archery text to make it clear both rewards are available from the start
-        update_message_by_id(messages, 0x6040, "Hey newcomer, you have a fine \x01horse!\x04I don't know where you stole \x01it from, but...\x04OK, how about challenging this \x01\x05\x41horseback archery\x05\x40?\x04Once the horse starts galloping,\x01shoot the targets with your\x01arrows. \x04Let's see how many points you \x01can score. You get 20 arrows.\x04If you can score \x05\x411,000 points\x05\x40, I will \x01give you something good! And even \x01more if you score \x05\x411,500 points\x05\x40!\x0B\x02")
+        hba_first_message += " And even \x01more if you score \x05\x41{} points\x05\x40!\x0B\x02".format(hba_score_2)
+    else:
+        hba_first_message += "\x0B\x02"
+    update_message_by_id(messages, 0x6040, hba_first_message)
 
     # Fix HBA to not wait for the fanfare to complete before transitioning to claim reward
     rom.write_byte(0xC1C00B, 0x2)
@@ -1710,6 +1779,34 @@ def patch_rom(spoiler:Spoiler, world:World, rom:Rom):
     target_message_confirm="\x08OKAY!!\x09\x01This is a game for grownups!\x01Hyrule's famous \x05\x41Shooting Gallery\x05\x40!\x04Take aim at the targets from that\x01platform over there! Can you hit\x01\x05\x41ten targets\x05\x40? You get \x05\x45{ammo} \x05\x40shots!\x04Draw your weapon with \xA0.\x01Are you ready?\x01Go for a perfect score!\x01Good Luck!\x0B\x02".format(ammo=target_ammo)
 
     dampe_race_message = "Heh heh heh, young man!\x01Are you fast on your feet?\x04I may not look like it, but I'm\x01confident in my speed!\x01Let's have a race!\x01Follow me if you dare!\x04If you are faster than \x05\x45{time}\x05\x40\x01seconds, I'll give you a prize!\x01Oh, and I'm feeling {mood} today!\x04".format(time=dampe_race_time, mood=dampe_race_fire_frames_string)
+    talon_message_first = "\x08Mumble...mumble...\x01Huh? I'm awake already!\x04\x08What?\x04"
+    talon_message_first += "\x08Well I'll be! If it ain't that the forest\x01kid from the other day!\x01By the way, thanks "
+    talon_message_first += "a lot for \x01waking me up!\x04\x08It took some doing, but I finally \x01got Malon back in a "
+    talon_message_first += "good mood.\x04\x08So, what are you up to today?\x01Got some free time on your hands\x01you say?\x01"
+    talon_message_first += "Well how about a little game?\x04\x09These three Cuccos I have here\x01are special \x05\x41Super"
+    talon_message_first += " Cuccos\x05\x40!\x04"
+
+    talon_message_second = "\x08Mumble...mumble...\x01I'm up! I'm up!\x04What?\x04Hey, \x05\x46\x0F\x05\x40Got some"
+    talon_message_second += "free time?\x01Then c'mon and play!\x04"
+
+    talon_message = "\x09I'm going to throw these three Cuccos\x01into that there gaggle of normal Cuccos\x04"
+    talon_message += "\x09If you can pick out \x05\x44{}\x05\x40\x01".format(talon_count_string)
+    talon_message += "special birds from among the\x01normal Cuccos within \x05\x46{}\x05\x40 seconds\x01".format(super_cucco_time)
+    talon_message += "I'll give you \x05\x41something \"good\"\x05\x40.\x04If you can't find them, I win!\x01"
+    talon_message += "Only \x05\x42{}\x05\x40 Rupees! Wanna play, \x05\x46\x0F\x05\x40?\x01".format(talon_cost)
+    talon_message += "\x1B\x05\x42Yes\x01\x05\x41No\x05\x40"
+
+    talon_start_message = "You have \x05\x46{}\x05\x40 seconds!\x01All rightly then, get ready.\x01".format(super_cucco_time)
+    talon_start_message += "Here go the Super Cuccos!\x04\x06\x30START LOOKIN'!!\x0B"
+
+    talon_message_first += talon_message
+    talon_message_second += talon_message
+
+    hba_second_message = "Hey, rookie!\x01You're looking good!\x01Show me your skill again!\x04"
+    hba_second_message += "You should set a new goal of\x01\x05\x41{} points\x05\x40".format(hba_score_2)
+    hba_second_message += " and try again!\x0B\x02"
+
+    chu_bowling_message = ""
 
     if world.settings.world_count > 1:
         target_message_sign = make_player_message(target_message_sign)
@@ -1718,6 +1815,11 @@ def patch_rom(spoiler:Spoiler, world:World, rom:Rom):
     update_message_by_id(messages, 0x002B, target_message)
     update_message_by_id(messages, 0x002E, target_message_confirm)
     update_message_by_id(messages, 0x5041, dampe_race_message)
+    update_message_by_id(messages, 0x207E, talon_message_first)
+    update_message_by_id(messages, 0x207F, talon_message_second)
+    update_message_by_id(messages, 0x2080, talon_start_message)
+    # update_message_by_id(messages, 0x6042, hba_first_message)
+    update_message_by_id(messages, 0x6042, hba_second_message)
 
     if world.settings.shuffle_grotto_entrances:
         # Build the Grotto Load Table based on grotto entrance data
