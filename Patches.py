@@ -892,17 +892,17 @@ def patch_rom(spoiler:Spoiler, world:World, rom:Rom):
             hba_small_target = [60, 60, 60]
             hba_med_target = [120, 120, 120]
             hba_large_target = [160, 160, 160]
-            hba_ammo = max(3*divmod(hba_score_1/100)[0], 50)
+            hba_ammo = max(3*divmod(hba_score_1, 100)[0], 50)
         if difficulty == 'hard':
             hba_small_target = [10, 40, 60]
             hba_med_target = [30, 100, 120]
             hba_large_target = [30, 140, 160]
-            hba_ammo = max(2*divmod(hba_score_1/100)[0], 50)
+            hba_ammo = max(2*divmod(hba_score_1, 100)[0], 50)
         if difficulty == 'mean':
             hba_small_target = [5, 20, 60]
             hba_med_target = [10, 40, 120]
             hba_large_target = [10, 40, 160]
-            hba_ammo = max(1*divmod(hba_score_2/100)[0], 50)
+            hba_ammo = max(1*divmod(hba_score_2, 100)[0], 50)
 
 
 
