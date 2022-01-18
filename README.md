@@ -12,9 +12,6 @@ Differences between this branch and the main Dev branch (on [Testrunner's Fork](
 * Picking up Gold Skulltula Tokens in non-Tokensanity displays a self-closing textbox which no longer freezes the player.
 * "Bombchus In Logic" is improved to include bombchu drops (from grass, pots, etc) that start dropping once you have found Bombchus.
 * New cosmetic setting to randomize the color of some additional equipment and items.
-* "Chest Size Matches Content" is replaced with "Chest Appearance Matches Content" (from mracsys's [ctmc branch](https://github.com/mracsys/OoT-Randomizer/tree/ctmc))
-* HBA fanfare fix: no longer waits for fanfare to complete (from engineer124's [hba_fanfare_fix branch](https://github.com/engineer124/OoT-Randomizer/tree/hba_fanfare_fix))
-* New SFX setting to disable standard battle music (from GSKirox's [disable-battle-music branch](https://github.com/GSKirox/OoT-Randomizer/tree/disable-battle-music))
 
 ## Index
 
@@ -112,6 +109,35 @@ do that.
 ## Changelog
 
 ### Dev
+
+#### New Features
+
+* **Settings**
+  * New setting `Dungeon Shortcuts` opens shortcuts in blue warp dungeons to the boss room. This is toggleable per-dungeon, and affects glitchless logic.
+  * New setting `Shopsanity Prices` adds additional price range options when Shopsanity is enabled, including "Affordable" which sets all prices to 10 rupees (to match the same option in Scrub Shuffle).
+  * `Chest Size Matches Content` has been replaced with `Chest Appearance Matches Content`. Unique textures are applied to chests containing major items, small keys, boss keys, skulltula tokens, and remaining items. An additional option also changes chest sizes like the previous setting.
+  * New cosmetic setting `Disable battle music` turns off the battle music from being near enemies, allowing the background music to continue uninterrupted.
+
+* **Gameplay**
+  * Shortened the animation for equipping magic arrows.
+
+
+#### Bug fixes
+  * Return the color of the "OK" and "No" options of the warp song prompts to their correct colors in Warp Song Shuffle.
+  * Horseback Archery will no longer delay ending based on the fanfare.
+  * Prevent Dead Hand from spawning outside the room collision.
+  * Magic arrows equipped as adult no longer revert to the Bow after traveling through time to child and back.
+  * Rainbow Bridge set to vanilla no longer spawns without Light Arrows.
+  * Fix MQ Shadow Temple making use of shared flags.
+  * Fix MQ Fire Temple missing the Hammer chest from the map and minimap.
+  * Add correct default Goals for Ganon's Boss Key when Light Arrow Cutscene is non-vanilla.
+
+#### Other changes
+  * Added an auto-tracker context area to memory, so auto-trackers can find certain symbols much easier.
+  * Improve some error messages when running the generator.
+  * Fix logic parser shortcuts not working right in newer Python versions.
+
+### 6.2
 
 #### Bug fixes
 

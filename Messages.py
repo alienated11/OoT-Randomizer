@@ -981,6 +981,8 @@ def shuffle_messages(messages, except_hints=True, always_allow_skip=True):
 
 # Update warp song text boxes for ER
 def update_warp_song_text(messages, world):
+    from Hints import get_hint_area
+
     msg_list = {
         0x088D: 'Minuet of Forest Warp -> Sacred Forest Meadow',
         0x088E: 'Bolero of Fire Warp -> DMC Central Local',
@@ -992,16 +994,8 @@ def update_warp_song_text(messages, world):
 
     for id, entr in msg_list.items():
         destination = world.get_entrance(entr).connected_region
+        destination_name, color = get_hint_area(destination)
+        color = COLOR_MAP[color]
 
-        if destination.pretty_name:
-            destination_name = destination.pretty_name
-        elif destination.hint:
-            destination_name = destination.hint
-        elif destination.dungeon:
-            destination_name = destination.dungeon.hint
-        else:
-            destination_name = destination.name
-        color = COLOR_MAP[destination.font_color or 'White']
-
-        new_msg = f"\x08\x05{color}Warp to {destination_name}?\x05\40\x09\x01\x01\x1b\x05{color}OK\x01No\x05\40"
+        new_msg = f"\x08\x05{color}Warp to {destination_name}?\x05\40\x09\x01\x01\x1b\x05\x42OK\x01No\x05\40"
         update_message_by_id(messages, id, new_msg)
