@@ -2523,7 +2523,7 @@ setting_infos = [
     ),
     Combobox(
         name           = 'talon_level',
-        gui_text       = 'Super Cucco Minigame Difficulty Level',
+        gui_text       = 'Talon\'s Chickens Difficulty Level',
         default        = 'normal',
         choices        = {
             'easy':   'Easy',
@@ -2561,7 +2561,7 @@ setting_infos = [
     ),
     Checkbutton(
         name           = 'talon_count_random',
-        gui_text       = 'Random Super Cucco Count',
+        gui_text       = 'Random Talon\'s Chicken Count',
         gui_tooltip    = '''\
             Talon will give a reward for collecting a random amount of Super Cuccos
         ''',
@@ -2572,7 +2572,7 @@ setting_infos = [
     ),
     Scale(
         name           = 'talon_count',
-        gui_text       = 'Super Cucco Count',
+        gui_text       = 'Talon\'s Chicken Count',
         default        = 3,
         min            = 1,
         max            = 3,
@@ -2587,7 +2587,7 @@ setting_infos = [
     ),
     Checkbutton(
         name           = 'talon_cost',
-        gui_text       = 'Talon Cost',
+        gui_text       = 'Random Talon\'s Chicken Cost',
         gui_tooltip    = '''\
             Randomize cost to play Super Cucco Minigame
         ''',
@@ -2624,7 +2624,7 @@ setting_infos = [
     ),
     Combobox(
         name           = 'target_minigame_level',
-        gui_text       = 'Target Minigame Difficulty Level',
+        gui_text       = 'Shooting Gallery Difficulty Level',
         default        = 'normal',
         choices        = {
             'easy':   'Easy',
@@ -2633,7 +2633,7 @@ setting_infos = [
             'mean':   'Mean'
             },
         gui_tooltip    = '''\
-            Modifies the difficulty level for Child and Adult Target Shooting Minigame, by changing the amount of ammo given
+            Modifies the difficulty level for Child and Adult Shooting Gallery, by changing the amount of ammo given
             
             'Easy':
             Plenty of ammo (30)
@@ -2662,9 +2662,9 @@ setting_infos = [
     ),
     Checkbutton(
         name           = 'target_minigame_cost',
-        gui_text       = 'Target Cost',
+        gui_text       = 'Random Shooting Gallery Cost',
         gui_tooltip    = '''\
-            Randomize cost to play Target Shooting Minigame
+            Randomize cost to play Child and Adult Shooting Gallery
         ''',
         default        = False,
         shared         = True,
@@ -2674,10 +2674,99 @@ setting_infos = [
     ),
     Checkbutton(
         name           = 'target_minigame_colors',
-        gui_text       = 'Target Colors',
+        gui_text       = 'Random Shooting Gallery Colors',
         gui_tooltip    = '''\
-            Randomize colors of Rupees in Target Shooting Minigame
+            Randomize colors of Rupees in Child and Adult Shooting Gallery
             Note: this does NOT affect the order, it is purely cosmetic
+        ''',
+        default        = False,
+        shared         = True,
+        gui_params     = {
+            'randomize_key': 'randomize_settings',
+        },
+    ),
+    Combobox(
+        name           = 'hba_level',
+        gui_text       = 'Horseback Archery Difficulty Level',
+        default        = 'normal',
+        choices        = {
+            'easy':   'Easy',
+            'normal': 'Normal',
+            'hard':   'Hard',
+            'mean':   'Mean'
+            },
+        gui_tooltip    = '''\
+            Modifies the difficulty level for Horseback Archery, by changing the amount of ammo given
+            and the distance threshold for bullseye
+            
+            Note ammo amount is for Vanilla score requirements (1000, 1500)
+            If the scores are randomized, ammo will be updated accordingly
+            
+            'Easy':
+            Plenty of ammo (30) (3x low score/100)
+            Hitting a target counts as bullseye (100 points)
+            
+            'Normal':
+            Vanilla amount of ammo (20) (2x low score/100)
+            Normal bullseye range
+            
+            'Hard':
+            Normal amount of ammo (20) (2x low score/100)
+            Reduced bullseye range (most of target is 60 points)
+            
+            'Mean':
+            No extra ammo (15) (1x high score/100)
+            Extremely small bullseye range (most of target is 30 points)
+            
+        ''',
+        disable        = {
+            'easy': {'settings' : ['hba_ammo']},
+            'hard': {'settings' : ['hba_ammo']},
+            'mean': {'settings' : ['hba_ammo']},
+        },
+        gui_params     = {
+            'randomize_key': 'randomize_settings',
+            'distribution':  [
+                ('easy', 1),
+                ('normal', 2),
+                ('hard', 1),
+                ('mean', 0)
+            ],
+        },
+        shared         = True,
+
+    ),
+    Checkbutton(
+        name           = 'hba_cost',
+        gui_text       = 'Random Horseback Archery Cost',
+        gui_tooltip    = '''\
+            Randomize cost to play Child and Adult Shooting Gallery
+        ''',
+        default        = False,
+        shared         = True,
+        gui_params     = {
+            'randomize_key': 'randomize_settings',
+        },
+    ),
+    Checkbutton(
+        name           = 'hba_ammo',
+        gui_text       = 'Random Ammo for Horseback Archery',
+        gui_tooltip    = '''\
+            Randomize ammo given for Horseback Archery
+            Range is 20-50          
+            Cannot be enable with a difficulty other than "Normal"
+        ''',
+        default        = False,
+        shared         = True,
+        gui_params     = {
+            'randomize_key': 'randomize_settings',
+        },
+    ),
+    Checkbutton(
+        name           = 'hba_score',
+        gui_text       = 'Random Score Requirements for Horseback Archery',
+        gui_tooltip    = '''\
+            Randomize score needed to win Horseback Archery's prizes
         ''',
         default        = False,
         shared         = True,

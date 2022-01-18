@@ -342,6 +342,10 @@
             "target_minigame_level",
             "target_minigame_cost",
             "target_minigame_colors",
+            "hba_level",
+            "hba_cost",
+            "hba_ammo",
+            "hba_score",
             "dampe_race_level"
           ]
         },
