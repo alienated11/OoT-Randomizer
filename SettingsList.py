@@ -4402,26 +4402,28 @@ setting_infos = [
         shared=True,
     ),
     Combobox(
-        name='junk_item',
-        gui_text='Junk Item',
-        default='Ice Trap',
-        choices={
-            'Bombs (5)': 'Bombs',
-            'Arrows (5)': 'Arrows',
-            'Deku Stick (1)': 'Deku Stick',
-            'Deku Nuts (5)': 'Deku Nuts',
-            'Deku Seeds (30)': 'Deku Seeds',
-            'Rupee (1)': 'Green Rupee',
-            'Rupees (5)': 'Blue Rupee',
-            'Rupees (20)': 'Red Rupee',
-            'Rupees (50)': 'Gold Rupee',
-            'Chicken': 'Chicken',
-            'Ice Arrows': 'Ice Arrows',
-            'Ice Trap': 'Ice Traps'
+        name           = 'junk_item',
+        gui_text       = 'Junk Item',
+        default        = 'Ice Trap',
+        choices        = {
+            'Bombs (5)':       'Bombs',
+            'Arrows (5)':       'Arrows',
+            'Deku Stick (1)':       'Deku Stick',
+            'Deku Nuts (5)':       'Deku Nuts',
+            'Deku Seeds (30)':       'Deku Seeds',
+            'Rupee (1)':       'Green Rupee',
+            'Rupees (5)':       'Blue Rupee',
+            'Rupees (20)':       'Red Rupee',
+            'Rupees (50)':       'Gold Rupee',
+            'Chicken':       'Chicken',
+            'Ice Arrows':       'Ice Arrows',
+            'Deku Shield':       'Deku Shield',
+            'Hylian Shield':       'Hylian Shield',
+            'Ice Trap':       'Ice Traps'
         },
-        gui_tooltip='''\
+        gui_tooltip    = '''\
         ''',
-        shared=True,
+        shared         = True,
     ),
     Combobox(
         name='item_pool_value',
