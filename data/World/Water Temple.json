@@ -41,7 +41,7 @@
             "Water Temple Morpha Heart": "can_use(Longshot)"
         },
         "exits": {
-            "Water Temple Highest Water Level": "False"
+            "Water Temple Highest Water Level": "True"
         }
     },
     {

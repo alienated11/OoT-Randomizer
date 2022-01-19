@@ -20,7 +20,7 @@
             "Fire Temple Big Lava Room":"
                 (Small_Key_Fire_Temple, 2) and
                 (logic_fewer_tunic_requirements or can_use(Goron_Tunic))",
-            "Fire Temple Boss": "Boss_Key_Fire_Temple and (logic_fire_boss_door_jump or Hover_Boots or at('Fire Temple Upper', can_play(Song_of_Time) or has_explosives))"
+            "Fire Temple Boss": "Boss_Key_Fire_Temple and (logic_fire_boss_door_jump or Hover_Boots or fire_temple_shortcuts or at('Fire Temple Upper', can_play(Song_of_Time) or has_explosives))"
         }
     },
     {
@@ -36,7 +36,7 @@
             "Fire Temple Lower":  "True",
             "Fire Temple Middle": "
                 can_use(Goron_Tunic) and (Small_Key_Fire_Temple, 4) and
-                (Progressive_Strength_Upgrade or logic_fire_strength) and 
+                (Progressive_Strength_Upgrade or logic_fire_strength) and
                 (has_explosives or Bow or Progressive_Hookshot)"
         }
     },
@@ -76,7 +76,7 @@
         },
         "exits": {
             "Fire Temple Upper": "
-                (Small_Key_Fire_Temple, 8) or 
+                (Small_Key_Fire_Temple, 8) or
                 ((Small_Key_Fire_Temple, 7) and
                     ((can_use(Hover_Boots) and can_use(Megaton_Hammer)) or logic_fire_flame_maze))"
         }
@@ -86,8 +86,8 @@
         "dungeon": "Fire Temple",
         "locations": {
             "Fire Temple Highest Goron Chest": "
-                can_use(Megaton_Hammer) and 
-                (can_play(Song_of_Time) or (logic_rusted_switches and 
+                can_use(Megaton_Hammer) and
+                (can_play(Song_of_Time) or (logic_rusted_switches and
                     (can_use(Hover_Boots) or has_explosives)))",
             "Fire Temple Megaton Hammer Chest": "has_explosives"
         }

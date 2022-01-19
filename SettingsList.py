@@ -8,7 +8,7 @@ import operator
 
 from Colors import get_tunic_color_options, get_navi_color_options, get_sword_trail_color_options, \
     get_bombchu_trail_color_options, get_boomerang_trail_color_options, get_gauntlet_color_options, \
-    get_magic_color_options, get_heart_color_options, get_shield_frame_color_options, get_a_button_color_options,\
+    get_magic_color_options, get_heart_color_options, get_shield_frame_color_options, get_a_button_color_options, \
     get_b_button_color_options, get_c_button_color_options, get_start_button_color_options
 from Hints import HintDistList, HintDistTips, gossipLocations
 from Item import item_table
@@ -19,14 +19,16 @@ import StartingItems
 from Utils import data_path
 from ItemList import item_table
 
+
 # holds the info for a single setting
 class Setting_Info():
 
-    def __init__(self, name, type, gui_text, gui_type, shared, choices, default=None, disabled_default=None, disable=None, gui_tooltip=None, gui_params=None, cosmetic=False):
-        self.name = name # name of the setting, used as a key to retrieve the setting's value everywhere
-        self.type = type # type of the setting's value, used to properly convert types to setting strings
-        self.shared = shared # whether or not the setting is one that should be shared, used in converting settings to a string
-        self.cosmetic = cosmetic # whether or not the setting should be included in the cosmetic log
+    def __init__(self, name, type, gui_text, gui_type, shared, choices, default=None, disabled_default=None,
+                 disable=None, gui_tooltip=None, gui_params=None, cosmetic=False):
+        self.name = name  # name of the setting, used as a key to retrieve the setting's value everywhere
+        self.type = type  # type of the setting's value, used to properly convert types to setting strings
+        self.shared = shared  # whether or not the setting is one that should be shared, used in converting settings to a string
+        self.cosmetic = cosmetic  # whether or not the setting should be included in the cosmetic log
         self.gui_text = gui_text
         self.gui_type = gui_type
         if gui_tooltip is None:
@@ -36,9 +38,9 @@ class Setting_Info():
 
         if gui_params == None:
             gui_params = {}
-        self.gui_params = gui_params # additional parameters that the randomizer uses for the gui
-        self.disable = disable # dictionary of settings this this setting disabled
-        self.dependency = None # lambda the determines if this is disabled. Generated later
+        self.gui_params = gui_params  # additional parameters that the randomizer uses for the gui
+        self.disable = disable  # dictionary of settings this this setting disabled
+        self.dependency = None  # lambda the determines if this is disabled. Generated later
 
         # dictionary of options to their text names
         if isinstance(choices, list):
@@ -82,7 +84,6 @@ class Setting_Info():
         if 'distribution' not in gui_params:
             self.gui_params['distribution'] = [(choice, 1) for choice in self.choice_list]
 
-
     def calc_bitwidth(self, choices):
         count = len(choices)
         if count > 0:
@@ -96,47 +97,47 @@ class Setting_Info():
 class Checkbutton(Setting_Info):
 
     def __init__(self, name, gui_text, gui_tooltip=None, disable=None,
-            disabled_default=None, default=False, shared=False, gui_params=None, cosmetic=False):
-
+                 disabled_default=None, default=False, shared=False, gui_params=None, cosmetic=False):
         choices = {
-            True:  'checked',
+            True: 'checked',
             False: 'unchecked',
         }
 
-        super().__init__(name, bool, gui_text, 'Checkbutton', shared, choices, default, disabled_default, disable, gui_tooltip, gui_params, cosmetic)
+        super().__init__(name, bool, gui_text, 'Checkbutton', shared, choices, default, disabled_default, disable,
+                         gui_tooltip, gui_params, cosmetic)
 
 
 class Combobox(Setting_Info):
 
     def __init__(self, name, gui_text, choices, default, gui_tooltip=None,
-            disable=None, disabled_default=None, shared=False, gui_params=None, cosmetic=False):
-
-        super().__init__(name, str, gui_text, 'Combobox', shared, choices, default, disabled_default, disable, gui_tooltip, gui_params, cosmetic)
+                 disable=None, disabled_default=None, shared=False, gui_params=None, cosmetic=False):
+        super().__init__(name, str, gui_text, 'Combobox', shared, choices, default, disabled_default, disable,
+                         gui_tooltip, gui_params, cosmetic)
 
 
 class Scale(Setting_Info):
 
     def __init__(self, name, gui_text, min, max, default, step=1,
-            gui_tooltip=None, disable=None, disabled_default=None,
-            shared=False, gui_params=None, cosmetic=False):
-
+                 gui_tooltip=None, disable=None, disabled_default=None,
+                 shared=False, gui_params=None, cosmetic=False):
         choices = {
-            i: str(i) for i in range(min, max+1, step)
+            i: str(i) for i in range(min, max + 1, step)
         }
         if gui_params == None:
             gui_params = {}
-        gui_params['min']    = min
-        gui_params['max']    = max
-        gui_params['step']   = step
+        gui_params['min'] = min
+        gui_params['max'] = max
+        gui_params['step'] = step
 
-        super().__init__(name, int, gui_text, 'Scale', shared, choices, default, disabled_default, disable, gui_tooltip, gui_params, cosmetic)
+        super().__init__(name, int, gui_text, 'Scale', shared, choices, default, disabled_default, disable, gui_tooltip,
+                         gui_params, cosmetic)
 
 
 logic_tricks = {
     'Fewer Tunic Requirements': {
-        'name'    : 'logic_fewer_tunic_requirements',
-        'tags'    : ("General", "Fire Temple", "Water Temple", "Gerudo Training Ground", "Zora's Fountain",),
-        'tooltip' : '''\
+        'name': 'logic_fewer_tunic_requirements',
+        'tags': ("General", "Fire Temple", "Water Temple", "Gerudo Training Ground", "Zora's Fountain",),
+        'tooltip': '''\
                     Allows the following possible without Tunics:
                     - Enter Water Temple. The key below the center
                     pillar still requires Zora Tunic.
@@ -149,81 +150,81 @@ logic_tricks = {
                     trips.
                     '''},
     'Hidden Grottos without Stone of Agony': {
-        'name'    : 'logic_grottos_without_agony',
-        'tags'    : ("General", "Entrance",),
-        'tooltip' : '''\
+        'name': 'logic_grottos_without_agony',
+        'tags': ("General", "Entrance",),
+        'tooltip': '''\
                     Allows entering hidden grottos without the
                     Stone of Agony.
                     '''},
     'Pass Through Visible One-Way Collisions': {
-        'name'    : 'logic_visible_collisions',
-        'tags'    : ("Entrance", "Kakariko Village",),
-        'tooltip' : '''\
+        'name': 'logic_visible_collisions',
+        'tags': ("Entrance", "Kakariko Village",),
+        'tooltip': '''\
                     Allows climbing through the platform to reach 
                     Impa's House Back as adult with no items and 
                     going through the Kakariko Village Gate as child
                     when coming from the Mountain Trail side.
                     '''},
     'Child Dead Hand without Kokiri Sword': {
-        'name'    : 'logic_child_deadhand',
-        'tags'    : ("Bottom of the Well",),
-        'tooltip' : '''\
+        'name': 'logic_child_deadhand',
+        'tags': ("Bottom of the Well",),
+        'tooltip': '''\
                     Requires 9 sticks or 5 jump slashes.
                     '''},
     'Second Dampe Race as Child': {
-        'name'    : 'logic_child_dampe_race_poh',
-        'tags'    : ("the Graveyard", "Entrance",),
-        'tooltip' : '''\
+        'name': 'logic_child_dampe_race_poh',
+        'tags': ("the Graveyard", "Entrance",),
+        'tooltip': '''\
                     It is possible to complete the second dampe
                     race as child in under a minute, but it is
                     a strict time limit.
                     '''},
     'Man on Roof without Hookshot': {
-        'name'    : 'logic_man_on_roof',
-        'tags'    : ("Kakariko Village",),
-        'tooltip' : '''\
+        'name': 'logic_man_on_roof',
+        'tags': ("Kakariko Village",),
+        'tooltip': '''\
                     Can be reached by side-hopping off
                     the watchtower.
                     '''},
     'Dodongo\'s Cavern Staircase with Bow': {
-        'name'    : 'logic_dc_staircase',
-        'tags'    : ("Dodongo's Cavern",),
-        'tooltip' : '''\
+        'name': 'logic_dc_staircase',
+        'tags': ("Dodongo's Cavern",),
+        'tooltip': '''\
                     The Bow can be used to knock down the stairs
                     with two well-timed shots.
                     '''},
     'Dodongo\'s Cavern Spike Trap Room Jump without Hover Boots': {
-        'name'    : 'logic_dc_jump',
-        'tags'    : ("Dodongo's Cavern",),
-        'tooltip' : '''\
+        'name': 'logic_dc_jump',
+        'tags': ("Dodongo's Cavern",),
+        'tooltip': '''\
                     Jump is adult only.
                     '''},
     'Dodongo\'s Cavern Vines GS from Below with Longshot': {
-        'name'    : 'logic_dc_vines_gs',
-        'tags'    : ("Dodongo's Cavern", "Skulltulas",),
-        'tooltip' : '''\
+        'name': 'logic_dc_vines_gs',
+        'tags': ("Dodongo's Cavern", "Skulltulas",),
+        'tooltip': '''\
                     The vines upon which this Skulltula rests are one-
                     sided collision. You can use the Longshot to get it
                     from below, by shooting it through the vines,
                     bypassing the need to lower the staircase.
                     '''},
     'Thieves\' Hideout "Kitchen" with No Additional Items': {
-        'name'    : 'logic_gerudo_kitchen',
-        'tags'    : ("Thieves' Hideout", "Gerudo's Fortress",),
-        'tooltip' : '''\
+        'name': 'logic_gerudo_kitchen',
+        'tags': ("Thieves' Hideout", "Gerudo's Fortress",),
+        'tooltip': '''\
                     The logic normally guarantees one of Bow, Hookshot,
                     or Hover Boots.
                     '''},
     'Deku Tree Basement Vines GS with Jump Slash': {
-        'name'    : 'logic_deku_basement_gs',
-        'tags'    : ("Deku Tree", "Skulltulas",),
-        'tooltip' : '''\
+        'name': 'logic_deku_basement_gs',
+        'tags': ("Deku Tree", "Skulltulas",),
+        'tooltip': '''\
                     Can be defeated by doing a precise jump slash.
                     '''},
     'Deku Tree Basement Web to Gohma with Bow': {
-        'name'    : 'logic_deku_b1_webs_with_bow',
-        'tags'    : ("Deku Tree", "Entrance",),
-        'tooltip' : '''\
+        'name': 'logic_deku_b1_webs_with_bow',
+        'tags': ("Deku Tree", "Entrance",),
+        'tooltip': '''\
                     All spider web walls in the Deku Tree basement can be burnt
                     as adult with just a bow by shooting through torches. This
                     trick only applies to the circular web leading to Gohma;
@@ -236,34 +237,34 @@ logic_tricks = {
                     This allows completion of adult Deku Tree with no fire source.
                     '''},
     'Deku Tree MQ Roll Under the Spiked Log': {
-        'name'    : 'logic_deku_mq_log',
-        'tags'    : ("Deku Tree",),
-        'tooltip' : '''\
+        'name': 'logic_deku_mq_log',
+        'tags': ("Deku Tree",),
+        'tooltip': '''\
                     You can get past the spiked log by rolling
                     to briefly shrink your hitbox. As adult,
                     the timing is a bit more precise.
                     '''},
     'Hammer Rusted Switches Through Walls': {
-        'name'    : 'logic_rusted_switches',
-        'tags'    : ("Fire Temple", "Ganon's Castle",),
-        'tooltip' : '''\
+        'name': 'logic_rusted_switches',
+        'tags': ("Fire Temple", "Ganon's Castle",),
+        'tooltip': '''\
                     Applies to:
                     - Fire Temple Highest Goron Chest.
                     - MQ Fire Temple Lizalfos Maze.
                     - MQ Spirit Trial.
                     '''},
     'Bottom of the Well Map Chest with Strength & Sticks': {
-        'name'    : 'logic_botw_basement',
-        'tags'    : ("Bottom of the Well",),
-        'tooltip' : '''\
+        'name': 'logic_botw_basement',
+        'tags': ("Bottom of the Well",),
+        'tooltip': '''\
                     The chest in the basement can be reached with
                     strength by doing a jump slash with a lit
                     stick to access the bomb flowers.
                     '''},
     'Bottom of the Well MQ Jump Over the Pits': {
-        'name'    : 'logic_botw_mq_pits',
-        'tags'    : ("Bottom of the Well",),
-        'tooltip' : '''\
+        'name': 'logic_botw_mq_pits',
+        'tags': ("Bottom of the Well",),
+        'tooltip': '''\
                     While the pits in Bottom of the Well don't allow you to
                     jump just by running straight at them, you can still get
                     over them by side-hopping or backflipping across. With
@@ -272,44 +273,44 @@ logic_tricks = {
                     you to access the west inner room without explosives.
                     '''},
     'Skip Forest Temple MQ Block Puzzle with Bombchu': {
-        'name'    : 'logic_forest_mq_block_puzzle',
-        'tags'    : ("Forest Temple",),
-        'tooltip' : '''\
+        'name': 'logic_forest_mq_block_puzzle',
+        'tags': ("Forest Temple",),
+        'tooltip': '''\
                     Send the Bombchu straight up the center of the
                     wall directly to the left upon entering the room.
                     '''},
     'Spirit Temple Child Side Bridge with Bombchu': {
-        'name'    : 'logic_spirit_child_bombchu',
-        'tags'    : ("Spirit Temple",),
-        'tooltip' : '''\
+        'name': 'logic_spirit_child_bombchu',
+        'tags': ("Spirit Temple",),
+        'tooltip': '''\
                     A carefully-timed Bombchu can hit the switch.
                     '''},
     'Windmill PoH as Adult with Nothing': {
-        'name'    : 'logic_windmill_poh',
-        'tags'    : ("Kakariko Village",),
-        'tooltip' : '''\
+        'name': 'logic_windmill_poh',
+        'tags': ("Kakariko Village",),
+        'tooltip': '''\
                     Can jump up to the spinning platform from
                     below as adult.
                     '''},
     'Crater\'s Bean PoH with Hover Boots': {
-        'name'    : 'logic_crater_bean_poh_with_hovers',
-        'tags'    : ("Death Mountain Crater",),
-        'tooltip' : '''\
+        'name': 'logic_crater_bean_poh_with_hovers',
+        'tags': ("Death Mountain Crater",),
+        'tooltip': '''\
                     Hover from the base of the bridge
                     near Goron City and walk up the
                     very steep slope.
                     '''},
     'Zora\'s Domain Entry with Cucco': {
-        'name'    : 'logic_zora_with_cucco',
-        'tags'    : ("Zora's River",),
-        'tooltip' : '''\
+        'name': 'logic_zora_with_cucco',
+        'tags': ("Zora's River",),
+        'tooltip': '''\
                     Can fly behind the waterfall with
                     a cucco as child.
                     '''},
     'Water Temple MQ Central Pillar with Fire Arrows': {
-        'name'    : 'logic_water_mq_central_pillar',
-        'tags'    : ("Water Temple",),
-        'tooltip' : '''\
+        'name': 'logic_water_mq_central_pillar',
+        'tags': ("Water Temple",),
+        'tooltip': '''\
                     Slanted torches have misleading hitboxes. Whenever
                     you see a slanted torch jutting out of the wall,
                     you can expect most or all of its hitbox is actually
@@ -320,32 +321,32 @@ logic_tricks = {
                     expects Din's Fire and Song of Time.
                     '''},
     'Gerudo Training Ground MQ Left Side Silver Rupees with Hookshot': {
-        'name'    : 'logic_gtg_mq_with_hookshot',
-        'tags'    : ("Gerudo Training Ground",),
-        'tooltip' : '''\
+        'name': 'logic_gtg_mq_with_hookshot',
+        'tags': ("Gerudo Training Ground",),
+        'tooltip': '''\
                     The highest silver rupee can be obtained by
                     hookshotting the target and then immediately jump
                     slashing toward the rupee.
                     '''},
     'Forest Temple East Courtyard Vines with Hookshot': {
-        'name'    : 'logic_forest_vines',
-        'tags'    : ("Forest Temple",),
-        'tooltip' : '''\
+        'name': 'logic_forest_vines',
+        'tags': ("Forest Temple",),
+        'tooltip': '''\
                     The vines in Forest Temple leading to where the well
                     drain switch is in the standard form can be barely
                     reached with just the Hookshot.
                     '''},
     'Forest Temple East Courtyard GS with Boomerang': {
-        'name'    : 'logic_forest_outdoor_east_gs',
-        'tags'    : ("Forest Temple", "Entrance", "Skulltulas",),
-        'tooltip' : '''\
+        'name': 'logic_forest_outdoor_east_gs',
+        'tags': ("Forest Temple", "Entrance", "Skulltulas",),
+        'tooltip': '''\
                     Precise Boomerang throws can allow child to
                     kill the Skulltula and collect the token.
                     '''},
     'Forest Temple First Room GS with Difficult-to-Use Weapons': {
-        'name'    : 'logic_forest_first_gs',
-        'tags'    : ("Forest Temple", "Entrance", "Skulltulas",),
-        'tooltip' : '''\
+        'name': 'logic_forest_first_gs',
+        'tags': ("Forest Temple", "Entrance", "Skulltulas",),
+        'tooltip': '''\
                     Allows killing this Skulltula with Sword or Sticks by
                     jump slashing it as you let go from the vines. You will
                     take fall damage.
@@ -354,9 +355,9 @@ logic_tricks = {
                     Child Link's shorter height.
                     '''},
     'Swim Through Forest Temple MQ Well with Hookshot': {
-        'name'    : 'logic_forest_well_swim',
-        'tags'    : ("Forest Temple",),
-        'tooltip' : '''\
+        'name': 'logic_forest_well_swim',
+        'tags': ("Forest Temple",),
+        'tooltip': '''\
                     Shoot the vines in the well as low and as far to
                     the right as possible, and then immediately swim
                     under the ceiling to the right. This can only be
@@ -364,16 +365,16 @@ logic_tricks = {
                     form.
                     '''},
     'Forest Temple MQ Twisted Hallway Switch with Jump Slash': {
-        'name'    : 'logic_forest_mq_hallway_switch_jumpslash',
-        'tags'    : ("Forest Temple",),
-        'tooltip' : '''\
+        'name': 'logic_forest_mq_hallway_switch_jumpslash',
+        'tags': ("Forest Temple",),
+        'tooltip': '''\
                     The switch to twist the hallway can be hit with
                     a jump slash through the glass block. To get in
                     front of the switch, either use the Hover Boots
                     or hit the shortcut switch at the top of the
                     room and jump from the glass blocks that spawn.
                     '''},
-    #'Forest Temple MQ Twisted Hallway Switch with Hookshot': {
+    # 'Forest Temple MQ Twisted Hallway Switch with Hookshot': {
     #    'name'    : 'logic_forest_mq_hallway_switch_hookshot',
     #    'tags'    : ("Forest Temple",),
     #    'tooltip' : '''\
@@ -382,48 +383,48 @@ logic_tricks = {
     #                the target on the ceiling.
     #                '''},
     'Death Mountain Trail Chest with Strength': {
-        'name'    : 'logic_dmt_bombable',
-        'tags'    : ("Death Mountain Trail",),
-        'tooltip' : '''\
+        'name': 'logic_dmt_bombable',
+        'tags': ("Death Mountain Trail",),
+        'tooltip': '''\
                     Child Link can blow up the wall using a nearby bomb
                     flower. You must backwalk with the flower and then
                     quickly throw it toward the wall.
                     '''},
     'Goron City Spinning Pot PoH with Strength': {
-        'name'    : 'logic_goron_city_pot_with_strength',
-        'tags'    : ("Goron City",),
-        'tooltip' : '''\
+        'name': 'logic_goron_city_pot_with_strength',
+        'tags': ("Goron City",),
+        'tooltip': '''\
                     Allows for stopping the Goron City Spinning
                     Pot using a bomb flower alone, requiring 
                     strength in lieu of inventory explosives.
                     '''},
     'Adult Kokiri Forest GS with Hover Boots': {
-        'name'    : 'logic_adult_kokiri_gs',
-        'tags'    : ("Kokiri Forest", "Skulltulas",),
-        'tooltip' : '''\
+        'name': 'logic_adult_kokiri_gs',
+        'tags': ("Kokiri Forest", "Skulltulas",),
+        'tooltip': '''\
                     Can be obtained without Hookshot by using the Hover
                     Boots off of one of the roots.
                     '''},
     'Spirit Temple MQ Frozen Eye Switch without Fire': {
-        'name'    : 'logic_spirit_mq_frozen_eye',
-        'tags'    : ("Spirit Temple",),
-        'tooltip' : '''\
+        'name': 'logic_spirit_mq_frozen_eye',
+        'tags': ("Spirit Temple",),
+        'tooltip': '''\
                     You can melt the ice by shooting an arrow through a
                     torch. The only way to find a line of sight for this
                     shot is to first spawn a Song of Time block, and then
                     stand on the very edge of it.
                     '''},
     'Spirit Temple Shifting Wall with No Additional Items': {
-        'name'    : 'logic_spirit_wall',
-        'tags'    : ("Spirit Temple",),
-        'tooltip' : '''\
+        'name': 'logic_spirit_wall',
+        'tags': ("Spirit Temple",),
+        'tooltip': '''\
                     The logic normally guarantees a way of dealing with both
                     the Beamos and the Walltula before climbing the wall.
                     '''},
     'Spirit Temple Main Room GS with Boomerang': {
-        'name'    : 'logic_spirit_lobby_gs',
-        'tags'    : ("Spirit Temple", "Skulltulas",),
-        'tooltip' : '''\
+        'name': 'logic_spirit_lobby_gs',
+        'tags': ("Spirit Temple", "Skulltulas",),
+        'tooltip': '''\
                     Standing on the highest part of the arm of the statue, a
                     precise Boomerang throw can kill and obtain this Gold
                     Skulltula. You must throw the Boomerang slightly off to
@@ -431,48 +432,70 @@ logic_tricks = {
                     directly at it will clank off of the wall in front.
                     '''},
     'Spirit Temple Main Room Jump from Hands to Upper Ledges': {
-        'name'    : 'logic_spirit_lobby_jump',
-        'tags'    : ("Spirit Temple", "Skulltulas",),
-        'tooltip' : '''\
+        'name': 'logic_spirit_lobby_jump',
+        'tags': ("Spirit Temple", "Skulltulas",),
+        'tooltip': '''\
                     A precise jump to obtain the following as adult
                     without needing one of Hookshot or Hover Boots:
                     - Spirit Temple Statue Room Northeast Chest
                     - Spirit Temple GS Lobby
                     '''},
+    'Spirit Temple Main Room Hookshot to Boss Platform': {
+        'name': 'logic_spirit_platform_hookshot',
+        'tags': ("Spirit Temple",),
+        'tooltip': '''\
+                    Precise hookshot aiming at the platform chains can be
+                    used to reach the boss platform from the middle landings.
+                    Using a jumpslash immediately after reaching a chain
+                    makes aiming more lenient. Relevant only when Spirit
+                    Temple boss shortcuts are on.
+                    '''},
     'Spirit Temple MQ Sun Block Room GS with Boomerang': {
-        'name'    : 'logic_spirit_mq_sun_block_gs',
-        'tags'    : ("Spirit Temple", "Skulltulas",),
-        'tooltip' : '''\
+        'name': 'logic_spirit_mq_sun_block_gs',
+        'tags': ("Spirit Temple", "Skulltulas",),
+        'tooltip': '''\
                     Throw the Boomerang in such a way that it
                     curves through the side of the glass block
                     to hit the Gold Skulltula.
                     '''},
-    'Jabu Scrub as Adult with Jump Dive': {
-        'name'    : 'logic_jabu_scrub_jump_dive',
-        'tags'    : ("Jabu Jabu's Belly", "Entrance",),
-        'tooltip' : '''\
+    'Jabu Underwater Alcove as Adult with Jump Dive': {
+        'name': 'logic_jabu_alcove_jump_dive',
+        'tags': ("Jabu Jabu's Belly", "Entrance",),
+        'tooltip': '''\
                     Standing above the underwater tunnel leading to the scrub,
                     jump down and swim through the tunnel. This allows adult to
-                    access the scrub with no Scale or Iron Boots.
+                    access the alcove with no Scale or Iron Boots. In vanilla Jabu,
+                    this alcove has a business scrub. In MQ Jabu, it has the compass
+                    chest and a door switch for the main floor.
+                    '''},
+    'Jabu MQ Compass Chest with Boomerang': {
+        'name': 'logic_jabu_mq_rang_jump',
+        'tags': ("Jabu Jabu's Belly",),
+        'tooltip': '''\
+                    Boomerang can reach the cow switch to spawn the chest by
+                    targeting the cow, jumping off of the ledge where the
+                    chest spawns, and throwing the Boomerang in midair. This
+                    is only relevant with Jabu Jabu's Belly dungeon shortcuts
+                    enabled.
                     '''},
     'Jabu MQ Song of Time Block GS with Boomerang': {
-        'name'    : 'logic_jabu_mq_sot_gs',
-        'tags'    : ("Jabu Jabu's Belly", "Skulltulas",),
-        'tooltip' : '''\
+        'name': 'logic_jabu_mq_sot_gs',
+        'tags': ("Jabu Jabu's Belly", "Skulltulas",),
+        'tooltip': '''\
                     Allow the Boomerang to return to you through
                     the Song of Time block to grab the token.
                     '''},
     'Bottom of the Well MQ Dead Hand Freestanding Key with Boomerang': {
-        'name'    : 'logic_botw_mq_dead_hand_key',
-        'tags'    : ("Bottom of the Well",),
-        'tooltip' : '''\
+        'name': 'logic_botw_mq_dead_hand_key',
+        'tags': ("Bottom of the Well",),
+        'tooltip': '''\
                     Boomerang can fish the item out of the rubble without
                     needing explosives to blow it up.
                     '''},
     'Fire Temple Flame Wall Maze Skip': {
-        'name'    : 'logic_fire_flame_maze',
-        'tags'    : ("Fire Temple",),
-        'tooltip' : '''\
+        'name': 'logic_fire_flame_maze',
+        'tags': ("Fire Temple",),
+        'tooltip': '''\
                     If you move quickly you can sneak past the edge of
                     a flame wall before it can rise up to block you.
                     To do it without taking damage is more precise.
@@ -480,9 +503,9 @@ logic_tricks = {
                     Small Key or Hover Boots.
                     '''},
     'Fire Temple MQ Flame Wall Maze Skip': {
-        'name'    : 'logic_fire_mq_flame_maze',
-        'tags'    : ("Fire Temple", "Skulltulas",),
-        'tooltip' : '''\
+        'name': 'logic_fire_mq_flame_maze',
+        'tags': ("Fire Temple", "Skulltulas",),
+        'tooltip': '''\
                     If you move quickly you can sneak past the edge of
                     a flame wall before it can rise up to block you.
                     To do it without taking damage is more precise.
@@ -493,42 +516,42 @@ logic_tricks = {
                     to progress deeper into the dungeon without Hookshot.
                     '''},
     'Fire Temple MQ Climb without Fire Source': {
-        'name'    : 'logic_fire_mq_climb',
-        'tags'    : ("Fire Temple",),
-        'tooltip' : '''\
+        'name': 'logic_fire_mq_climb',
+        'tags': ("Fire Temple",),
+        'tooltip': '''\
                     You can use the Hover Boots to hover around to
                     the climbable wall, skipping the need to use a
                     fire source and spawn a Hookshot target.
                     '''},
     'Fire Temple MQ Lower to Upper Lizalfos Maze with Hover Boots': {
-        'name'    : 'logic_fire_mq_maze_hovers',
-        'tags'    : ("Fire Temple",),
-        'tooltip' : '''\
+        'name': 'logic_fire_mq_maze_hovers',
+        'tags': ("Fire Temple",),
+        'tooltip': '''\
                     Use the Hover Boots off of a crate to
                     climb to the upper maze without needing
                     to spawn and use the Hookshot targets.
                     '''},
     'Fire Temple MQ Chest Near Boss without Breaking Crate': {
-        'name'    : 'logic_fire_mq_near_boss',
-        'tags'    : ("Fire Temple",),
-        'tooltip' : '''\
+        'name': 'logic_fire_mq_near_boss',
+        'tags': ("Fire Temple",),
+        'tooltip': '''\
                     The hitbox for the torch extends a bit outside of the crate.
                     Shoot a flaming arrow at the side of the crate to light the
                     torch without needing to get over there and break the crate.
                     '''},
     'Fire Temple MQ Lizalfos Maze Side Room without Box': {
-        'name'    : 'logic_fire_mq_maze_side_room',
-        'tags'    : ("Fire Temple",),
-        'tooltip' : '''\
+        'name': 'logic_fire_mq_maze_side_room',
+        'tags': ("Fire Temple",),
+        'tooltip': '''\
                     You can walk from the blue switch to the door and
                     quickly open the door before the bars reclose. This
                     skips needing to reach the upper sections of the
                     maze to get a box to place on the switch.
                     '''},
     'Fire Temple MQ Boss Key Chest without Bow': {
-        'name'    : 'logic_fire_mq_bk_chest',
-        'tags'    : ("Fire Temple",),
-        'tooltip' : '''\
+        'name': 'logic_fire_mq_bk_chest',
+        'tags': ("Fire Temple",),
+        'tooltip': '''\
                     It is possible to light both of the timed torches
                     to unbar the door to the boss key chest's room
                     with just Din's Fire if you move very quickly
@@ -538,81 +561,101 @@ logic_tricks = {
                     torches have been lit.
                     '''},
     'Fire Temple MQ Above Flame Wall Maze GS from Below with Longshot': {
-        'name'    : 'logic_fire_mq_above_maze_gs',
-        'tags'    : ("Fire Temple", "Skulltulas",),
-        'tooltip' : '''\
+        'name': 'logic_fire_mq_above_maze_gs',
+        'tags': ("Fire Temple", "Skulltulas",),
+        'tooltip': '''\
                     The floor of the room that contains this Skulltula
                     is only solid from above. From the maze below, the
                     Longshot can be shot through the ceiling to obtain 
                     the token with two fewer small keys than normal.
                     '''},
     'Zora\'s River Lower Freestanding PoH as Adult with Nothing': {
-        'name'    : 'logic_zora_river_lower',
-        'tags'    : ("Zora's River",),
-        'tooltip' : '''\
+        'name': 'logic_zora_river_lower',
+        'tags': ("Zora's River",),
+        'tooltip': '''\
                     Adult can reach this PoH with a precise jump,
                     no Hover Boots required.
                     '''},
     'Water Temple Cracked Wall with Hover Boots': {
-        'name'    : 'logic_water_cracked_wall_hovers',
-        'tags'    : ("Water Temple",),
-        'tooltip' : '''\
+        'name': 'logic_water_cracked_wall_hovers',
+        'tags': ("Water Temple",),
+        'tooltip': '''\
                     With a midair side-hop while wearing the Hover
                     Boots, you can reach the cracked wall without
                     needing to raise the water up to the middle level.
                     '''},
     'Shadow Temple Freestanding Key with Bombchu': {
-        'name'    : 'logic_shadow_freestanding_key',
-        'tags'    : ("Shadow Temple",),
-        'tooltip' : '''\
+        'name': 'logic_shadow_freestanding_key',
+        'tags': ("Shadow Temple",),
+        'tooltip': '''\
                     Release the Bombchu with good timing so that
                     it explodes near the bottom of the pot.
                     '''},
     'Shadow Temple MQ Invisible Blades Silver Rupees without Song of Time': {
-        'name'    : 'logic_shadow_mq_invisible_blades',
-        'tags'    : ("Shadow Temple",),
-        'tooltip' : '''\
+        'name': 'logic_shadow_mq_invisible_blades',
+        'tags': ("Shadow Temple",),
+        'tooltip': '''\
                     The Like Like can be used to boost you into the
                     silver rupee that normally requires Song of Time.
                     This cannot be performed on OHKO since the Like
                     Like does not boost you high enough if you die.
                     '''},
     'Shadow Temple MQ Lower Huge Pit without Fire Source': {
-        'name'    : 'logic_shadow_mq_huge_pit',
-        'tags'    : ("Shadow Temple",),
-        'tooltip' : '''\
+        'name': 'logic_shadow_mq_huge_pit',
+        'tags': ("Shadow Temple",),
+        'tooltip': '''\
                     Normally a frozen eye switch spawns some platforms
                     that you can use to climb down, but there's actually
                     a small piece of ground that you can stand on that
                     you can just jump down to.
                     '''},
+    'Shadow Temple MQ Windy Walkway Reverse without Hover Boots': {
+        'name': 'logic_shadow_mq_windy_walkway',
+        'tags': ("Shadow Temple",),
+        'tooltip': '''\
+                    With shadow dungeon shortcuts enabled, it is possible
+                    to jump from the alcove in the windy hallway to the
+                    middle platform. There are two methods: wait out the fan
+                    opposite the door and hold forward, or jump to the right
+                    to be pushed by the fan there towards the platform ledge.
+                    Note that jumps of this distance are inconsistent, but
+                    still possible.
+                    '''},
+    'Shadow Temple MQ After Wind Gold Skulltula with Nothing': {
+        'name': 'logic_shadow_mq_after_wind_gs',
+        'tags': ("Shadow Temple", "Skulltulas",),
+        'tooltip': '''\
+                    The Gold Skulltula in the rubble pile can be killed
+                    with a sword slash without blowing up the rubble. The
+                    reward will appear above the rubble pile.
+                    '''},
     'Backflip over Mido as Adult': {
-        'name'    : 'logic_mido_backflip',
-        'tags'    : ("the Lost Woods",),
-        'tooltip' : '''\
+        'name': 'logic_mido_backflip',
+        'tags': ("the Lost Woods",),
+        'tooltip': '''\
                     With a specific position and angle, you can
                     backflip over Mido.
                     '''},
     'Fire Temple Boss Door without Hover Boots or Pillar': {
-        'name'    : 'logic_fire_boss_door_jump',
-        'tags'    : ("Fire Temple",),
-        'tooltip' : '''\
+        'name': 'logic_fire_boss_door_jump',
+        'tags': ("Fire Temple",),
+        'tooltip': '''\
                     The Fire Temple Boss Door can be reached with a precise
                     jump. You must be touching the side wall of the room so
                     that Link will grab the ledge from farther away than
                     is normally possible.
                     '''},
     'Lake Hylia Lab Dive without Gold Scale': {
-        'name'    : 'logic_lab_diving',
-        'tags'    : ("Lake Hylia",),
-        'tooltip' : '''\
+        'name': 'logic_lab_diving',
+        'tags': ("Lake Hylia",),
+        'tooltip': '''\
                     Remove the Iron Boots in the midst of
                     Hookshotting the underwater crate.
                     '''},
     'Deliver Eye Drops with Bolero of Fire': {
-        'name'    : 'logic_biggoron_bolero',
-        'tags'    : ("Death Mountain Trail",),
-        'tooltip' : '''\
+        'name': 'logic_biggoron_bolero',
+        'tags': ("Death Mountain Trail",),
+        'tooltip': '''\
                     Playing a warp song normally causes a trade item to
                     spoil immediately, however, it is possible use Bolero
                     to reach Biggoron and still deliver the Eye Drops
@@ -630,26 +673,26 @@ logic_tricks = {
                     time limit.
                     '''},
     'Wasteland Crossing without Hover Boots or Longshot': {
-        'name'    : 'logic_wasteland_crossing',
-        'tags'    : ("Haunted Wasteland",),
-        'tooltip' : '''\
+        'name': 'logic_wasteland_crossing',
+        'tags': ("Haunted Wasteland",),
+        'tooltip': '''\
                     You can beat the quicksand by backwalking across it
                     in a specific way.
                     Note that jumping to the carpet merchant as child
                     typically requires a fairly precise jump slash.
                     '''},
     'Colossus Hill GS with Hookshot': {
-        'name'    : 'logic_colossus_gs',
-        'tags'    : ("Desert Colossus", "Skulltulas",),
-        'tooltip' : '''\
+        'name': 'logic_colossus_gs',
+        'tags': ("Desert Colossus", "Skulltulas",),
+        'tooltip': '''\
                     Somewhat precise. If you kill enough Leevers
                     you can get enough of a break to take some time
                     to aim more carefully.
                     '''},
     'Dodongo\'s Cavern Scarecrow GS with Armos Statue': {
-        'name'    : 'logic_dc_scarecrow_gs',
-        'tags'    : ("Dodongo's Cavern", "Skulltulas",),
-        'tooltip' : '''\
+        'name': 'logic_dc_scarecrow_gs',
+        'tags': ("Dodongo's Cavern", "Skulltulas",),
+        'tooltip': '''\
                     You can jump off an Armos Statue to reach the
                     alcove with the Gold Skulltula. It takes quite
                     a long time to pull the statue the entire way.
@@ -657,34 +700,34 @@ logic_tricks = {
                     done as child.
                     '''},
     'Kakariko Tower GS with Jump Slash': {
-        'name'    : 'logic_kakariko_tower_gs',
-        'tags'    : ("Kakariko Village", "Skulltulas",),
-        'tooltip' : '''\
+        'name': 'logic_kakariko_tower_gs',
+        'tags': ("Kakariko Village", "Skulltulas",),
+        'tooltip': '''\
                     Climb the tower as high as you can without
                     touching the Gold Skulltula, then let go and
                     jump slash immediately. You will take fall
                     damage.
                     '''},
     'Deku Tree MQ Compass Room GS Boulders with Just Hammer': {
-        'name'    : 'logic_deku_mq_compass_gs',
-        'tags'    : ("Deku Tree", "Skulltulas",),
-        'tooltip' : '''\
+        'name': 'logic_deku_mq_compass_gs',
+        'tags': ("Deku Tree", "Skulltulas",),
+        'tooltip': '''\
                     Climb to the top of the vines, then let go
                     and jump slash immediately to destroy the
                     boulders using the Hammer, without needing
                     to spawn a Song of Time block.
                     '''},
     'Lake Hylia Lab Wall GS with Jump Slash': {
-        'name'    : 'logic_lab_wall_gs',
-        'tags'    : ("Lake Hylia", "Skulltulas",),
-        'tooltip' : '''\
+        'name': 'logic_lab_wall_gs',
+        'tags': ("Lake Hylia", "Skulltulas",),
+        'tooltip': '''\
                     The jump slash to actually collect the
                     token is somewhat precise.
                     '''},
     'Spirit Temple MQ Lower Adult without Fire Arrows': {
-        'name'    : 'logic_spirit_mq_lower_adult',
-        'tags'    : ("Spirit Temple",),
-        'tooltip' : '''\
+        'name': 'logic_spirit_mq_lower_adult',
+        'tags': ("Spirit Temple",),
+        'tooltip': '''\
                     It can be done with Din\'s Fire and Bow.
                     Whenever an arrow passes through a lit torch, it
                     resets the timer. It's finicky but it's also
@@ -692,26 +735,26 @@ logic_tricks = {
                     torch, which makes it easier.
                     '''},
     'Spirit Temple Map Chest with Bow': {
-        'name'    : 'logic_spirit_map_chest',
-        'tags'    : ("Spirit Temple",),
-        'tooltip' : '''\
+        'name': 'logic_spirit_map_chest',
+        'tags': ("Spirit Temple",),
+        'tooltip': '''\
                     To get a line of sight from the upper torch to
                     the map chest torches, you must pull an Armos
                     statue all the way up the stairs.
                     '''},
     'Spirit Temple Sun Block Room Chest with Bow': {
-        'name'    : 'logic_spirit_sun_chest',
-        'tags'    : ("Spirit Temple",),
-        'tooltip' : '''\
+        'name': 'logic_spirit_sun_chest',
+        'tags': ("Spirit Temple",),
+        'tooltip': '''\
                     Using the blocks in the room as platforms you can
                     get lines of sight to all three torches. The timer
                     on the torches is quite short so you must move
                     quickly in order to light all three.
                     '''},
     'Spirit Temple MQ Sun Block Room as Child without Song of Time': {
-        'name'    : 'logic_spirit_mq_sun_block_sot',
-        'tags'    : ("Spirit Temple",),
-        'tooltip' : '''\
+        'name': 'logic_spirit_mq_sun_block_sot',
+        'tags': ("Spirit Temple",),
+        'tooltip': '''\
                     While adult can easily jump directly to the switch that
                     unbars the door to the sun block room, child Link cannot
                     make the jump without spawning a Song of Time block to
@@ -721,9 +764,9 @@ logic_tricks = {
                     quickly to get through the door before it closes back up.
                     '''},
     'Shadow Trial MQ Torch with Bow': {
-        'name'    : 'logic_shadow_trial_mq',
-        'tags'    : ("Ganon's Castle",),
-        'tooltip' : '''\
+        'name': 'logic_shadow_trial_mq',
+        'tags': ("Ganon's Castle",),
+        'tooltip': '''\
                     You can light the torch in this room without a fire
                     source by shooting an arrow through the lit torch
                     at the beginning of the room. Because the room is
@@ -731,9 +774,9 @@ logic_tricks = {
                     be difficult to aim the shot correctly.
                     '''},
     'Forest Temple NE Outdoors Ledge with Hover Boots': {
-        'name'    : 'logic_forest_outdoors_ledge',
-        'tags'    : ("Forest Temple", "Entrance",),
-        'tooltip' : '''\
+        'name': 'logic_forest_outdoors_ledge',
+        'tags': ("Forest Temple", "Entrance",),
+        'tooltip': '''\
                     With precise Hover Boots movement you can fall down
                     to this ledge from upper balconies. If done precisely
                     enough, it is not necessary to take fall damage.
@@ -742,9 +785,9 @@ logic_tricks = {
                     entrance randomizer.
                     '''},
     'Water Temple Boss Key Region with Hover Boots': {
-        'name'    : 'logic_water_boss_key_region',
-        'tags'    : ("Water Temple",),
-        'tooltip' : '''\
+        'name': 'logic_water_boss_key_region',
+        'tags': ("Water Temple",),
+        'tooltip': '''\
                     With precise Hover Boots movement it is possible
                     to reach the boss key chest's region without
                     needing the Longshot. It is not necessary to take
@@ -753,9 +796,9 @@ logic_tricks = {
                     just the Hover Boots.
                     '''},
     'Water Temple MQ North Basement GS without Small Key': {
-        'name'    : 'logic_water_mq_locked_gs',
-        'tags'    : ("Water Temple", "Skulltulas",),
-        'tooltip' : '''\
+        'name': 'logic_water_mq_locked_gs',
+        'tags': ("Water Temple", "Skulltulas",),
+        'tooltip': '''\
                     There is an invisible Hookshot target that can be used
                     to get over the gate that blocks you from going to this
                     Skulltula early. This avoids going through some rooms
@@ -765,23 +808,23 @@ logic_tricks = {
                     Scarecrow's Song to reach the locked door.
                     '''},
     'Water Temple Falling Platform Room GS with Hookshot': {
-        'name'    : 'logic_water_falling_platform_gs_hookshot',
-        'tags'    : ("Water Temple", "Skulltulas",),
-        'tooltip' : '''\
+        'name': 'logic_water_falling_platform_gs_hookshot',
+        'tags': ("Water Temple", "Skulltulas",),
+        'tooltip': '''\
                     If you stand on the very edge of the platform, this
                     Gold Skulltula can be obtained with only the Hookshot.
                     '''},
     'Water Temple Falling Platform Room GS with Boomerang': {
-        'name'    : 'logic_water_falling_platform_gs_boomerang',
-        'tags'    : ("Water Temple", "Skulltulas", "Entrance",),
-        'tooltip' : '''\
+        'name': 'logic_water_falling_platform_gs_boomerang',
+        'tags': ("Water Temple", "Skulltulas", "Entrance",),
+        'tooltip': '''\
                     If you stand on the very edge of the platform, this
                     Gold Skulltula can be obtained with only the Boomerang.
                     '''},
     'Water Temple River GS without Iron Boots': {
-        'name'    : 'logic_water_river_gs',
-        'tags'    : ("Water Temple", "Skulltulas",),
-        'tooltip' : '''\
+        'name': 'logic_water_river_gs',
+        'tags': ("Water Temple", "Skulltulas",),
+        'tooltip': '''\
                     Standing on the exposed ground toward the end of
                     the river, a precise Longshot use can obtain the
                     token. The Longshot cannot normally reach far
@@ -789,9 +832,9 @@ logic_tricks = {
                     first have to find some other way of killing it.
                     '''},
     'Water Temple Entry without Iron Boots using Hookshot': {
-        'name'    : 'logic_water_hookshot_entry',
-        'tags'    : ("Lake Hylia",),
-        'tooltip' : '''\
+        'name': 'logic_water_hookshot_entry',
+        'tags': ("Lake Hylia",),
+        'tooltip': '''\
                     When entering Water Temple using Gold Scale instead
                     of Iron Boots, the Longshot is usually used to be
                     able to hit the switch and open the gate. But, by
@@ -799,32 +842,32 @@ logic_tricks = {
                     with only the reach of the Hookshot.
                     '''},
     'Death Mountain Trail Climb with Hover Boots': {
-        'name'    : 'logic_dmt_climb_hovers',
-        'tags'    : ("Death Mountain Trail",),
-        'tooltip' : '''\
+        'name': 'logic_dmt_climb_hovers',
+        'tags': ("Death Mountain Trail",),
+        'tooltip': '''\
                     It is possible to use the Hover Boots to bypass
                     needing to destroy the boulders blocking the path
                     to the top of Death Mountain.
                     '''},
     'Death Mountain Trail Upper Red Rock GS without Hammer': {
-        'name'    : 'logic_trail_gs_upper',
-        'tags'    : ("Death Mountain Trail", "Skulltulas",),
-        'tooltip' : '''\
+        'name': 'logic_trail_gs_upper',
+        'tags': ("Death Mountain Trail", "Skulltulas",),
+        'tooltip': '''\
                     After killing the Skulltula, the token can be collected
                     by backflipping into the rock at the correct angle.
                     '''},
     'Death Mountain Trail Lower Red Rock GS with Hookshot': {
-        'name'    : 'logic_trail_gs_lower_hookshot',
-        'tags'    : ("Death Mountain Trail", "Skulltulas",),
-        'tooltip' : '''\
+        'name': 'logic_trail_gs_lower_hookshot',
+        'tags': ("Death Mountain Trail", "Skulltulas",),
+        'tooltip': '''\
                     After killing the Skulltula, the token can be fished
                     out of the rock without needing to destroy it, by
                     using the Hookshot in the correct way.
                     '''},
     'Death Mountain Trail Lower Red Rock GS with Hover Boots': {
-        'name'    : 'logic_trail_gs_lower_hovers',
-        'tags'    : ("Death Mountain Trail", "Skulltulas",),
-        'tooltip' : '''\
+        'name': 'logic_trail_gs_lower_hovers',
+        'tags': ("Death Mountain Trail", "Skulltulas",),
+        'tooltip': '''\
                     After killing the Skulltula, the token can be
                     collected without needing to destroy the rock by
                     backflipping down onto it with the Hover Boots.
@@ -832,77 +875,85 @@ logic_tricks = {
                     fence, and go for the Skulltula Token from there.
                     '''},
     'Death Mountain Trail Lower Red Rock GS with Magic Bean': {
-        'name'    : 'logic_trail_gs_lower_bean',
-        'tags'    : ("Death Mountain Trail", "Skulltulas",),
-        'tooltip' : '''\
+        'name': 'logic_trail_gs_lower_bean',
+        'tags': ("Death Mountain Trail", "Skulltulas",),
+        'tooltip': '''\
                     After killing the Skulltula, the token can be
                     collected without needing to destroy the rock by
                     jumping down onto it from the bean plant,
                     midflight, with precise timing and positioning.
                     '''},
     'Death Mountain Crater Upper to Lower with Hammer': {
-        'name'    : 'logic_crater_upper_to_lower',
-        'tags'    : ("Death Mountain Crater",),
-        'tooltip' : '''\
+        'name': 'logic_crater_upper_to_lower',
+        'tags': ("Death Mountain Crater",),
+        'tooltip': '''\
                     With the Hammer, you can jump slash the rock twice
                     in the same jump in order to destroy it before you
                     fall into the lava.
                     '''},
     'Zora\'s Domain Entry with Hover Boots': {
-        'name'    : 'logic_zora_with_hovers',
-        'tags'    : ("Zora's River",),
-        'tooltip' : '''\
+        'name': 'logic_zora_with_hovers',
+        'tags': ("Zora's River",),
+        'tooltip': '''\
                     Can hover behind the waterfall as adult.
                     '''},
     'Zora\'s Domain GS with No Additional Items': {
-        'name'    : 'logic_domain_gs',
-        'tags'    : ("Zora's Domain", "Skulltulas",),
-        'tooltip' : '''\
+        'name': 'logic_domain_gs',
+        'tags': ("Zora's Domain", "Skulltulas",),
+        'tooltip': '''\
                     A precise jump slash can kill the Skulltula and
                     recoil back onto the top of the frozen waterfall.
                     To kill it, the logic normally guarantees one of
                     Hookshot, Bow, or Magic.
                     '''},
     'Skip King Zora as Adult with Nothing': {
-        'name'    : 'logic_king_zora_skip',
-        'tags'    : ("Zora's Domain",),
-        'tooltip' : '''\
+        'name': 'logic_king_zora_skip',
+        'tags': ("Zora's Domain",),
+        'tooltip': '''\
                     With a precise jump as adult, it is possible to
                     get on the fence next to King Zora from the front
                     to access Zora's Fountain.
                     '''},
     'Shadow Temple River Statue with Bombchu': {
-        'name'    : 'logic_shadow_statue',
-        'tags'    : ("Shadow Temple",),
-        'tooltip' : '''\
+        'name': 'logic_shadow_statue',
+        'tags': ("Shadow Temple",),
+        'tooltip': '''\
                     By sending a Bombchu around the edge of the
                     gorge, you can knock down the statue without
                     needing a Bow.
                     Applies in both vanilla and MQ Shadow.
                     '''},
+    'Shadow Temple Bongo Bongo with Nothing': {
+        'name': 'logic_shadow_bongo',
+        'tags': ("Shadow Temple",),
+        'tooltip': '''\
+                    If Shadow Temple dungeon shortcuts are enabled, 
+                    Bongo Bongo can be fought without projectiles
+                    using precise sword slashes.
+                    '''},
     'Stop Link the Goron with Din\'s Fire': {
-        'name'    : 'logic_link_goron_dins',
-        'tags'    : ("Goron City",),
-        'tooltip' : '''\
+        'name': 'logic_link_goron_dins',
+        'tags': ("Goron City",),
+        'tooltip': '''\
                     The timing is quite awkward.
                     '''},
     'Fire Temple Song of Time Room GS without Song of Time': {
-        'name'    : 'logic_fire_song_of_time',
-        'tags'    : ("Fire Temple", "Skulltulas",),
-        'tooltip' : '''\
+        'name': 'logic_fire_song_of_time',
+        'tags': ("Fire Temple", "Skulltulas",),
+        'tooltip': '''\
                     A precise jump can be used to reach this room.
                     '''},
     'Fire Temple Climb without Strength': {
-        'name'    : 'logic_fire_strength',
-        'tags'    : ("Fire Temple",),
-        'tooltip' : '''\
+        'name': 'logic_fire_strength',
+        'tags': ("Fire Temple",),
+        'tooltip': '''\
                     A precise jump can be used to skip
                     pushing the block.
                     '''},
     'Fire Temple MQ Big Lava Room Blocked Door without Hookshot': {
-        'name'    : 'logic_fire_mq_blocked_chest',
-        'tags'    : ("Fire Temple",),
-        'tooltip' : '''\
+        'name': 'logic_fire_mq_blocked_chest',
+        'tags': ("Fire Temple",),
+        'tooltip': '''\
                     There is a gap between the hitboxes of the flame
                     wall in the big lava room. If you know where this
                     gap is located, you can jump through it and skip
@@ -910,9 +961,9 @@ logic_tricks = {
                     taking damage is more precise.
                     '''},
     'Fire Temple MQ Lower to Upper Lizalfos Maze with Precise Jump': {
-        'name'    : 'logic_fire_mq_maze_jump',
-        'tags'    : ("Fire Temple",),
-        'tooltip' : '''\
+        'name': 'logic_fire_mq_maze_jump',
+        'tags': ("Fire Temple",),
+        'tooltip': '''\
                     A precise jump off of a crate can be used to
                     climb to the upper maze without needing to spawn
                     and use the Hookshot targets. This trick
@@ -921,41 +972,41 @@ logic_tricks = {
                     MQ Lizalfos Maze Side Room without Box".
                     '''},
     'Light Trial MQ without Hookshot': {
-        'name'    : 'logic_light_trial_mq',
-        'tags'    : ("Ganon's Castle",),
-        'tooltip' : '''\
+        'name': 'logic_light_trial_mq',
+        'tags': ("Ganon's Castle",),
+        'tooltip': '''\
                     If you move quickly you can sneak past the edge of
                     a flame wall before it can rise up to block you.
                     In this case to do it without taking damage is
                     especially precise.
                     '''},
     'Ice Cavern MQ Scarecrow GS with No Additional Items': {
-        'name'    : 'logic_ice_mq_scarecrow',
-        'tags'    : ("Ice Cavern", "Skulltulas",),
-        'tooltip' : '''\
+        'name': 'logic_ice_mq_scarecrow',
+        'tags': ("Ice Cavern", "Skulltulas",),
+        'tooltip': '''\
                     A precise jump can be used to reach this alcove.
                     '''},
     'Ice Cavern MQ Red Ice GS without Song of Time': {
-        'name'    : 'logic_ice_mq_red_ice_gs',
-        'tags'    : ("Ice Cavern", "Skulltulas",),
-        'tooltip' : '''\
+        'name': 'logic_ice_mq_red_ice_gs',
+        'tags': ("Ice Cavern", "Skulltulas",),
+        'tooltip': '''\
                     If you side-hop into the perfect position, you
                     can briefly stand on the platform with the red
                     ice just long enough to dump some blue fire.
                     '''},
     'Ice Cavern Block Room GS with Hover Boots': {
-        'name'    : 'logic_ice_block_gs',
-        'tags'    : ("Ice Cavern", "Skulltulas",),
-        'tooltip' : '''\
+        'name': 'logic_ice_block_gs',
+        'tags': ("Ice Cavern", "Skulltulas",),
+        'tooltip': '''\
                     The Hover Boots can be used to get in front of the
                     Skulltula to kill it with a jump slash. Then, the
                     Hover Boots can again be used to obtain the Token,
                     all without Hookshot or Boomerang.
                     '''},
     'Reverse Wasteland': {
-        'name'    : 'logic_reverse_wasteland',
-        'tags'    : ("Haunted Wasteland",),
-        'tooltip' : '''\
+        'name': 'logic_reverse_wasteland',
+        'tags': ("Haunted Wasteland",),
+        'tooltip': '''\
                     By memorizing the path, you can travel through the
                     Wasteland in reverse.
                     Note that jumping to the carpet merchant as child
@@ -970,33 +1021,33 @@ logic_tricks = {
                     Fortress.
                     '''},
     'Zora\'s River Upper Freestanding PoH as Adult with Nothing': {
-        'name'    : 'logic_zora_river_upper',
-        'tags'    : ("Zora's River",),
-        'tooltip' : '''\
+        'name': 'logic_zora_river_upper',
+        'tags': ("Zora's River",),
+        'tooltip': '''\
                     Adult can reach this PoH with a precise jump,
                     no Hover Boots required.
                     '''},
     'Shadow Temple MQ Truth Spinner Gap with Longshot': {
-        'name'    : 'logic_shadow_mq_gap',
-        'tags'    : ("Shadow Temple",),
-        'tooltip' : '''\
+        'name': 'logic_shadow_mq_gap',
+        'tags': ("Shadow Temple",),
+        'tooltip': '''\
                     You can Longshot a torch and jump-slash recoil onto
                     the tongue. It works best if you Longshot the right
                     torch from the left side of the room.
                     '''},
     'Lost Woods Adult GS without Bean': {
-        'name'    : 'logic_lost_woods_gs_bean',
-        'tags'    : ("the Lost Woods", "Skulltulas",),
-        'tooltip' : '''\
+        'name': 'logic_lost_woods_gs_bean',
+        'tags': ("the Lost Woods", "Skulltulas",),
+        'tooltip': '''\
                     You can collect the token with a precise
                     Hookshot use, as long as you can kill the
                     Skulltula somehow first. It can be killed
                     using Longshot, Bow, Bombchus or Din's Fire.
                     '''},
     'Jabu Near Boss GS without Boomerang as Adult': {
-        'name'    : 'logic_jabu_boss_gs_adult',
-        'tags'    : ("Jabu Jabu's Belly", "Skulltulas", "Entrance",),
-        'tooltip' : '''\
+        'name': 'logic_jabu_boss_gs_adult',
+        'tags': ("Jabu Jabu's Belly", "Skulltulas", "Entrance",),
+        'tooltip': '''\
                     You can easily get over to the door to the
                     near boss area early with Hover Boots. The
                     tricky part is getting through the door
@@ -1006,9 +1057,9 @@ logic_tricks = {
                     closes.
                     '''},
     'Kakariko Rooftop GS with Hover Boots': {
-        'name'    : 'logic_kakariko_rooftop_gs',
-        'tags'    : ("Kakariko Village", "Skulltulas",),
-        'tooltip' : '''\
+        'name': 'logic_kakariko_rooftop_gs',
+        'tags': ("Kakariko Village", "Skulltulas",),
+        'tooltip': '''\
                     Take the Hover Boots from the entrance to Impa's
                     House over to the rooftop of Skulltula House. From
                     there, a precise Hover Boots backwalk with backflip
@@ -1018,25 +1069,25 @@ logic_tricks = {
                     into the token.
                     '''},
     'Graveyard Freestanding PoH with Boomerang': {
-        'name'    : 'logic_graveyard_poh',
-        'tags'    : ("the Graveyard",),
-        'tooltip' : '''\
+        'name': 'logic_graveyard_poh',
+        'tags': ("the Graveyard",),
+        'tooltip': '''\
                     Using a precise moving setup you can obtain
                     the Piece of Heart by having the Boomerang
                     interact with it along the return path.
                     '''},
     'Hyrule Castle Storms Grotto GS with Just Boomerang': {
-        'name'    : 'logic_castle_storms_gs',
-        'tags'    : ("Hyrule Castle", "Skulltulas",),
-        'tooltip' : '''\
+        'name': 'logic_castle_storms_gs',
+        'tags': ("Hyrule Castle", "Skulltulas",),
+        'tooltip': '''\
                     With precise throws, the Boomerang alone can
                     kill the Skulltula and collect the token,
                     without first needing to blow up the wall.
                     '''},
     'Death Mountain Trail Soil GS without Destroying Boulder': {
-        'name'    : 'logic_dmt_soil_gs',
-        'tags'    : ("Death Mountain Trail", "Skulltulas",),
-        'tooltip' : '''\
+        'name': 'logic_dmt_soil_gs',
+        'tags': ("Death Mountain Trail", "Skulltulas",),
+        'tooltip': '''\
                     Bugs will go into the soft soil even while the boulder is
                     still blocking the entrance.
                     Then, using a precise moving setup you can kill the Gold
@@ -1044,9 +1095,9 @@ logic_tricks = {
                     interact with it along the return path.
                     '''},
     'Gerudo Training Ground Left Side Silver Rupees without Hookshot': {
-        'name'    : 'logic_gtg_without_hookshot',
-        'tags'    : ("Gerudo Training Ground",),
-        'tooltip' : '''\
+        'name': 'logic_gtg_without_hookshot',
+        'tags': ("Gerudo Training Ground",),
+        'tooltip': '''\
                     After collecting the rest of the silver rupees in the room,
                     you can reach the final silver rupee on the ceiling by being
                     pulled up into it after getting grabbed by the Wallmaster.
@@ -1056,9 +1107,9 @@ logic_tricks = {
                     To do so without taking damage is more precise.
                     '''},
     'Gerudo Training Ground MQ Left Side Silver Rupees without Hookshot': {
-        'name'    : 'logic_gtg_mq_without_hookshot',
-        'tags'    : ("Gerudo Training Ground",),
-        'tooltip' : '''\
+        'name': 'logic_gtg_mq_without_hookshot',
+        'tags': ("Gerudo Training Ground",),
+        'tooltip': '''\
                     After collecting the rest of the silver rupees in the room,
                     you can reach the final silver rupee on the ceiling by being
                     pulled up into it after getting grabbed by the Wallmaster.
@@ -1072,9 +1123,9 @@ logic_tricks = {
                     Silver Rupees with Hookshot".
                     '''},
     'Reach Gerudo Training Ground Fake Wall Ledge with Hover Boots': {
-        'name'    : 'logic_gtg_fake_wall',
-        'tags'    : ("Gerudo Training Ground",),
-        'tooltip' : '''\
+        'name': 'logic_gtg_fake_wall',
+        'tags': ("Gerudo Training Ground",),
+        'tooltip': '''\
                     A precise Hover Boots use from the top of the chest can allow
                     you to grab the ledge without needing the usual requirements.
                     In Master Quest, this always skips a Song of Time requirement.
@@ -1083,9 +1134,9 @@ logic_tricks = {
                     without Hookshot" is enabled.
                     '''},
     'Water Temple Cracked Wall with No Additional Items': {
-        'name'    : 'logic_water_cracked_wall_nothing',
-        'tags'    : ("Water Temple",),
-        'tooltip' : '''\
+        'name': 'logic_water_cracked_wall_nothing',
+        'tags': ("Water Temple",),
+        'tooltip': '''\
                     A precise jump slash (among other methods) will
                     get you to the cracked wall without needing the
                     Hover Boots or to raise the water to the middle
@@ -1093,9 +1144,9 @@ logic_tricks = {
                     Cracked Wall with Hover Boots".
                     '''},
     'Water Temple North Basement Ledge with Precise Jump': {
-        'name'    : 'logic_water_north_basement_ledge_jump',
-        'tags'    : ("Water Temple",),
-        'tooltip' : '''\
+        'name': 'logic_water_north_basement_ledge_jump',
+        'tags': ("Water Temple",),
+        'tooltip': '''\
                     In the northern basement there's a ledge from where, in
                     vanilla Water Temple, boulders roll out into the room.
                     Normally to jump directly to this ledge logically
@@ -1104,9 +1155,9 @@ logic_tricks = {
                     Vanilla and Master Quest.
                     '''},
     'Water Temple Torch Longshot': {
-        'name'    : 'logic_water_temple_torch_longshot',
-        'tags'    : ("Water Temple",),
-        'tooltip' : '''\
+        'name': 'logic_water_temple_torch_longshot',
+        'tags': ("Water Temple",),
+        'tooltip': '''\
                     Stand on the eastern side of the central pillar and longshot
                     the torches on the bottom level. Swim through the corridor
                     and float up to the top level. This allows access to this
@@ -1116,18 +1167,18 @@ logic_tricks = {
                     trick is first enabled.
                     '''},
     'Water Temple Central Pillar GS with Farore\'s Wind': {
-        'name'    : 'logic_water_central_gs_fw',
-        'tags'    : ("Water Temple", "Skulltulas",),
-        'tooltip' : '''\
+        'name': 'logic_water_central_gs_fw',
+        'tags': ("Water Temple", "Skulltulas",),
+        'tooltip': '''\
                     If you set Farore's Wind inside the central pillar
                     and then return to that warp point after raising
                     the water to the highest level, you can obtain this
                     Skulltula Token with Hookshot or Boomerang.
                     '''},
     'Water Temple Central Pillar GS with Iron Boots': {
-        'name'    : 'logic_water_central_gs_irons',
-        'tags'    : ("Water Temple", "Skulltulas",),
-        'tooltip' : '''\
+        'name': 'logic_water_central_gs_irons',
+        'tags': ("Water Temple", "Skulltulas",),
+        'tooltip': '''\
                     After opening the middle water level door into the
                     central pillar, the door will stay unbarred so long
                     as you do not leave the room -- even if you were to
@@ -1137,9 +1188,9 @@ logic_tricks = {
                     the Hookshot.
                     '''},
     'Water Temple Boss Key Jump Dive': {
-        'name'    : 'logic_water_bk_jump_dive',
-        'tags'    : ("Water Temple",),
-        'tooltip' : '''\
+        'name': 'logic_water_bk_jump_dive',
+        'tags': ("Water Temple",),
+        'tooltip': '''\
                     Stand on the very edge of the raised corridor leading from the
                     push block room to the rolling boulder corridor. Face the
                     gold skulltula on the waterfall and jump over the boulder
@@ -1148,9 +1199,9 @@ logic_tricks = {
                     Iron boots.
                     '''},
     'Water Temple Dragon Statue Jump Dive': {
-        'name'    : 'logic_water_dragon_jump_dive',
-        'tags'    : ("Water Temple",),
-        'tooltip' : '''\
+        'name': 'logic_water_dragon_jump_dive',
+        'tags': ("Water Temple",),
+        'tooltip': '''\
                     If you come into the dragon statue room from the
                     serpent river, you can jump down from above and get
                     into the tunnel without needing either Iron Boots
@@ -1160,9 +1211,9 @@ logic_tricks = {
                     through the tunnel before the gate closes.
                     '''},
     'Water Temple Dragon Statue Switch from Above the Water as Adult': {
-        'name'    : 'logic_water_dragon_adult',
-        'tags'    : ("Water Temple",),
-        'tooltip' : '''\
+        'name': 'logic_water_dragon_adult',
+        'tags': ("Water Temple",),
+        'tooltip': '''\
                     Normally you need both Hookshot and Iron Boots to hit the
                     switch and swim through the tunnel to get to the chest. But
                     by hitting the switch from dry land, using one of Bombchus,
@@ -1174,9 +1225,9 @@ logic_tricks = {
                     to get into the tunnel.
                     '''},
     'Water Temple Dragon Statue Switch from Above the Water as Child': {
-        'name'    : 'logic_water_dragon_child',
-        'tags'    : ("Water Temple", "Entrance",),
-        'tooltip' : '''\
+        'name': 'logic_water_dragon_child',
+        'tags': ("Water Temple", "Entrance",),
+        'tooltip': '''\
                     It is possible for child to hit the switch from dry land
                     using one of Bombchus, Slingshot or Boomerang. Then, to
                     get to the chest, child can dive through the tunnel using
@@ -1188,27 +1239,27 @@ logic_tricks = {
                     for adult's variant of this trick.
                     '''},
     'Goron City Maze Left Chest with Hover Boots': {
-        'name'    : 'logic_goron_city_leftmost',
-        'tags'    : ("Goron City",),
-        'tooltip' : '''\
+        'name': 'logic_goron_city_leftmost',
+        'tags': ("Goron City",),
+        'tooltip': '''\
                     A precise backwalk starting from on top of the
                     crate and ending with a precisely-timed backflip
                     can reach this chest without needing either
                     the Hammer or Silver Gauntlets.
                     '''},
     'Goron City Grotto with Hookshot While Taking Damage': {
-        'name'    : 'logic_goron_grotto',
-        'tags'    : ("Goron City",),
-        'tooltip' : '''\
+        'name': 'logic_goron_grotto',
+        'tags': ("Goron City",),
+        'tooltip': '''\
                     It is possible to reach the Goron City Grotto by
                     quickly using the Hookshot while in the midst of
                     taking damage from the lava floor. This trick will
                     not be expected on OHKO or quadruple damage.
                     '''},
     'Deku Tree Basement without Slingshot': {
-        'name'    : 'logic_deku_b1_skip',
-        'tags'    : ("Deku Tree",),
-        'tooltip' : '''\
+        'name': 'logic_deku_b1_skip',
+        'tags': ("Deku Tree",),
+        'tooltip': '''\
                     A precise jump can be used to skip
                     needing to use the Slingshot to go
                     around B1 of the Deku Tree. If used
@@ -1219,26 +1270,26 @@ logic_tricks = {
                     and Master Quest.
                     '''},
     'Spirit Temple Lower Adult Switch with Bombs': {
-        'name'    : 'logic_spirit_lower_adult_switch',
-        'tags'    : ("Spirit Temple",),
-        'tooltip' : '''\
+        'name': 'logic_spirit_lower_adult_switch',
+        'tags': ("Spirit Temple",),
+        'tooltip': '''\
                     A bomb can be used to hit the switch on the ceiling,
                     but it must be thrown from a particular distance
                     away and with precise timing.
                     '''},
     'Forest Temple Outside Backdoor with Jump Slash': {
-        'name'    : 'logic_forest_outside_backdoor',
-        'tags'    : ("Forest Temple",),
-        'tooltip' : '''\
+        'name': 'logic_forest_outside_backdoor',
+        'tags': ("Forest Temple",),
+        'tooltip': '''\
                     With a precise jump slash from above,
                     you can reach the backdoor to the west
                     courtyard without Hover Boots. Applies
                     to both Vanilla and Master Quest.
                     '''},
     'Forest Temple East Courtyard Door Frame with Hover Boots': {
-        'name'    : 'logic_forest_door_frame',
-        'tags'    : ("Forest Temple",),
-        'tooltip' : '''\
+        'name': 'logic_forest_door_frame',
+        'tags': ("Forest Temple",),
+        'tooltip': '''\
                     A precise Hover Boots movement from the upper
                     balconies in this courtyard can be used to get on
                     top of the door frame. Applies to both Vanilla and
@@ -1249,78 +1300,81 @@ logic_tricks = {
                     as adult without Hookshot or Song of Time.
                     '''},
     'Dodongo\'s Cavern MQ Early Bomb Bag Area as Child': {
-        'name'    : 'logic_dc_mq_child_bombs',
-        'tags'    : ("Dodongo's Cavern",),
-        'tooltip' : '''\
+        'name': 'logic_dc_mq_child_bombs',
+        'tags': ("Dodongo's Cavern",),
+        'tooltip': '''\
                     With a precise jump slash from above, you
                     can reach the Bomb Bag area as only child
                     without needing a Slingshot. You will
                     take fall damage.
                     '''},
     'Dodongo\'s Cavern Two Scrub Room with Strength': {
-        'name'    : 'logic_dc_scrub_room',
-        'tags'    : ("Dodongo's Cavern",),
-        'tooltip' : '''\
+        'name': 'logic_dc_scrub_room',
+        'tags': ("Dodongo's Cavern",),
+        'tooltip': '''\
                     With help from a conveniently-positioned block,
                     Adult can quickly carry a bomb flower over to
                     destroy the mud wall blocking the room with two
                     Deku Scrubs.
                     '''},
     'Dodongo\'s Cavern Child Slingshot Skips': {
-        'name'    : 'logic_dc_slingshot_skip',
-        'tags'    : ("Dodongo's Cavern",),
-        'tooltip' : '''\
+        'name': 'logic_dc_slingshot_skip',
+        'tags': ("Dodongo's Cavern",),
+        'tooltip': '''\
                     With precise platforming, child can cross the
                     platforms while the flame circles are there.
                     When enabling this trick, it's recommended that
                     you also enable the Adult variant: "Dodongo's
                     Cavern Spike Trap Room Jump without Hover Boots".
                     '''},
-    'Dodongo\'s Cavern MQ Light the Eyes with Strength': {
-        'name'    : 'logic_dc_mq_eyes',
-        'tags'    : ("Dodongo's Cavern",),
-        'tooltip' : '''\
+    'Dodongo\'s Cavern MQ Light the Eyes with Strength as Adult': {
+        'name': 'logic_dc_mq_eyes_adult',
+        'tags': ("Dodongo's Cavern",),
+        'tooltip': '''\
+                    If you move very quickly, it is possible to use
+                    the bomb flower at the top of the room to light
+                    the eyes.
+                    '''},
+    'Dodongo\'s Cavern MQ Smash the Boss Lobby Floor': {
+        'name': 'logic_dc_mq_hammer_floor',
+        'tags': ("Dodongo's Cavern",),
+        'tooltip': '''\
+                    The bombable floor before King Dodongo can be destroyed
+                    with Hammer if hit in the very center. This is only
+                    relevant if either the adult or child variant of
+                    "Dodongo's Cavern MQ Light the Eyes with Strength" are on.
+                    '''},
+    'Dodongo\'s Cavern MQ Light the Eyes with Strength as Child': {
+        'name': 'logic_dc_mq_eyes_child',
+        'tags': ("Dodongo's Cavern",),
+        'tooltip': '''\
                     If you move very quickly, it is possible to use
                     the bomb flower at the top of the room to light
                     the eyes. To perform this trick as child is
-                    significantly more difficult, but child will never
-                    be expected to do so unless "Dodongo's Cavern MQ
-                    Back Areas as Child without Explosives" is enabled.
-                    Also, the bombable floor before King Dodongo can be
-                    destroyed with Hammer if hit in the very center.
-                    '''},
-    'Dodongo\'s Cavern MQ Back Areas as Child without Explosives': {
-        'name'    : 'logic_dc_mq_child_back',
-        'tags'    : ("Dodongo's Cavern",),
-        'tooltip' : '''\
-                    Child can progress through the back areas without
-                    explosives by throwing a pot at a switch to lower a
-                    fire wall, and by defeating Armos to detonate bomb
-                    flowers (among other methods). While these techniques
-                    themselves are relatively simple, they're not
-                    relevant unless "Dodongo's Cavern MQ Light the Eyes
-                    with Strength" is enabled, which is a trick that
-                    is particularly difficult for child to perform.
+                    significantly more difficult than adult. The
+                    player is also expected to complete the DC back
+                    area without explosives, including getting past
+                    the Armos wall to the switch for the boss door.
                     '''},
     'Rolling Goron (Hot Rodder Goron) as Child with Strength': {
-        'name'    : 'logic_child_rolling_with_strength',
-        'tags'    : ("Goron City",),
-        'tooltip' : '''\
+        'name': 'logic_child_rolling_with_strength',
+        'tags': ("Goron City",),
+        'tooltip': '''\
                     Use the bombflower on the stairs or near Medigoron.
                     Timing is tight, especially without backwalking.
                     '''},
     'Goron City Spinning Pot PoH with Bombchu': {
-        'name'    : 'logic_goron_city_pot',
-        'tags'    : ("Goron City",),
-        'tooltip' : '''\
+        'name': 'logic_goron_city_pot',
+        'tags': ("Goron City",),
+        'tooltip': '''\
                     A Bombchu can be used to stop the spinning
                     pot, but it can be quite finicky to get it
                     to work.
                     '''},
     'Gerudo Valley Crate PoH as Adult with Hover Boots': {
-        'name'    : 'logic_valley_crate_hovers',
-        'tags'    : ("Gerudo Valley",),
-        'tooltip' : '''\
+        'name': 'logic_valley_crate_hovers',
+        'tags': ("Gerudo Valley",),
+        'tooltip': '''\
                     From the far side of Gerudo Valley, a precise
                     Hover Boots movement and jump-slash recoil can
                     allow adult to reach the ledge with the crate
@@ -1328,24 +1382,24 @@ logic_tricks = {
                     fall damage.
                     '''},
     'Jump onto the Lost Woods Bridge as Adult with Nothing': {
-        'name'    : 'logic_lost_woods_bridge',
-        'tags'    : ("the Lost Woods", "Entrance",),
-        'tooltip' : '''\
+        'name': 'logic_lost_woods_bridge',
+        'tags': ("the Lost Woods", "Entrance",),
+        'tooltip': '''\
                     With very precise movement it's possible for
                     adult to jump onto the bridge without needing
                     Longshot, Hover Boots, or Bean.
                     '''},
     'Spirit Trial without Hookshot': {
-        'name'    : 'logic_spirit_trial_hookshot',
-        'tags'    : ("Ganon's Castle",),
-        'tooltip' : '''\
+        'name': 'logic_spirit_trial_hookshot',
+        'tags': ("Ganon's Castle",),
+        'tooltip': '''\
                     A precise jump off of an Armos can
                     collect the highest rupee.
                     '''},
     'Shadow Temple Stone Umbrella Skip': {
-        'name'    : 'logic_shadow_umbrella',
-        'tags'    : ("Shadow Temple",),
-        'tooltip' : '''\
+        'name': 'logic_shadow_umbrella',
+        'tags': ("Shadow Temple",),
+        'tooltip': '''\
                     A very precise Hover Boots movement
                     from off of the lower chest can get you
                     on top of the crushing spikes without
@@ -1353,9 +1407,9 @@ logic_tricks = {
                     both Vanilla and Master Quest.
                     '''},
     'Shadow Temple Falling Spikes GS with Hover Boots': {
-        'name'    : 'logic_shadow_umbrella_gs',
-        'tags'    : ("Shadow Temple", "Skulltulas",),
-        'tooltip' : '''\
+        'name': 'logic_shadow_umbrella_gs',
+        'tags': ("Shadow Temple", "Skulltulas",),
+        'tooltip': '''\
                     After killing the Skulltula, a very precise Hover Boots
                     movement from off of the lower chest can get you on top
                     of the crushing spikes without needing to pull the block.
@@ -1366,9 +1420,9 @@ logic_tricks = {
                     enable "Shadow Temple Stone Umbrella Skip".
                     '''},
     'Water Temple Central Bow Target without Longshot or Hover Boots': {
-        'name'    : 'logic_water_central_bow',
-        'tags'    : ("Water Temple",),
-        'tooltip' : '''\
+        'name': 'logic_water_central_bow',
+        'tags': ("Water Temple",),
+        'tooltip': '''\
                     A very precise Bow shot can hit the eye
                     switch from the floor above. Then, you
                     can jump down into the hallway and make
@@ -1377,18 +1431,18 @@ logic_tricks = {
                     Slingshot instead of the Bow.
                     '''},
     'Fire Temple East Tower without Scarecrow\'s Song': {
-        'name'    : 'logic_fire_scarecrow',
-        'tags'    : ("Fire Temple",),
-        'tooltip' : '''\
+        'name': 'logic_fire_scarecrow',
+        'tags': ("Fire Temple",),
+        'tooltip': '''\
                     Also known as "Pixelshot".
                     The Longshot can reach the target on the elevator
                     itself, allowing you to skip needing to spawn the
                     scarecrow.
                     '''},
     'Fire Trial MQ with Hookshot': {
-        'name'    : 'logic_fire_trial_mq',
-        'tags'    : ("Ganon's Castle",),
-        'tooltip' : '''\
+        'name': 'logic_fire_trial_mq',
+        'tags': ("Ganon's Castle",),
+        'tooltip': '''\
                     It's possible to hook the target at the end of
                     fire trial with just Hookshot, but it requires
                     precise aim and perfect positioning. The main
@@ -1396,18 +1450,18 @@ logic_tricks = {
                     of the obelisk without falling into the lava.
                     '''},
     'Shadow Temple Entry with Fire Arrows': {
-        'name'    : 'logic_shadow_fire_arrow_entry',
-        'tags'    : ("Shadow Temple",),
-        'tooltip' : '''\
+        'name': 'logic_shadow_fire_arrow_entry',
+        'tags': ("Shadow Temple",),
+        'tooltip': '''\
                     It is possible to light all of the torches to
                     open the Shadow Temple entrance with just Fire
                     Arrows, but you must be very quick, precise,
                     and strategic with how you take your shots.
                     '''},
     'Lensless Wasteland': {
-        'name'    : 'logic_lens_wasteland',
-        'tags'    : ("Lens of Truth","Haunted Wasteland",),
-        'tooltip' : '''\
+        'name': 'logic_lens_wasteland',
+        'tags': ("Lens of Truth", "Haunted Wasteland",),
+        'tooltip': '''\
                     By memorizing the path, you can travel through the
                     Wasteland without using the Lens of Truth to see
                     the Poe.
@@ -1415,209 +1469,234 @@ logic_tricks = {
                     the Wasteland is "Reverse Wasteland".
                     '''},
     'Bottom of the Well without Lens of Truth': {
-        'name'    : 'logic_lens_botw',
-        'tags'    : ("Lens of Truth","Bottom of the Well",),
-        'tooltip' : '''\
+        'name': 'logic_lens_botw',
+        'tags': ("Lens of Truth", "Bottom of the Well",),
+        'tooltip': '''\
                     Removes the requirements for the Lens of Truth
                     in Bottom of the Well.
                     '''},
     'Ganon\'s Castle MQ without Lens of Truth': {
-        'name'    : 'logic_lens_castle_mq',
-        'tags'    : ("Lens of Truth","Ganon's Castle",),
-        'tooltip' : '''\
+        'name': 'logic_lens_castle_mq',
+        'tags': ("Lens of Truth", "Ganon's Castle",),
+        'tooltip': '''\
                     Removes the requirements for the Lens of Truth
                     in Ganon's Castle MQ.
                     '''},
     'Ganon\'s Castle without Lens of Truth': {
-        'name'    : 'logic_lens_castle',
-        'tags'    : ("Lens of Truth","Ganon's Castle",),
-        'tooltip' : '''\
+        'name': 'logic_lens_castle',
+        'tags': ("Lens of Truth", "Ganon's Castle",),
+        'tooltip': '''\
                     Removes the requirements for the Lens of Truth
                     in Ganon's Castle.
                     '''},
     'Gerudo Training Ground MQ without Lens of Truth': {
-        'name'    : 'logic_lens_gtg_mq',
-        'tags'    : ("Lens of Truth","Gerudo Training Ground",),
-        'tooltip' : '''\
+        'name': 'logic_lens_gtg_mq',
+        'tags': ("Lens of Truth", "Gerudo Training Ground",),
+        'tooltip': '''\
                     Removes the requirements for the Lens of Truth
                     in Gerudo Training Ground MQ.
                     '''},
     'Gerudo Training Ground without Lens of Truth': {
-        'name'    : 'logic_lens_gtg',
-        'tags'    : ("Lens of Truth","Gerudo Training Ground",),
-        'tooltip' : '''\
+        'name': 'logic_lens_gtg',
+        'tags': ("Lens of Truth", "Gerudo Training Ground",),
+        'tooltip': '''\
                     Removes the requirements for the Lens of Truth
                     in Gerudo Training Ground.
                     '''},
     'Jabu MQ without Lens of Truth': {
-        'name'    : 'logic_lens_jabu_mq',
-        'tags'    : ("Lens of Truth","Jabu Jabu's Belly",),
-        'tooltip' : '''\
+        'name': 'logic_lens_jabu_mq',
+        'tags': ("Lens of Truth", "Jabu Jabu's Belly",),
+        'tooltip': '''\
                     Removes the requirements for the Lens of Truth
                     in Jabu MQ.
                     '''},
-    'Shadow Temple MQ before Invisible Moving Platform without Lens of Truth': {
-        'name'    : 'logic_lens_shadow_mq',
-        'tags'    : ("Lens of Truth","Shadow Temple",),
-        'tooltip' : '''\
+    'Shadow Temple MQ Stationary Objects without Lens of Truth': {
+        'name': 'logic_lens_shadow_mq',
+        'tags': ("Lens of Truth", "Shadow Temple",),
+        'tooltip': '''\
                     Removes the requirements for the Lens of Truth
-                    in Shadow Temple MQ before the invisible moving platform.
+                    in Shadow Temple MQ for most areas in the dungeon.
+                    See "Shadow Temple MQ Invisible Moving Platform
+                    without Lens of Truth", "Shadow Temple MQ Invisible
+                    Blades Silver Rupees without Lens of Truth", and
+                    "Shadow Temple MQ 2nd Dead Hand without Lens of Truth"
+                    for exceptions.
                     '''},
-    'Shadow Temple MQ beyond Invisible Moving Platform without Lens of Truth': {
-        'name'    : 'logic_lens_shadow_mq_back',
-        'tags'    : ("Lens of Truth","Shadow Temple",),
-        'tooltip' : '''\
+    'Shadow Temple MQ Invisible Moving Platform without Lens of Truth': {
+        'name': 'logic_lens_shadow_mq_platform',
+        'tags': ("Lens of Truth", "Shadow Temple",),
+        'tooltip': '''\
                     Removes the requirements for the Lens of Truth
-                    in Shadow Temple MQ beyond the invisible moving platform.
+                    in Shadow Temple MQ to cross the invisible moving
+                    platform in the huge pit room in either direction.
                     '''},
-    'Shadow Temple before Invisible Moving Platform without Lens of Truth': {
-        'name'    : 'logic_lens_shadow',
-        'tags'    : ("Lens of Truth","Shadow Temple",),
-        'tooltip' : '''\
-                    Removes the requirements for the Lens of Truth
-                    in Shadow Temple before the invisible moving platform.
+    'Shadow Temple MQ Invisible Blades Silver Rupees without Lens of Truth': {
+        'name': 'logic_lens_shadow_mq_invisible_blades',
+        'tags': ("Lens of Truth", "Shadow Temple",),
+        'tooltip': '''\
+                    Removes the requirement for the Lens of Truth or
+                    Nayru's Love in Shadow Temple MQ for the Invisible
+                    Blades room silver rupee collection.
                     '''},
-    'Shadow Temple beyond Invisible Moving Platform without Lens of Truth': {
-        'name'    : 'logic_lens_shadow_back',
-        'tags'    : ("Lens of Truth","Shadow Temple",),
-        'tooltip' : '''\
+    'Shadow Temple MQ 2nd Dead Hand without Lens of Truth': {
+        'name': 'logic_lens_shadow_mq_dead_hand',
+        'tags': ("Lens of Truth", "Shadow Temple",),
+        'tooltip': '''\
+                    Dead Hand can spawn out of bounds in the back room of
+                    Shadow Temple, making him unreachable until the room
+                    is reloaded. The only way to tell if this happened is
+                    with Lens of Truth. This trick removes that safety net.
+                    '''},
+    'Shadow Temple Stationary Objects without Lens of Truth': {
+        'name': 'logic_lens_shadow',
+        'tags': ("Lens of Truth", "Shadow Temple",),
+        'tooltip': '''\
                     Removes the requirements for the Lens of Truth
-                    in Shadow Temple beyond the invisible moving platform.
+                    in Shadow Temple for most areas in the dungeon
+                    except for crossing the moving platform in the huge
+                    pit room.
+                    '''},
+    'Shadow Temple Invisible Moving Platform without Lens of Truth': {
+        'name': 'logic_lens_shadow_platform',
+        'tags': ("Lens of Truth", "Shadow Temple",),
+        'tooltip': '''\
+                    Removes the requirements for the Lens of Truth
+                    in Shadow Temple to cross the invisible moving
+                    platform in the huge pit room in either direction.
                     '''},
     'Spirit Temple MQ without Lens of Truth': {
-        'name'    : 'logic_lens_spirit_mq',
-        'tags'    : ("Lens of Truth","Spirit Temple",),
-        'tooltip' : '''\
+        'name': 'logic_lens_spirit_mq',
+        'tags': ("Lens of Truth", "Spirit Temple",),
+        'tooltip': '''\
                     Removes the requirements for the Lens of Truth
                     in Spirit Temple MQ.
                     '''},
     'Spirit Temple without Lens of Truth': {
-        'name'    : 'logic_lens_spirit',
-        'tags'    : ("Lens of Truth","Spirit Temple",),
-        'tooltip' : '''\
+        'name': 'logic_lens_spirit',
+        'tags': ("Lens of Truth", "Spirit Temple",),
+        'tooltip': '''\
                     Removes the requirements for the Lens of Truth
                     in Spirit Temple.
                     '''},
 }
 
-
 # a list of the possible settings
 setting_infos = [
     # Web Only Settings
     Setting_Info(
-        name        = 'web_wad_file',
-        type        = str,
-        gui_text    = "WAD File",
-        gui_type    = "Fileinput",
-        shared      = False,
-        choices     = {},
-        gui_tooltip = "Your original OoT 1.2 NTSC-U / NTSC-J WAD file (.wad)",
-        gui_params  = {
+        name='web_wad_file',
+        type=str,
+        gui_text="WAD File",
+        gui_type="Fileinput",
+        shared=False,
+        choices={},
+        gui_tooltip="Your original OoT 1.2 NTSC-U / NTSC-J WAD file (.wad)",
+        gui_params={
             "file_types": [
                 {
-                  "name": "WAD Files",
-                  "extensions": [ "wad" ]
+                    "name": "WAD Files",
+                    "extensions": ["wad"]
                 },
                 {
-                  "name": "All Files",
-                  "extensions": [ "*" ]
+                    "name": "All Files",
+                    "extensions": ["*"]
                 }
             ],
             "hide_when_disabled": True,
         }
     ),
     Setting_Info(
-        name        = 'web_common_key_file',
-        type        = str,
-        gui_text    = "Wii Common Key File",
-        gui_type    = "Fileinput",
-        shared      = False,
-        choices     = {},
-        gui_tooltip = """\
+        name='web_common_key_file',
+        type=str,
+        gui_text="Wii Common Key File",
+        gui_type="Fileinput",
+        shared=False,
+        choices={},
+        gui_tooltip="""\
             The Wii Common Key is a copyrighted 32 character string needed for WAD encryption.
             Google to find it! Do not ask on Discord!
         """,
-        gui_params  = {
+        gui_params={
             "file_types": [
                 {
-                  "name": "BIN Files",
-                  "extensions": [ "bin" ]
+                    "name": "BIN Files",
+                    "extensions": ["bin"]
                 },
                 {
-                  "name": "All Files",
-                  "extensions": [ "*" ]
+                    "name": "All Files",
+                    "extensions": ["*"]
                 }
             ],
             "hide_when_disabled": True,
         }
     ),
     Setting_Info(
-        name        = 'web_common_key_string',
-        type        = str,
-        gui_text    = "Alternatively Enter Wii Common Key",
-        gui_type    = "Textinput",
-        shared      = False,
-        choices     = {},
-        gui_tooltip = """\
+        name='web_common_key_string',
+        type=str,
+        gui_text="Alternatively Enter Wii Common Key",
+        gui_type="Textinput",
+        shared=False,
+        choices={},
+        gui_tooltip="""\
             The Wii Common Key is a copyrighted 32 character string needed for WAD encryption.
             Google to find it! Do not ask on Discord!
         """,
-        gui_params  = {
-            "size"               : "full",
-            "max_length"         : 32,
-            "hide_when_disabled" : True,
+        gui_params={
+            "size": "full",
+            "max_length": 32,
+            "hide_when_disabled": True,
         }
     ),
     Setting_Info(
-        name        = 'web_wad_channel_id',
-        type        = str,
-        gui_text    = "WAD Channel ID",
-        gui_type    = "Textinput",
-        shared      = False,
-        choices     = {},
-        default     = "NICE",
-        gui_tooltip = """\
+        name='web_wad_channel_id',
+        type=str,
+        gui_text="WAD Channel ID",
+        gui_type="Textinput",
+        shared=False,
+        choices={},
+        default="NICE",
+        gui_tooltip="""\
             4 characters, should end with E to ensure Dolphin compatibility.
             Note: If you have multiple OoTR WAD files with different Channel IDs installed, the game can crash on a soft reset. Use a Title Deleter to remove old WADs.
         """,
-        gui_params  = {
-            "size"               : "small",
-            "max_length"         : 4,
-            "no_line_break"      : True,
-            "hide_when_disabled" : True,
+        gui_params={
+            "size": "small",
+            "max_length": 4,
+            "no_line_break": True,
+            "hide_when_disabled": True,
         }
     ),
     Setting_Info(
-        name        = 'web_wad_channel_title',
-        type        = str,
-        gui_text    = "WAD Channel Title",
-        gui_type    = "Textinput",
-        shared      = False,
-        choices     = {},
-        default     = "OoTRandomizer",
-        gui_tooltip = "20 characters max",
-        gui_params  = {
-            "size"               : "medium",
-            "max_length"         : 20,
-            "hide_when_disabled" : True,
+        name='web_wad_channel_title',
+        type=str,
+        gui_text="WAD Channel Title",
+        gui_type="Textinput",
+        shared=False,
+        choices={},
+        default="OoTRandomizer",
+        gui_tooltip="20 characters max",
+        gui_params={
+            "size": "medium",
+            "max_length": 20,
+            "hide_when_disabled": True,
         }
     ),
     Setting_Info(
-        name       = 'web_output_type',
-        type       = str,
-        gui_text   = "Output Type",
-        gui_type   = "Radiobutton",
-        shared     = False,
-        choices    = {
-            'z64' : ".z64 (N64/Emulator)",
-            'wad' : ".wad (WiiVC)"
+        name='web_output_type',
+        type=str,
+        gui_text="Output Type",
+        gui_type="Radiobutton",
+        shared=False,
+        choices={
+            'z64': ".z64 (N64/Emulator)",
+            'wad': ".wad (WiiVC)"
         },
-        gui_params  = {
-            "hide_when_disabled" : True,
+        gui_params={
+            "hide_when_disabled": True,
         },
-        default    = "z64",
-        disable    = {
-            'z64' : {'settings' : [
+        default="z64",
+        disable={
+            'z64': {'settings': [
                 'web_wad_file',
                 'web_common_key_file',
                 'web_common_key_string',
@@ -1627,10 +1706,10 @@ setting_infos = [
         }
     ),
     Checkbutton(
-        name           = 'web_persist_in_cache',
-        gui_text       = 'Persist Files in Cache',
-        default        = True,
-        shared         = False,
+        name='web_persist_in_cache',
+        gui_text='Persist Files in Cache',
+        default=True,
+        shared=False,
     ),
 
     # Non-GUI Settings
@@ -1638,218 +1717,219 @@ setting_infos = [
     Checkbutton('check_version', None),
     Checkbutton('output_settings', None),
     Checkbutton(
-        name           = 'generate_from_file',
-        gui_text       = 'Generate From Patch File',
-        default        = False,
-        disable        = {
-            True : {
-                'tabs' : ['main_tab', 'detailed_tab', 'starting_tab', 'other_tab'],
-                'sections' : ['preset_section'],
-                'settings' : ['count', 'create_spoiler', 'world_count', 'enable_distribution_file', 'distribution_file'],
+        name='generate_from_file',
+        gui_text='Generate From Patch File',
+        default=False,
+        disable={
+            True: {
+                'tabs': ['main_tab', 'detailed_tab', 'starting_tab', 'other_tab'],
+                'sections': ['preset_section'],
+                'settings': ['count', 'create_spoiler', 'world_count', 'enable_distribution_file', 'distribution_file'],
             },
-            False : {
-                'settings' : ['repatch_cosmetics'],
+            False: {
+                'settings': ['repatch_cosmetics'],
             },
         },
-        gui_params     = {
-            'web:disable' : {
-                False : {
-                    'settings' : [
-                        'rom','web_output_type','player_num',
+        gui_params={
+            'web:disable': {
+                False: {
+                    'settings': [
+                        'rom', 'web_output_type', 'player_num',
                         'web_wad_file', 'web_common_key_file', 'web_common_key_string',
-                        'web_wad_channel_id','web_wad_channel_title'
+                        'web_wad_channel_id', 'web_wad_channel_title'
                     ],
                 },
             }
         },
-        shared         = False,
+        shared=False,
     ),
     Checkbutton(
-        name           = 'enable_distribution_file',
-        gui_text       = 'Enable Plandomizer (Advanced)',
-        gui_tooltip    = '''\
+        name='enable_distribution_file',
+        gui_text='Enable Plandomizer (Advanced)',
+        gui_tooltip='''\
             Optional. Use a plandomizer JSON file to get 
             total control over the item placement.
         ''',
-        gui_params     = {
+        gui_params={
             'no_line_break': True,
         },
-        default        = False,
-        disable        = {
-            False  : {'settings' : ['distribution_file']},
+        default=False,
+        disable={
+            False: {'settings': ['distribution_file']},
         },
-        shared         = False,
+        shared=False,
     ),
     Checkbutton(
-        name           = 'enable_cosmetic_file',
-        gui_text       = 'Enable Cosmetic Plandomizer (Advanced)',
-        gui_tooltip    = '''\
+        name='enable_cosmetic_file',
+        gui_text='Enable Cosmetic Plandomizer (Advanced)',
+        gui_tooltip='''\
             Optional. Use a cosmetic plandomizer JSON file to get 
             more control over your cosmetic and sound settings.
         ''',
-        default        = False,
-        disable        = {
-            False  : {'settings' : ['cosmetic_file']},
+        default=False,
+        disable={
+            False: {'settings': ['cosmetic_file']},
         },
-        shared         = False,
+        shared=False,
     ),
     Setting_Info('distribution_file', str, "Plandomizer File", "Fileinput", False, {},
-        gui_tooltip = """\
+                 gui_tooltip="""\
             Optional. Place a plandomizer JSON file here 
             to get total control over the item placement.
         """,
-        gui_params = {
-            "file_types": [
-                {
-                  "name": "JSON Files",
-                  "extensions": [ "json" ]
-                },
-                {
-                  "name": "All Files",
-                  "extensions": [ "*" ]
-                }
-            ],
-            "hide_when_disabled" : True,
-        }),
+                 gui_params={
+                     "file_types": [
+                         {
+                             "name": "JSON Files",
+                             "extensions": ["json"]
+                         },
+                         {
+                             "name": "All Files",
+                             "extensions": ["*"]
+                         }
+                     ],
+                     "hide_when_disabled": True,
+                 }),
     Setting_Info('cosmetic_file', str, "Cosmetic Plandomizer File", "Fileinput", False, {},
-        gui_tooltip = """\
+                 gui_tooltip="""\
             Optional. Use a cosmetic plandomizer JSON file to get 
             more control over your cosmetic and sound settings.
         """,
-        gui_params = {
-            "file_types": [
-                {
-                  "name": "JSON Files",
-                  "extensions": [ "json" ]
-                },
-                {
-                  "name": "All Files",
-                  "extensions": [ "*" ]
-                }
-            ],
-            "hide_when_disabled" : True,
-        }),
-    Setting_Info('checked_version',   str, None, None, False, {}),
-    Setting_Info('rom',               str, "Base ROM", "Fileinput", False, {},
-        gui_params = {
-            "file_types": [
-                {
-                  "name": "ROM Files",
-                  "extensions": [ "z64", "n64" ]
-                },
-                {
-                  "name": "All Files",
-                  "extensions": [ "*" ]
-                }
-            ],
-            "web:hide_when_disabled" : True,
-        }),
-    Setting_Info('output_dir',        str, "Output Directory", "Directoryinput", False, {}),
-    Setting_Info('output_file',       str, None, None, False, {}),
-    Setting_Info('seed',              str, None, None, False, {}),
-    Setting_Info('patch_file',        str, "Patch File", "Fileinput", False, {},
-        gui_params = {
-            "file_types": [
-                {
-                  "name": "Patch File Archive",
-                  "extensions": [ "zpfz", "zpf" ]
-                },
-                {
-                  "name": "All Files",
-                  "extensions": [ "*" ]
-                }
-            ],
-        }),
-    Setting_Info('count',             int, "Generation Count", "Numberinput", False, {},
-        default        = 1,
-        gui_params = {
-            'min' : 1,
-        }
-    ),
-    Setting_Info('world_count',       int, "Player Count", "Numberinput", True, {},
-        default        = 1,
-        gui_params = {
-            'min' : 1,
-            'max' : 255,
-            'no_line_break'     : True,
-            'web:max'           : 15,
-            'web:no_line_break' : True,
-        }
-    ),
-    Setting_Info('player_num',        int, "Player ID", "Numberinput", False, {},
-        default        = 1,
-        gui_params = {
-            'min' : 1,
-            'max' : 255,
-        }
-    ),
+                 gui_params={
+                     "file_types": [
+                         {
+                             "name": "JSON Files",
+                             "extensions": ["json"]
+                         },
+                         {
+                             "name": "All Files",
+                             "extensions": ["*"]
+                         }
+                     ],
+                     "hide_when_disabled": True,
+                 }),
+    Setting_Info('checked_version', str, None, None, False, {}),
+    Setting_Info('rom', str, "Base ROM", "Fileinput", False, {},
+                 gui_params={
+                     "file_types": [
+                         {
+                             "name": "ROM Files",
+                             "extensions": ["z64", "n64"]
+                         },
+                         {
+                             "name": "All Files",
+                             "extensions": ["*"]
+                         }
+                     ],
+                     "web:hide_when_disabled": True,
+                 }),
+    Setting_Info('output_dir', str, "Output Directory", "Directoryinput", False, {}),
+    Setting_Info('output_file', str, None, None, False, {}),
+    Setting_Info('seed', str, None, None, False, {}),
+    Setting_Info('patch_file', str, "Patch File", "Fileinput", False, {},
+                 gui_params={
+                     "file_types": [
+                         {
+                             "name": "Patch File Archive",
+                             "extensions": ["zpfz", "zpf"]
+                         },
+                         {
+                             "name": "All Files",
+                             "extensions": ["*"]
+                         }
+                     ],
+                 }),
+    Setting_Info('count', int, "Generation Count", "Numberinput", False, {},
+                 default=1,
+                 gui_params={
+                     'min': 1,
+                 }
+                 ),
+    Setting_Info('world_count', int, "Player Count", "Numberinput", True, {},
+                 default=1,
+                 gui_params={
+                     'min': 1,
+                     'max': 255,
+                     'no_line_break': True,
+                     'web:max': 15,
+                     'web:no_line_break': True,
+                 }
+                 ),
+    Setting_Info('player_num', int, "Player ID", "Numberinput", False, {},
+                 default=1,
+                 gui_params={
+                     'min': 1,
+                     'max': 255,
+                 }
+                 ),
 
     # GUI Settings
-    Setting_Info('presets',           str, "", "Presetinput", False, {},
-        default        = "[New Preset]",
-        gui_tooltip    = 'Select a setting preset to apply.',
-    ),
-    Setting_Info('open_output_dir',   str, "Open Output Directory", "Button", False, {},
-        gui_params = {
-            'function' : "openOutputDir",
-            'no_line_break' : True,
-        }
-    ),
-    Setting_Info('open_python_dir',   str, "Open App Directory", "Button", False, {},
-        gui_params = {
-            'function' : "openPythonDir",
-        }
-    ),
+    Setting_Info('presets', str, "", "Presetinput", False, {},
+                 default="[New Preset]",
+                 gui_tooltip='Select a setting preset to apply.',
+                 ),
+    Setting_Info('open_output_dir', str, "Open Output Directory", "Button", False, {},
+                 gui_params={
+                     'function': "openOutputDir",
+                     'no_line_break': True,
+                 }
+                 ),
+    Setting_Info('open_python_dir', str, "Open App Directory", "Button", False, {},
+                 gui_params={
+                     'function': "openPythonDir",
+                 }
+                 ),
     Checkbutton(
-        name           = 'repatch_cosmetics',
-        gui_text       = 'Override Original Cosmetics',
-        default        = True,
-        disable        = {
-            False : {
-                'tabs': ['cosmetics_tab','sfx_tab'],
-                'settings' : ['create_cosmetics_log', 'enable_cosmetic_file', 'cosmetic_file'],
+        name='repatch_cosmetics',
+        gui_text='Override Original Cosmetics',
+        default=True,
+        disable={
+            False: {
+                'tabs': ['cosmetics_tab', 'sfx_tab'],
+                'settings': ['create_cosmetics_log', 'enable_cosmetic_file', 'cosmetic_file'],
             },
         },
-        shared         = False,
+        shared=False,
     ),
     Checkbutton(
-        name           = 'create_spoiler',
-        gui_text       = 'Create Spoiler Log',
-        gui_tooltip    = '''\
+        name='create_spoiler',
+        gui_text='Create Spoiler Log',
+        gui_tooltip='''\
                          Enabling this will change the seed.
                          Warning: Only disable this if you don't want any help in solving this seed!
                          ''',
-        default        = True,
-        gui_params     = {
-            'no_line_break' : True,
-            'web:no_line_break' : False,
+        default=True,
+        gui_params={
+            'no_line_break': True,
+            'web:no_line_break': False,
         },
-        shared         = True,
+        shared=True,
     ),
     Checkbutton(
-        name           = 'create_cosmetics_log',
-        gui_text       = 'Create Cosmetics Log',
-        default        = True,
-        disabled_default = False,
+        name='create_cosmetics_log',
+        gui_text='Create Cosmetics Log',
+        default=True,
+        disabled_default=False,
     ),
     Setting_Info(
-        name           = 'compress_rom',
-        type           = str,
-        gui_text       = "Output Type",
-        gui_type       = "Radiobutton",
-        shared         = False,
-        choices        = {
-            'True':  'Compressed [Stable]',
+        name='compress_rom',
+        type=str,
+        gui_text="Output Type",
+        gui_type="Radiobutton",
+        shared=False,
+        choices={
+            'True': 'Compressed [Stable]',
             'False': 'Uncompressed [Crashes]',
             'Patch': 'Patch File',
-            'None':  'No Output',
+            'None': 'No Output',
         },
-        default        = 'True',
-        disable        = {
-            'None'  : {'settings' : ['player_num', 'create_cosmetics_log', 'enable_cosmetic_file', 'cosmetic_file', 'rom']},
-            'Patch' : {'settings' : ['player_num']}
+        default='True',
+        disable={
+            'None': {
+                'settings': ['player_num', 'create_cosmetics_log', 'enable_cosmetic_file', 'cosmetic_file', 'rom']},
+            'Patch': {'settings': ['player_num']}
         },
-        gui_tooltip = '''\
+        gui_tooltip='''\
             The first time compressed generation will take a while,
             but subsequent generations will be quick. It is highly
             recommended to compress or the game will crash
@@ -1863,9 +1943,9 @@ setting_infos = [
         },
     ),
     Checkbutton(
-        name           = 'randomize_settings',
-        gui_text       = 'Randomize Main Rule Settings',
-        gui_tooltip    = '''\
+        name='randomize_settings',
+        gui_text='Randomize Main Rule Settings',
+        gui_tooltip='''\
                          Randomizes all settings on the 'Main Rules' tab, except:
 
                          - Logic Rules
@@ -1876,31 +1956,33 @@ setting_infos = [
                          (you will always be required to obtain all the relevant rewards)
                          - Scrub Shuffle will either be "Off" or "On (Affordable)"
                          ''',
-        default        = False,
-        disable        = {
-            True : {
-                'sections' : ['various_section', 'shuffle_section', 'shuffle_dungeon_section'],
-                'settings': ['starting_age', 'shuffle_interior_entrances', 'shuffle_grotto_entrances', 'shuffle_grotto_location', 'shuffle_grotto_req', 'shuffle_dungeon_entrances', 'shuffle_dungeon_bosses',
+        default=False,
+        disable={
+            True: {
+                'sections': ['various_section', 'shuffle_section', 'shuffle_dungeon_section'],
+                'settings': ['starting_age', 'shuffle_interior_entrances', 'shuffle_grotto_entrances',
+                             'shuffle_grotto_location', 'shuffle_grotto_req', 'shuffle_dungeon_entrances',
+                             'shuffle_dungeon_bosses',
                              'shuffle_overworld_entrances', 'mix_entrance_pools', 'decouple_entrances',
                              'owl_drops', 'warp_songs', 'spawn_positions'],
             }
         },
-        shared         = True,
+        shared=True,
     ),
     Combobox(
-        name           = 'open_forest',
-        gui_text       = 'Forest',
-        default        = 'closed',
-        choices        = {
-            'open':        'Open Forest',
+        name='open_forest',
+        gui_text='Forest',
+        default='closed',
+        choices={
+            'open': 'Open Forest',
             'closed_deku': 'Closed Deku',
-            'closed':      'Closed Forest',
-            },
-        gui_tooltip    = '''\
+            'closed': 'Closed Forest',
+        },
+        gui_tooltip='''\
             'Open Forest': Mido no longer blocks the path to the
             Deku Tree, and the Kokiri boy no longer blocks the path
             out of the forest.
-            
+
             'Closed Deku': The Kokiri boy no longer blocks the path
             out of the forest, but Mido still blocks the path to the
             Deku Tree, requiring Kokiri Sword and Deku Shield to access
@@ -1918,11 +2000,11 @@ setting_infos = [
             be treated as Closed Deku with starting age Child and WILL NOT 
             guarantee that these items are available in the forest area.
         ''',
-        shared         = True,
-        disable        = {
-            'closed' : {'settings' : ['starting_age']}
+        shared=True,
+        disable={
+            'closed': {'settings': ['starting_age']}
         },
-        gui_params     = {
+        gui_params={
             'randomize_key': 'randomize_settings',
             'distribution': [
                 ('open', 1),
@@ -1932,60 +2014,60 @@ setting_infos = [
         },
     ),
     Combobox(
-        name           = 'open_kakariko',
-        gui_text       = 'Kakariko Gate',
-        default        = 'closed',
-        choices        = {
-            'open':   'Open Gate',
-            'zelda':  "Zelda's Letter Opens Gate",
+        name='open_kakariko',
+        gui_text='Kakariko Gate',
+        default='closed',
+        choices={
+            'open': 'Open Gate',
+            'zelda': "Zelda's Letter Opens Gate",
             'closed': 'Closed Gate',
-            },
-        gui_tooltip    = '''\
+        },
+        gui_tooltip='''\
             This changes the behavior of the Kakariko Gate to
             Death Mountain Trail as child. The gate is always
             open as adult.
-            
+
             "Open Gate": The gate is always open instead of
             needing Zelda's Letter. The Happy Mask Shop opens
             upon obtaining Zelda's Letter without needing to
             show it to the guard.
-            
+
             "Zelda's Letter Opens Gate": The gate is closed at
             the start, but opens automatically along with the
             Happy Mask Shop upon obtaining Zelda's Letter.
-            
+
             "Closed": The gate and the Happy Mask Shop both remain closed
             until showing Zelda's Letter to the guard in Kakariko.
         ''',
-        shared         = True,
-        gui_params     = {
+        shared=True,
+        gui_params={
             'randomize_key': 'randomize_settings',
         },
     ),
     Checkbutton(
-        name           = 'open_door_of_time',
-        gui_text       = 'Open Door of Time',
-        gui_tooltip    = '''\
+        name='open_door_of_time',
+        gui_text='Open Door of Time',
+        gui_tooltip='''\
             The Door of Time starts opened instead of needing to
             play the Song of Time. If this is not set, only
             an Ocarina and Song of Time must be found to open
             the Door of Time.
         ''',
-        shared         = True,
-        gui_params     = {
+        shared=True,
+        gui_params={
             'randomize_key': 'randomize_settings',
         },
     ),
     Combobox(
-        name           = 'zora_fountain',
-        gui_text       = 'Zora\'s Fountain',
-        default        = 'closed',
-        choices        = {
+        name='zora_fountain',
+        gui_text='Zora\'s Fountain',
+        default='closed',
+        choices={
             'closed': 'Default Behavior (Closed)',
-            'adult':  'Open For Adult',
-            'open':   'Always Open',
+            'adult': 'Open For Adult',
+            'open': 'Always Open',
         },
-        gui_tooltip    = '''\
+        gui_tooltip='''\
             'Default Behavior': King Zora obstructs the way to
             Zora's Fountain. Ruto's Letter must be shown as
             child in order to move him for both eras.
@@ -1998,21 +2080,21 @@ setting_infos = [
             both the child and adult eras. This also removes 
             Ruto's Letter from the pool since it can't be used.
         ''',
-        shared         = True,
-        gui_params     = {
+        shared=True,
+        gui_params={
             'randomize_key': 'randomize_settings',
         },
     ),
     Combobox(
-        name           = 'gerudo_fortress',
-        gui_text       = 'Gerudo\'s Fortress',
-        default        = 'normal',
-        choices        = {
+        name='gerudo_fortress',
+        gui_text='Gerudo\'s Fortress',
+        default='normal',
+        choices={
             'normal': 'Default Behavior',
-            'fast':   'Rescue One Carpenter',
-            'open':   'Open Gerudo\'s Fortress',
+            'fast': 'Rescue One Carpenter',
+            'open': 'Open Gerudo\'s Fortress',
         },
-        gui_tooltip    = '''\
+        gui_tooltip='''\
             'Rescue One Carpenter': Only the bottom left carpenter,
             in the cell with a single torch, must be rescued.
             This cell can be savewarped to from any room in the hideout.
@@ -2023,28 +2105,28 @@ setting_infos = [
             the player starts with the Gerudo Card in the inventory 
             allowing access to Gerudo Training Ground.
         ''',
-        shared         = True,
-        disable        = {
-            'open' : {'settings' : ['shuffle_hideoutkeys']}
+        shared=True,
+        disable={
+            'open': {'settings': ['shuffle_hideoutkeys']}
         },
-        gui_params     = {
+        gui_params={
             'randomize_key': 'randomize_settings',
         },
     ),
     Combobox(
-        name           = 'bridge',
-        gui_text       = 'Rainbow Bridge Requirement',
-        default        = 'medallions',
-        choices        = {
-            'open':       'Always Open',
-            'vanilla':    'Vanilla Requirements',
-            'stones':	  'Spiritual Stones',
+        name='bridge',
+        gui_text='Rainbow Bridge Requirement',
+        default='medallions',
+        choices={
+            'open': 'Always Open',
+            'vanilla': 'Vanilla Requirements',
+            'stones': 'Spiritual Stones',
             'medallions': 'Medallions',
-            'dungeons':   'Dungeons',
-            'tokens':     'Gold Skulltula Tokens',
-            'random':     'Random'
+            'dungeons': 'Dungeons',
+            'tokens': 'Gold Skulltula Tokens',
+            'random': 'Random'
         },
-        gui_tooltip    = '''\
+        gui_tooltip='''\
             'Always Open': Rainbow Bridge is always present.
             'Vanilla Requirements': Spirit/Shadow Medallions and Light Arrows.
             'Spiritual Stones': A configurable amount of Spiritual Stones.
@@ -2053,121 +2135,122 @@ setting_infos = [
             'Gold Skulltula Tokens': A configurable amount of Gold Skulltula Tokens.
             'Random': A random Rainbow Bridge requirement excluding Gold Skulltula Tokens.
         ''',
-        shared         = True,
+        shared=True,
         disable={
-            'open':       {'settings': ['bridge_medallions', 'bridge_stones', 'bridge_rewards', 'bridge_tokens']},
-            'vanilla':    {'settings': ['bridge_medallions', 'bridge_stones', 'bridge_rewards', 'bridge_tokens']},
-            'stones':     {'settings': ['bridge_medallions', 'bridge_rewards', 'bridge_tokens']},
+            'open': {'settings': ['bridge_medallions', 'bridge_stones', 'bridge_rewards', 'bridge_tokens']},
+            'vanilla': {'settings': ['bridge_medallions', 'bridge_stones', 'bridge_rewards', 'bridge_tokens']},
+            'stones': {'settings': ['bridge_medallions', 'bridge_rewards', 'bridge_tokens']},
             'medallions': {'settings': ['bridge_stones', 'bridge_rewards', 'bridge_tokens']},
-            'dungeons':   {'settings': ['bridge_medallions', 'bridge_stones', 'bridge_tokens']},
-            'tokens':     {'settings': ['bridge_medallions', 'bridge_stones', 'bridge_rewards']},
-            'random':     {'settings': ['bridge_medallions', 'bridge_stones', 'bridge_rewards', 'bridge_tokens']}
+            'dungeons': {'settings': ['bridge_medallions', 'bridge_stones', 'bridge_tokens']},
+            'tokens': {'settings': ['bridge_medallions', 'bridge_stones', 'bridge_rewards']},
+            'random': {'settings': ['bridge_medallions', 'bridge_stones', 'bridge_rewards', 'bridge_tokens']}
         },
-        gui_params     = {
+        gui_params={
             'randomize_key': 'randomize_settings',
-            'distribution':  [
-                ('open',       1),
-                ('vanilla',    1),
-                ('stones',     1),
+            'distribution': [
+                ('open', 1),
+                ('vanilla', 1),
+                ('stones', 1),
                 ('medallions', 1),
-                ('dungeons',   1),
+                ('dungeons', 1),
             ],
         },
     ),
     Scale(
-        name           = 'bridge_medallions',
-        gui_text       = "Medallions Required for Bridge",
-        default        = 6,
-        min            = 1,
-        max            = 6,
-        gui_tooltip    = '''\
+        name='bridge_medallions',
+        gui_text="Medallions Required for Bridge",
+        default=6,
+        min=1,
+        max=6,
+        gui_tooltip='''\
             Select the amount of Medallions required to spawn the rainbow bridge.
         ''',
-        shared         = True,
-        disabled_default = 0,
-        gui_params     = {
+        shared=True,
+        disabled_default=0,
+        gui_params={
             "randomize_key": "randomize_settings",
             "hide_when_disabled": True,
             'distribution': [(6, 1)],
         },
     ),
     Scale(
-        name           = 'bridge_stones',
-        gui_text       = "Spiritual Stones Required for Bridge",
-        default        = 3,
-        min            = 1,
-        max            = 3,
-        gui_tooltip    = '''\
+        name='bridge_stones',
+        gui_text="Spiritual Stones Required for Bridge",
+        default=3,
+        min=1,
+        max=3,
+        gui_tooltip='''\
             Select the amount of Spiritual Stones required to spawn the rainbow bridge.
         ''',
-        shared         = True,
-        disabled_default = 0,
-        gui_params     = {
+        shared=True,
+        disabled_default=0,
+        gui_params={
             "randomize_key": "randomize_settings",
             "hide_when_disabled": True,
             'distribution': [(3, 1)],
         },
     ),
     Scale(
-        name           = 'bridge_rewards',
-        gui_text       = "Dungeon Rewards Required for Bridge",
-        default        = 9,
-        min            = 1,
-        max            = 9,
-        gui_tooltip    = '''\
+        name='bridge_rewards',
+        gui_text="Dungeon Rewards Required for Bridge",
+        default=9,
+        min=1,
+        max=9,
+        gui_tooltip='''\
             Select the amount of Dungeon Rewards (Medallions and Spiritual Stones)
             required to spawn the rainbow bridge.
         ''',
-        shared         = True,
-        disabled_default = 0,
-        gui_params     = {
+        shared=True,
+        disabled_default=0,
+        gui_params={
             "randomize_key": "randomize_settings",
             "hide_when_disabled": True,
             'distribution': [(9, 1)],
         },
     ),
     Scale(
-        name           = 'bridge_tokens',
-        gui_text       = "Skulltulas Required for Bridge",
-        default        = 100,
-        min            = 1,
-        max            = 100,
-        gui_tooltip    = '''\
+        name='bridge_tokens',
+        gui_text="Skulltulas Required for Bridge",
+        default=100,
+        min=1,
+        max=100,
+        gui_tooltip='''\
             Select the amount of Gold Skulltula Tokens required to spawn the rainbow bridge.
         ''',
-        shared         = True,
-        disabled_default = 0,
-        gui_params     = {
+        shared=True,
+        disabled_default=0,
+        gui_params={
             "hide_when_disabled": True,
         },
     ),
     Checkbutton(
-        name           = 'triforce_hunt',
-        gui_text       = 'Triforce Hunt',
-        gui_tooltip    = '''\
+        name='triforce_hunt',
+        gui_text='Triforce Hunt',
+        gui_tooltip='''\
             Pieces of the Triforce have been scattered around the world. 
             Find some of them to beat the game.
 
             Game is saved on completion, and Ganon's Castle key is given
             if beating the game again is desired.
         ''',
-        shared         = True,
-        gui_params     = {
+        shared=True,
+        gui_params={
             'randomize_key': 'randomize_settings',
         },
-        disable        = {
-            True  : {'settings' : ['shuffle_ganon_bosskey', 'ganon_bosskey_stones', 'ganon_bosskey_medallions', 'ganon_bosskey_rewards', 'ganon_bosskey_tokens']},
-            False : {'settings' : ['triforce_goal_per_world']}
+        disable={
+            True: {'settings': ['shuffle_ganon_bosskey', 'ganon_bosskey_stones', 'ganon_bosskey_medallions',
+                                'ganon_bosskey_rewards', 'ganon_bosskey_tokens']},
+            False: {'settings': ['triforce_goal_per_world']}
         },
     ),
     Scale(
-        name           = 'triforce_goal_per_world',
-        gui_text       = 'Required Triforces Per World',
-        default        = 20,
-        min            = 1,
-        max            = 100,
-        shared         = True,
-        gui_tooltip    = '''\
+        name='triforce_goal_per_world',
+        gui_text='Required Triforces Per World',
+        default=20,
+        min=1,
+        max=100,
+        shared=True,
+        gui_tooltip='''\
             Select the amount of Triforce Pieces required to beat the game.
 
             In multiworld, each world will have the same number of triforces 
@@ -2181,20 +2264,20 @@ setting_infos = [
             'Scarce': 25% Extra
             'Minimal: No Extra
         ''',
-        gui_params     = {
+        gui_params={
             "hide_when_disabled": True,
         },
     ),
     Combobox(
-        name           = 'logic_rules',
-        gui_text       = 'Logic Rules',
-        default        = 'glitchless',
-        choices        = {
+        name='logic_rules',
+        gui_text='Logic Rules',
+        default='glitchless',
+        choices={
             'glitchless': 'Glitchless',
-            'glitched':   'Glitched',
-            'none':       'No Logic',
+            'glitched': 'Glitched',
+            'none': 'No Logic',
         },
-        gui_tooltip    = '''\
+        gui_tooltip='''\
             Logic provides guiding sets of rules for world generation
             which the Randomizer uses to ensure the generated seeds 
             are beatable.
@@ -2209,26 +2292,29 @@ setting_infos = [
             'No Logic': Maximize randomization, All locations are 
             considered available. MAY BE IMPOSSIBLE TO BEAT.
         ''',
-        disable        = {
-            'glitchless': {'settings' : ['tricks_list_msg']},
-            'glitched'  : {'settings' : ['allowed_tricks', 'shuffle_interior_entrances', 'shuffle_grotto_entrances', 'shuffle_grotto_location', 'shuffle_grotto_req',
-                                         'shuffle_dungeon_entrances', 'shuffle_dungeon_bosses','shuffle_overworld_entrances', 'owl_drops',
-                                         'warp_songs', 'spawn_positions', 'mq_dungeons_random', 'mq_dungeons',
-                                         'mix_entrance_pools', 'decouple_entrances' ]},
-            'none'      : {'settings' : ['allowed_tricks', 'logic_no_night_tokens_without_suns_song', 'reachable_locations']},
+        disable={
+            'glitchless': {'settings': ['tricks_list_msg']},
+            'glitched': {'settings': ['allowed_tricks', 'shuffle_interior_entrances', 'shuffle_grotto_entrances',
+                                      'shuffle_grotto_location', 'shuffle_grotto_req',
+                                      'shuffle_dungeon_entrances', 'shuffle_dungeon_bosses',
+                                      'shuffle_overworld_entrances', 'owl_drops',
+                                      'warp_songs', 'spawn_positions', 'mq_dungeons_random', 'mq_dungeons',
+                                      'dungeon_shortcuts',
+                                      'mix_entrance_pools', 'decouple_entrances']},
+            'none': {'settings': ['allowed_tricks', 'logic_no_night_tokens_without_suns_song', 'reachable_locations']},
         },
-        shared         = True,
+        shared=True,
     ),
     Combobox(
-        name           = 'reachable_locations',
-        gui_text       = 'Guarantee Reachable Locations',
-        default        = 'all',
-        choices        = {
-            'all':      'All',
-            'goals':    'All Goals',
+        name='reachable_locations',
+        gui_text='Guarantee Reachable Locations',
+        default='all',
+        choices={
+            'all': 'All',
+            'goals': 'All Goals',
             'beatable': 'Required Only',
         },
-        gui_tooltip    = '''\
+        gui_tooltip='''\
             This determines which items and locations are guaranteed to be reachable.
 
             'All': The randomizer will guarantee that every item is obtainable and every location is reachable.
@@ -2244,12 +2330,12 @@ setting_infos = [
         gui_params={
             "hide_when_disabled": True,
         },
-        shared         = True
+        shared=True
     ),
     Checkbutton(
-        name           = 'bombchus_in_logic',
-        gui_text       = 'Bombchus Are Considered in Logic',
-        gui_tooltip    = '''\
+        name='bombchus_in_logic',
+        gui_text='Bombchus Are Considered in Logic',
+        gui_tooltip='''\
             Bombchus are properly considered in logic and
             the game is changed to account for this fact.
 
@@ -2266,16 +2352,16 @@ setting_infos = [
             Additional Bombchu refills are available at 
             the Kokiri Shop and the Bazaar.
         ''',
-        default        = False,
-        shared         = True,
-        gui_params     = {
+        default=False,
+        shared=True,
+        gui_params={
             'randomize_key': 'randomize_settings',
         },
     ),
     Checkbutton(
-        name           = 'one_item_per_dungeon',
-        gui_text       = 'Dungeons Have One Major Item',
-        gui_tooltip    = '''\
+        name='one_item_per_dungeon',
+        gui_text='Dungeons Have One Major Item',
+        gui_tooltip='''\
             Dungeons have exactly one major item. 
             This naturally makes each dungeon similar in value
             rather than vary based on shuffled locations.
@@ -2303,88 +2389,128 @@ setting_infos = [
             other randomizer settings. Should seeds continuously
             fail to generate, consider turning this option off.
         ''',
-        shared         = True,
-        gui_params     = {
+        shared=True,
+        gui_params={
             'randomize_key': 'randomize_settings',
         },
     ),
     Checkbutton(
-        name           = 'trials_random',
-        gui_text       = 'Random Number of Ganon\'s Trials',
-        gui_tooltip    = '''\
+        name='trials_random',
+        gui_text='Random Number of Ganon\'s Trials',
+        gui_tooltip='''\
             Sets a random number of trials to enter Ganon's Tower.
         ''',
-        shared         = True,
-        disable        = {
-            True : {'settings' : ['trials']}
+        shared=True,
+        disable={
+            True: {'settings': ['trials']}
         },
-        gui_params     = {
+        gui_params={
             'randomize_key': 'randomize_settings',
-            'distribution':  [
+            'distribution': [
                 (True, 1),
             ]
         },
     ),
     Scale(
-        name           = 'trials',
-        gui_text       = "Ganon's Trials Count",
-        default        = 6,
-        min            = 0,
-        max            = 6,
-        gui_tooltip    = '''\
+        name='trials',
+        gui_text="Ganon's Trials Count",
+        default=6,
+        min=0,
+        max=6,
+        gui_tooltip='''\
             Trials are randomly selected. If hints are
             enabled, then there will be hints for which
             trials need to be completed.
         ''',
-        shared         = True,
-        disabled_default = 0,
+        shared=True,
+        disabled_default=0,
     ),
     Checkbutton(
-        name           = 'skip_child_zelda',
-        gui_text       = 'Skip Child Zelda',
-        gui_tooltip    = '''\
+        name='skip_child_zelda',
+        gui_text='Skip Child Zelda',
+        gui_tooltip='''\
             Start having already met Zelda and obtained
             Zelda's Letter along with the item from Impa.
             Supersedes "Skip Child Stealth" since the whole
             sequence is skipped. Similarly, this is
             incompatible with Shuffle Weird Egg.
         ''',
-        shared         = True,
-        disable = {
+        shared=True,
+        disable={
             True: {'settings': ['shuffle_weird_egg']},
         },
     ),
+    Setting_Info(
+        name='dungeon_shortcuts',
+        type=list,
+        gui_text='Dungeon Boss Shortcuts',
+        gui_type="MultipleSelect",
+        choices={
+            'deku_tree': 'Deku Tree',
+            'dodongos_cavern': 'Dodongo\'s Cavern',
+            'jabu_jabus_belly': 'Jabu Jabu\'s Belly',
+            'forest_temple': 'Forest Temple',
+            'fire_temple': 'Fire Temple',
+            'water_temple': 'Water Temple',  # doesn't do anything, but added to prevent confusion
+            'shadow_temple': 'Shadow Temple',
+            'spirit_temple': 'Spirit Temple'
+        },
+        default=[],
+        gui_tooltip='''\
+            Shortcuts to dungeon bosses are available
+            without any requirements.
+            Incompatible with glitched logic.
+
+            Changes include (vanilla shown, MQ similar):
+            <b>Deku Tree</b>: webs burned, block in the
+            basement moved, 231 scrubs defeated
+            <b>Dodongo's Cavern</b>: mud wall bombed,
+            mouth opened and boss lobby floor bombed
+            <b>Jabu Jabu</b>: pathway lowered
+            <b>Forest Temple</b>: elevator raised and
+            basement gates open
+            <b>Fire Temple</b>: pillar knocked down
+            <b>Shadow Temple</b>: Truthspinner solved, boat
+            block moved, and statue bridge moved. You start
+            with 2 small keys if Shuffle Small Keys is set
+            to Vanilla.
+            <b>Spirit Temple</b>: lobby elevator activated,
+            shortcut silver blocks moved, central room
+            platform lowered, and statue face melted
+        ''',
+        shared=True,
+    ),
     Checkbutton(
-        name           = 'no_escape_sequence',
-        gui_text       = 'Skip Tower Escape Sequence',
-        gui_tooltip    = '''\
+        name='no_escape_sequence',
+        gui_text='Skip Tower Escape Sequence',
+        gui_tooltip='''\
             The tower escape sequence between
             Ganondorf and Ganon will be skipped.
         ''',
-        shared         = True,
+        shared=True,
     ),
     Checkbutton(
-        name           = 'no_guard_stealth',
-        gui_text       = 'Skip Child Stealth',
-        gui_tooltip    = '''\
+        name='no_guard_stealth',
+        gui_text='Skip Child Stealth',
+        gui_tooltip='''\
             The crawlspace into Hyrule Castle goes
             straight to Zelda, skipping the guards.
         ''',
-        shared         = True,
+        shared=True,
     ),
     Checkbutton(
-        name           = 'no_epona_race',
-        gui_text       = 'Skip Epona Race',
-        gui_tooltip    = '''\
+        name='no_epona_race',
+        gui_text='Skip Epona Race',
+        gui_tooltip='''\
             Epona can be summoned with Epona's Song
             without needing to race Ingo.
         ''',
-        shared         = True,
+        shared=True,
     ),
     Checkbutton(
-        name           = 'skip_some_minigame_phases',
-        gui_text       = 'Skip Some Minigame Phases',
-        gui_tooltip    = '''\
+        name='skip_some_minigame_phases',
+        gui_text='Skip Some Minigame Phases',
+        gui_tooltip='''\
             Awards all eligible prizes after the first attempt for
             Dampe Race and Gerudo Horseback Archery.
 
@@ -2398,42 +2524,42 @@ setting_infos = [
             This means you can get both rewards at once if you get 
             1500 points in a single attempt.
         ''',
-        shared         = True,
+        shared=True,
     ),
     Checkbutton(
-        name           = 'useful_cutscenes',
-        gui_text       = 'Enable Specific Glitch-Useful Cutscenes',
-        gui_tooltip    = '''\
+        name='useful_cutscenes',
+        gui_text='Enable Specific Glitch-Useful Cutscenes',
+        gui_tooltip='''\
             The cutscenes of the Poes in Forest Temple and Darunia in
             Fire Temple will not be skipped. These cutscenes are useful
             in glitched gameplay only and do not provide any timesave
             for glitchless playthroughs.
         ''',
-        shared         = True,
+        shared=True,
     ),
     Checkbutton(
-        name           = 'complete_mask_quest',
-        gui_text       = 'Complete Mask Quest',
-        gui_tooltip    = '''\
+        name='complete_mask_quest',
+        gui_text='Complete Mask Quest',
+        gui_tooltip='''\
             Once the Happy Mask Shop is opened,
             all masks will be available to be borrowed.
         ''',
-        shared         = True,
+        shared=True,
     ),
     Checkbutton(
-        name           = 'fast_chests',
-        gui_text       = 'Fast Chest Cutscenes',
-        gui_tooltip    = '''\
+        name='fast_chests',
+        gui_text='Fast Chest Cutscenes',
+        gui_tooltip='''\
             All chest animations are fast. If disabled,
             the animation time is slow for major items.
         ''',
-        default        = True,
-        shared         = True,
+        default=True,
+        shared=True,
     ),
     Checkbutton(
-        name           = 'logic_no_night_tokens_without_suns_song',
-        gui_text       = 'Nighttime Skulltulas Expect Sun\'s Song',
-        gui_tooltip    = '''\
+        name='logic_no_night_tokens_without_suns_song',
+        gui_text='Nighttime Skulltulas Expect Sun\'s Song',
+        gui_tooltip='''\
             GS Tokens that can only be obtained
             during the night expect you to have Sun's
             Song to collect them. This prevents needing
@@ -2442,371 +2568,371 @@ setting_infos = [
         gui_params={
             "hide_when_disabled": True,
         },
-        shared         = True,
+        shared=True,
     ),
     Checkbutton(
-        name           = 'free_scarecrow',
-        gui_text       = 'Free Scarecrow\'s Song',
-        gui_tooltip    = '''\
+        name='free_scarecrow',
+        gui_text='Free Scarecrow\'s Song',
+        gui_tooltip='''\
             Pulling out the Ocarina near a
             spot at which Pierre can spawn will
             do so, without needing the song.
         ''',
-        shared         = True,
+        shared=True,
     ),
     Checkbutton(
-        name           = 'fast_bunny_hood',
-        gui_text       = 'Fast Bunny Hood',
-        gui_tooltip    = '''\
+        name='fast_bunny_hood',
+        gui_text='Fast Bunny Hood',
+        gui_tooltip='''\
             The Bunny Hood mask behaves like it does
             in Majora's Mask and makes you go 1.5× faster.
         ''',
-        shared         = True,
+        shared=True,
     ),
     Checkbutton(
-        name           = 'start_with_rupees',
-        gui_text       = 'Start with Max Rupees',
-        gui_tooltip    = '''\
+        name='start_with_rupees',
+        gui_text='Start with Max Rupees',
+        gui_tooltip='''\
             Start the game with a full wallet.
             Wallet upgrades will also fill the wallet.
         ''',
-        shared         = True,
+        shared=True,
     ),
     Checkbutton(
-        name           = 'start_with_consumables',
-        gui_text       = 'Start with Consumables',
-        gui_tooltip    = '''\
+        name='start_with_consumables',
+        gui_text='Start with Consumables',
+        gui_tooltip='''\
             Start the game with maxed out Deku Sticks and Deku Nuts.
         ''',
-        shared         = True,
+        shared=True,
     ),
     Scale(
-        name           = 'starting_hearts',
-        gui_text       = "Starting Hearts",
-        default        = 3,
-        min            = 3,
-        max            = 20,
-        gui_tooltip    = '''\
+        name='starting_hearts',
+        gui_text="Starting Hearts",
+        default=3,
+        min=3,
+        max=20,
+        gui_tooltip='''\
             Start the game with the selected number of hearts.
             Heart Containers and Pieces of Heart are removed
             from the item pool in equal proportion.
         ''',
-        disabled_default = 1,
-        shared         = True,
+        disabled_default=1,
+        shared=True,
     ),
     Checkbutton(
-        name           = 'chicken_count_random',
-        gui_text       = 'Random Cucco Count',
-        gui_tooltip    = '''\
+        name='chicken_count_random',
+        gui_text='Random Cucco Count',
+        gui_tooltip='''\
             Anju will give a reward for collecting a random
             number of Cuccos.
         ''',
-        disable        = {
-            True : {'settings' : ['chicken_count']}
+        disable={
+            True: {'settings': ['chicken_count']}
         },
-        shared         = True,
+        shared=True,
     ),
     Scale(
-        name           = 'chicken_count',
-        gui_text       = 'Cucco Count',
-        default        = 7,
-        min            = 0,
-        max            = 7,
-        gui_tooltip    = '''\
+        name='chicken_count',
+        gui_text='Cucco Count',
+        default=7,
+        min=0,
+        max=7,
+        gui_tooltip='''\
             Anju will give a reward for turning
             in the chosen number of Cuccos.
         ''',
-        shared         = True,
-        gui_params     = {
+        shared=True,
+        gui_params={
             'no_line_break': True,
         },
     ),
     Combobox(
-        name           = 'talon_level',
-        gui_text       = 'Talon\'s Chickens Difficulty Level',
-        default        = 'normal',
-        choices        = {
-            'easy':   'Easy',
+        name='talon_level',
+        gui_text='Talon\'s Chickens Difficulty Level',
+        default='normal',
+        choices={
+            'easy': 'Easy',
             'normal': 'Normal',
-            'hard':   'Hard',
-            'mean':   'Mean'
-            },
-        gui_tooltip    = '''\
+            'hard': 'Hard',
+            'mean': 'Mean'
+        },
+        gui_tooltip='''\
             Modifies the difficulty level for Child and Adult Target Shooting Minigame, by changing the amount of ammo given
-            
+
             'Easy':
             Plenty of time: 20 seconds per Super Cucco needed
-            
+
             'Normal':
             Vanilla amount of time: 10 seconds per Super Cucco needed (default: 30s)
-            
+
             'Hard':
             Reduced amount of time: 7 seconds per Super Cucco needed
-            
+
             'Mean':
             Very little time: 3 seconds per Super Cucco needed
-            
+
         ''',
-        gui_params     = {
+        gui_params={
             'randomize_key': 'randomize_settings',
-            'distribution':  [
+            'distribution': [
                 ('easy', 1),
                 ('normal', 2),
                 ('hard', 1),
                 ('mean', 0)
             ],
         },
-        shared         = True,
+        shared=True,
 
     ),
     Checkbutton(
-        name           = 'talon_count_random',
-        gui_text       = 'Random Talon\'s Chicken Count',
-        gui_tooltip    = '''\
+        name='talon_count_random',
+        gui_text='Random Talon\'s Chicken Count',
+        gui_tooltip='''\
             Talon will give a reward for collecting a random amount of Super Cuccos
         ''',
-        disable        = {
-            True : {'settings' : ['talon_count']}
+        disable={
+            True: {'settings': ['talon_count']}
         },
-        shared         = True,
+        shared=True,
     ),
     Scale(
-        name           = 'talon_count',
-        gui_text       = 'Talon\'s Chicken Count',
-        default        = 3,
-        min            = 1,
-        max            = 3,
-        gui_tooltip    = '''\
+        name='talon_count',
+        gui_text='Talon\'s Chicken Count',
+        default=3,
+        min=1,
+        max=3,
+        gui_tooltip='''\
             Talon will give a reward for turning
             in the chosen number of Super Cuccos.
         ''',
-        shared         = True,
-        gui_params     = {
+        shared=True,
+        gui_params={
             'no_line_break': True,
         },
     ),
     Checkbutton(
-        name           = 'talon_cost',
-        gui_text       = 'Random Talon\'s Chicken Cost',
-        gui_tooltip    = '''\
+        name='talon_cost',
+        gui_text='Random Talon\'s Chicken Cost',
+        gui_tooltip='''\
             Randomize cost to play Super Cucco Minigame
         ''',
-        default        = False,
-        shared         = True,
-        gui_params     = {
+        default=False,
+        shared=True,
+        gui_params={
             'randomize_key': 'randomize_settings',
         },
     ),
     Checkbutton(
-        name           = 'big_poe_count_random',
-        gui_text       = 'Random Big Poe Target Count',
-        gui_tooltip    = '''\
+        name='big_poe_count_random',
+        gui_text='Random Big Poe Target Count',
+        gui_tooltip='''\
             The Poe buyer will give a reward for turning
             in a random number of Big Poes.
         ''',
-        disable        = {
-            True : {'settings' : ['big_poe_count']}
+        disable={
+            True: {'settings': ['big_poe_count']}
         },
-        shared         = True,
+        shared=True,
     ),
     Scale(
-        name           = 'big_poe_count',
-        gui_text       = "Big Poe Target Count",
-        default        = 10,
-        min            = 1,
-        max            = 10,
-        gui_tooltip    = '''\
+        name='big_poe_count',
+        gui_text="Big Poe Target Count",
+        default=10,
+        min=1,
+        max=10,
+        gui_tooltip='''\
             The Poe buyer will give a reward for turning
             in the chosen number of Big Poes.
         ''',
-        disabled_default = 1,
-        shared         = True,
+        disabled_default=1,
+        shared=True,
     ),
     Combobox(
-        name           = 'target_minigame_level',
-        gui_text       = 'Shooting Gallery Difficulty Level',
-        default        = 'normal',
-        choices        = {
-            'easy':   'Easy',
+        name='target_minigame_level',
+        gui_text='Shooting Gallery Difficulty Level',
+        default='normal',
+        choices={
+            'easy': 'Easy',
             'normal': 'Normal',
-            'hard':   'Hard',
-            'mean':   'Mean'
-            },
-        gui_tooltip    = '''\
+            'hard': 'Hard',
+            'mean': 'Mean'
+        },
+        gui_tooltip='''\
             Modifies the difficulty level for Child and Adult Shooting Gallery, by changing the amount of ammo given
-            
+
             'Easy':
             Plenty of ammo (30)
-            
+
             'Normal':
             Vanilla amount of ammo (15)
-            
+
             'Hard':
             Reduced amount of ammo (12)
-            
+
             'Mean':
             No extra ammo (10)
-            
+
         ''',
-        gui_params     = {
+        gui_params={
             'randomize_key': 'randomize_settings',
-            'distribution':  [
+            'distribution': [
                 ('easy', 1),
                 ('normal', 2),
                 ('hard', 1),
                 ('mean', 0)
             ],
         },
-        shared         = True,
+        shared=True,
 
     ),
     Checkbutton(
-        name           = 'target_minigame_cost',
-        gui_text       = 'Random Shooting Gallery Cost',
-        gui_tooltip    = '''\
+        name='target_minigame_cost',
+        gui_text='Random Shooting Gallery Cost',
+        gui_tooltip='''\
             Randomize cost to play Child and Adult Shooting Gallery
         ''',
-        default        = False,
-        shared         = True,
-        gui_params     = {
+        default=False,
+        shared=True,
+        gui_params={
             'randomize_key': 'randomize_settings',
         },
     ),
     Checkbutton(
-        name           = 'target_minigame_colors',
-        gui_text       = 'Random Shooting Gallery Colors',
-        gui_tooltip    = '''\
+        name='target_minigame_colors',
+        gui_text='Random Shooting Gallery Colors',
+        gui_tooltip='''\
             Randomize colors of Rupees in Child and Adult Shooting Gallery
             Note: this does NOT affect the order, it is purely cosmetic
         ''',
-        default        = False,
-        shared         = True,
-        gui_params     = {
+        default=False,
+        shared=True,
+        gui_params={
             'randomize_key': 'randomize_settings',
         },
     ),
     Combobox(
-        name           = 'hba_level',
-        gui_text       = 'Horseback Archery Difficulty Level',
-        default        = 'normal',
-        choices        = {
-            'easy':   'Easy',
+        name='hba_level',
+        gui_text='Horseback Archery Difficulty Level',
+        default='normal',
+        choices={
+            'easy': 'Easy',
             'normal': 'Normal',
-            'hard':   'Hard',
-            'mean':   'Mean'
-            },
-        gui_tooltip    = '''\
+            'hard': 'Hard',
+            'mean': 'Mean'
+        },
+        gui_tooltip='''\
             Modifies the difficulty level for Horseback Archery, by changing the amount of ammo given
             and the distance threshold for bullseye
-            
+
             Note ammo amount is for Vanilla score requirements (1000, 1500)
             If the scores are randomized, ammo will be updated accordingly
-            
+
             'Easy':
             Plenty of ammo (30) (3x low score/100)
             Hitting a target counts as bullseye (100 points)
-            
+
             'Normal':
             Vanilla amount of ammo (20) (2x low score/100)
             Normal bullseye range
-            
+
             'Hard':
             Normal amount of ammo (20) (2x low score/100)
             Reduced bullseye range (most of target is 60 points)
-            
+
             'Mean':
             No extra ammo (15) (1x high score/100)
             Extremely small bullseye range (most of target is 30 points)
-            
+
         ''',
-        disable        = {
-            'easy': {'settings' : ['hba_ammo']},
-            'hard': {'settings' : ['hba_ammo']},
-            'mean': {'settings' : ['hba_ammo']},
+        disable={
+            'easy': {'settings': ['hba_ammo']},
+            'hard': {'settings': ['hba_ammo']},
+            'mean': {'settings': ['hba_ammo']},
         },
-        gui_params     = {
+        gui_params={
             'randomize_key': 'randomize_settings',
-            'distribution':  [
+            'distribution': [
                 ('easy', 1),
                 ('normal', 2),
                 ('hard', 1),
                 ('mean', 0)
             ],
         },
-        shared         = True,
+        shared=True,
 
     ),
     Checkbutton(
-        name           = 'hba_cost',
-        gui_text       = 'Random Horseback Archery Cost',
-        gui_tooltip    = '''\
+        name='hba_cost',
+        gui_text='Random Horseback Archery Cost',
+        gui_tooltip='''\
             Randomize cost to play Child and Adult Shooting Gallery
         ''',
-        default        = False,
-        shared         = True,
-        gui_params     = {
+        default=False,
+        shared=True,
+        gui_params={
             'randomize_key': 'randomize_settings',
         },
     ),
     Checkbutton(
-        name           = 'hba_ammo',
-        gui_text       = 'Random Ammo for Horseback Archery',
-        gui_tooltip    = '''\
+        name='hba_ammo',
+        gui_text='Random Ammo for Horseback Archery',
+        gui_tooltip='''\
             Randomize ammo given for Horseback Archery
             Range is 20-50          
             Cannot be enable with a difficulty other than "Normal"
         ''',
-        default        = False,
-        shared         = True,
-        gui_params     = {
+        default=False,
+        shared=True,
+        gui_params={
             'randomize_key': 'randomize_settings',
         },
     ),
     Checkbutton(
-        name           = 'hba_score',
-        gui_text       = 'Random Score Requirements for Horseback Archery',
-        gui_tooltip    = '''\
+        name='hba_score',
+        gui_text='Random Score Requirements for Horseback Archery',
+        gui_tooltip='''\
             Randomize score needed to win Horseback Archery's prizes
         ''',
-        default        = False,
-        shared         = True,
-        gui_params     = {
+        default=False,
+        shared=True,
+        gui_params={
             'randomize_key': 'randomize_settings',
         },
     ),
     Combobox(
-        name           = 'dampe_race_level',
-        gui_text       = 'Dampé Race Difficulty Level',
-        default        = 'normal',
-        choices        = {
-            'easy':   'Easy',
+        name='dampe_race_level',
+        gui_text='Dampé Race Difficulty Level',
+        default='normal',
+        choices={
+            'easy': 'Easy',
             'normal': 'Normal',
-            'hard':   'Hard',
-            'mean':   'Mean',
-            'why':    'WHY?'
-            },
-        gui_tooltip    = '''\
+            'hard': 'Hard',
+            'mean': 'Mean',
+            'why': 'WHY?'
+        },
+        gui_tooltip='''\
             Modifies the difficulty level for Dampé's Race by modifying time allowed for second prize and how often Dampé sends fire attacks
-            
+
             'Easy':
             Dampé's chance to throw fire is reduced and 15 extra seconds are given to win the second prize
-            
+
             'Normal':
             Normal chance for Dampé to attack and normal amount of time (60s) to receive second prize
-            
+
             'Hard':
             Slightly increased chance for Dampé attacks and normal amount of time
-            
+
             'Mean':
             Increased chance for Dampé attacks and reduced amount of time (53s)
-            
+
             'WHY?':
             Don't
-            
+
         ''',
-        gui_params     = {
+        gui_params={
             'randomize_key': 'randomize_settings',
-            'distribution':  [
+            'distribution': [
                 ('easy', 1),
                 ('normal', 2),
                 ('hard', 1),
@@ -2814,44 +2940,44 @@ setting_infos = [
                 ('why', 0)
             ],
         },
-        shared         = True,
+        shared=True,
 
     ),
     Checkbutton(
-        name           = 'shuffle_kokiri_sword',
-        gui_text       = 'Shuffle Kokiri Sword',
-        gui_tooltip    = '''\
+        name='shuffle_kokiri_sword',
+        gui_text='Shuffle Kokiri Sword',
+        gui_tooltip='''\
             Enabling this shuffles the Kokiri Sword into the pool.
 
             This will require extensive use of sticks until the
             sword is found.
         ''',
-        default        = True,
-        shared         = True,
-        gui_params     = {
+        default=True,
+        shared=True,
+        gui_params={
             'randomize_key': 'randomize_settings',
         },
     ),
     Checkbutton(
-        name           = 'shuffle_ocarinas',
-        gui_text       = 'Shuffle Ocarinas',
-        gui_tooltip    = '''\
+        name='shuffle_ocarinas',
+        gui_text='Shuffle Ocarinas',
+        gui_tooltip='''\
             Enabling this shuffles the Fairy Ocarina and the Ocarina
             of Time into the pool.
 
             This will require finding an Ocarina before being able
             to play songs.
         ''',
-        default        = False,
-        shared         = True,
-        gui_params     = {
+        default=False,
+        shared=True,
+        gui_params={
             'randomize_key': 'randomize_settings',
         },
     ),
     Checkbutton(
-        name           = 'shuffle_weird_egg',
-        gui_text       = 'Shuffle Weird Egg',
-        gui_tooltip    = '''\
+        name='shuffle_weird_egg',
+        gui_text='Shuffle Weird Egg',
+        gui_tooltip='''\
             Enabling this shuffles the Weird Egg from Malon into the pool.
 
             This will require finding the Weird Egg to talk to Zelda in
@@ -2860,38 +2986,38 @@ setting_infos = [
             The Weird Egg is also required for Zelda's Letter to open 
             the Kakariko Gate as child which can lock some progression.
         ''',
-        disable        = {
-            True : {'settings' : ['skip_child_zelda']}
+        disable={
+            True: {'settings': ['skip_child_zelda']}
         },
-        shared         = True,
-        gui_params     = {
+        shared=True,
+        gui_params={
             'randomize_key': 'randomize_settings',
         },
     ),
     Checkbutton(
-        name           = 'shuffle_gerudo_card',
-        gui_text       = "Shuffle Gerudo Card",
-        gui_tooltip    = '''\
+        name='shuffle_gerudo_card',
+        gui_text="Shuffle Gerudo Card",
+        gui_tooltip='''\
             Enabling this shuffles the Gerudo Card into the item pool.
 
             The Gerudo Card is required to enter the Gerudo Training Ground
             and prevents the guards from throwing you in jail.
         ''',
-        shared         = True,
-        gui_params     = {
+        shared=True,
+        gui_params={
             'randomize_key': 'randomize_settings',
         },
     ),
     Combobox(
-        name           = 'shuffle_song_items',
-        gui_text       = 'Shuffle Songs',
-        default        = 'song',
-        choices        = {
-            'song':    'Song Locations',
+        name='shuffle_song_items',
+        gui_text='Shuffle Songs',
+        default='song',
+        choices={
+            'song': 'Song Locations',
             'dungeon': 'Dungeon Rewards',
-            'any':     'Anywhere',
-            },
-        gui_tooltip    = '''\
+            'any': 'Anywhere',
+        },
+        gui_tooltip='''\
             This restricts where song items can appear.
 
             'Song Locations': Song will only appear at locations that
@@ -2909,73 +3035,73 @@ setting_infos = [
 
             'Anywhere': Songs can appear in any location.
         ''',
-        gui_params     = {
+        gui_params={
             'randomize_key': 'randomize_settings',
-            'distribution':  [
+            'distribution': [
                 ('song', 2),
                 ('dungeon', 1),
                 ('any', 1),
             ],
         },
-        shared         = True,
+        shared=True,
     ),
     Checkbutton(
-        name           = 'shuffle_cows',
-        gui_text       = 'Shuffle Cows',
-        gui_tooltip    = '''\
+        name='shuffle_cows',
+        gui_text='Shuffle Cows',
+        gui_tooltip='''\
             Enabling this will let cows give you items
             upon performing Epona's song in front of them.
             There are 9 cows, and an extra in MQ Jabu.
         ''',
-        default        = False,
-        shared         = True,
-        gui_params     = {
+        default=False,
+        shared=True,
+        gui_params={
             'randomize_key': 'randomize_settings',
         },
     ),
     Checkbutton(
-        name           = 'shuffle_beans',
-        gui_text       = 'Shuffle Magic Beans',
-        gui_tooltip    = '''\
+        name='shuffle_beans',
+        gui_text='Shuffle Magic Beans',
+        gui_tooltip='''\
             Enabling this adds a pack of 10 beans to the item pool
             and changes the Magic Bean Salesman to sell a random
             item once at the price of 60 Rupees.
         ''',
-        default        = False,
-        shared         = True,
-        gui_params     = {
+        default=False,
+        shared=True,
+        gui_params={
             'randomize_key': 'randomize_settings',
         },
     ),
     Checkbutton(
-        name           = 'shuffle_medigoron_carpet_salesman',
-        gui_text       = 'Shuffle Medigoron & Carpet Salesman',
-        gui_tooltip    = '''\
+        name='shuffle_medigoron_carpet_salesman',
+        gui_text='Shuffle Medigoron & Carpet Salesman',
+        gui_tooltip='''\
             Enabling this adds a Giant's Knife and a pack of Bombchus 
             to the item pool and changes both Medigoron and the 
             Haunted Wasteland Carpet Salesman to sell a random item 
             once at the price of 200 Rupees.
         ''',
-        default        = False,
-        shared         = True,
-        gui_params     = {
+        default=False,
+        shared=True,
+        gui_params={
             'randomize_key': 'randomize_settings',
         },
     ),
     Combobox(
-        name           = 'shuffle_interior_entrances',
-        gui_text       = 'Shuffle Interior Entrances',
-        default        = 'off',
-        choices        = {
-            'off':       'Off',
-            'simple':    'Simple Interiors',
-            'all':       'All Interiors',
+        name='shuffle_interior_entrances',
+        gui_text='Shuffle Interior Entrances',
+        default='off',
+        choices={
+            'off': 'Off',
+            'simple': 'Simple Interiors',
+            'all': 'All Interiors',
         },
-        gui_tooltip    = '''\
+        gui_tooltip='''\
             'Simple Interiors': 
             Shuffle the pool of interior entrances which contains most Houses 
             and all Great Fairies.
-    
+
             'All Interiors':
             Extended version of 'Simple Interiors' with some extra places:
             Windmill, Link's House, Temple of Time and Kakariko Potion Shop.
@@ -2983,10 +3109,10 @@ setting_infos = [
             When shuffling any interior entrances, trade quest timers are disabled 
             and items never revert, even when dying or loading a save.
         ''',
-        shared         = True,
-        gui_params     = {
+        shared=True,
+        gui_params={
             'randomize_key': 'randomize_settings',
-            'distribution':  [
+            'distribution': [
                 ('off', 2),
                 ('simple', 1),
                 ('all', 1),
@@ -2994,61 +3120,61 @@ setting_infos = [
         },
     ),
     Checkbutton(
-        name           = 'shuffle_grotto_entrances',
-        gui_text       = 'Shuffle Grotto Entrances',
-        gui_tooltip    = '''\
+        name='shuffle_grotto_entrances',
+        gui_text='Shuffle Grotto Entrances',
+        gui_tooltip='''\
             Shuffle the pool of grotto entrances, including all graves, 
             small Fairy Fountains and the Lost Woods Stage.
         ''',
-        default        = False,
-        shared         = True,
-        gui_params     = {
+        default=False,
+        shared=True,
+        gui_params={
             'randomize_key': 'randomize_settings',
         },
     ),
     Checkbutton(
-        name           = 'shuffle_grotto_location',
-        gui_text       = 'Shuffle Grotto Location',
-        gui_tooltip    = '''\
+        name='shuffle_grotto_location',
+        gui_text='Shuffle Grotto Location',
+        gui_tooltip='''\
             MOVE! THAT! HOLE!
         ''',
-        default        = False,
-        shared         = True,
-        gui_params     = {
+        default=False,
+        shared=True,
+        gui_params={
             'randomize_key': 'randomize_settings',
         },
     ),
     Combobox(
-        name           = 'shuffle_grotto_req',
-        gui_text       = 'Shuffle Grotto Requirements',
-        gui_tooltip    = '''\
+        name='shuffle_grotto_req',
+        gui_text='Shuffle Grotto Requirements',
+        gui_tooltip='''\
             Changes how grottos are opened.
-            
+
             'Open':
             All grottos are open
-            
+
             'Hit':
             All grottos are hidden and opened with Bombs or Hammer
-            
+
             'Storms':
             All grottos are hidden and opened by playing Song of Storms
-            
+
             'Random':
             Grotto opening requirements are completely random
-            
+
         ''',
-        default        = 'off',
-        choices        = {
-            'off':    'Off',
-            'open':   'All Open',
-            'hit':    'All Hit',
+        default='off',
+        choices={
+            'off': 'Off',
+            'open': 'All Open',
+            'hit': 'All Hit',
             'storms': 'All Song of Storms',
             'random': 'Random'
         },
-        shared         = True,
-        gui_params     = {
+        shared=True,
+        gui_params={
             'randomize_key': 'randomize_settings',
-            'distribution':  [
+            'distribution': [
                 ('off', 2),
                 ('open', 1),
                 ('hit', 1),
@@ -3058,9 +3184,9 @@ setting_infos = [
         },
     ),
     Checkbutton(
-        name           = 'shuffle_dungeon_entrances',
-        gui_text       = 'Shuffle Dungeon Entrances',
-        gui_tooltip    = '''\
+        name='shuffle_dungeon_entrances',
+        gui_text='Shuffle Dungeon Entrances',
+        gui_tooltip='''\
             Shuffle the pool of dungeon entrances, including Bottom 
             of the Well, Ice Cavern, and Gerudo Training Ground.
             However, Ganon's Castle and Thieves' Hideout are not shuffled.
@@ -3068,9 +3194,9 @@ setting_infos = [
             Additionally, the entrances of Deku Tree, Fire Temple and 
             Bottom of the Well are opened for both adult and child.
         ''',
-        default        = False,
-        shared         = True,
-        gui_params     = {
+        default=False,
+        shared=True,
+        gui_params={
             'randomize_key': 'randomize_settings',
         },
     ),
@@ -3093,6 +3219,10 @@ setting_infos = [
                Throw 'dorf himself into the pool
            ''',
         shared=True,
+        disable={
+            'boss': {'settings': ['decouple_entrances']},
+            'ganon': {'settings': ['decouple_entrances']}
+        },
         gui_params={
             'randomize_key': 'randomize_settings',
             'distribution': [
@@ -3103,9 +3233,9 @@ setting_infos = [
         },
     ),
     Checkbutton(
-        name           = 'shuffle_overworld_entrances',
-        gui_text       = 'Shuffle Overworld Entrances',
-        gui_tooltip    = '''\
+        name='shuffle_overworld_entrances',
+        gui_text='Shuffle Overworld Entrances',
+        gui_tooltip='''\
             Shuffle the pool of Overworld entrances, which corresponds
             to almost all loading zones between Overworld areas.
 
@@ -3118,52 +3248,52 @@ setting_infos = [
             entrances disables trade timers and trade items never revert, 
             even when dying or loading a save.
         ''',
-        default        = False,
-        shared         = True,
-        gui_params     = {
+        default=False,
+        shared=True,
+        gui_params={
             'randomize_key': 'randomize_settings',
         },
     ),
     Combobox(
-        name           = 'shuffle_ganon_castle_entrances',
-        gui_text       = 'Shuffle Ganon Castle Entrances',
-        gui_tooltip    = '''\
+        name='shuffle_ganon_castle_entrances',
+        gui_text='Shuffle Ganon Castle Entrances',
+        gui_tooltip='''\
             Add Ganon's Castle and Ganon's Tower to dungeon entrance pool
-            
+
             'Off':
             Do not shuffle Ganon's Castle or Ganon's Tower
-            
+
             'Separate Pools':
             Shuffle Ganon's Castle and Tower
             Consider Ganon's Castle to be a Dungeon and Ganon's Tower an Interior
-            
+
             'Same Pool':
             Shuffle Ganon's Castle and Tower
             Consider Ganon's Castle and Tower to both be a Dungeon
-            
+
             Note: These entrances only get shuffled when the corresponding ER (Dungeon/Interior) is enabled
         ''',
-        default        = 'off',
-        choices        = {
-            'off':       'Off',
-            'separate':    'Separate Pools',
-            'together':    'Same Pool'
+        default='off',
+        choices={
+            'off': 'Off',
+            'separate': 'Separate Pools',
+            'together': 'Same Pool'
         },
-        shared         = True,
-        gui_params     = {
+        shared=True,
+        gui_params={
             'randomize_key': 'randomize_settings',
         },
     ),
     Combobox(
-        name           = 'mix_entrance_pools',
-        gui_text       = 'Mix Entrance Pools',
-        default        = 'off',
-        choices        = {
-            'off':       'Off',
-            'indoor':    'Indoor Entrances',
-            'all':       'All Entrances',
+        name='mix_entrance_pools',
+        gui_text='Mix Entrance Pools',
+        default='off',
+        choices={
+            'off': 'Off',
+            'indoor': 'Indoor Entrances',
+            'all': 'All Entrances',
         },
-        gui_tooltip    = '''\
+        gui_tooltip='''\
             Shuffle entrances into a mixed pool instead of separate ones.
 
             'Indoor Entrances':
@@ -3175,10 +3305,10 @@ setting_infos = [
             Mixes all entrance pools, including both "Indoor" and
             Overworld entrances.
         ''',
-        shared         = True,
-        gui_params     = {
+        shared=True,
+        gui_params={
             'randomize_key': 'randomize_settings',
-            'distribution':  [
+            'distribution': [
                 ('off', 2),
                 ('indoor', 1),
                 ('all', 1),
@@ -3186,9 +3316,9 @@ setting_infos = [
         },
     ),
     Checkbutton(
-        name           = 'decouple_entrances',
-        gui_text       = 'Decouple Entrances',
-        gui_tooltip    = '''\
+        name='decouple_entrances',
+        gui_text='Decouple Entrances',
+        gui_tooltip='''\
             Decouple entrances when shuffling them.
             This means you are no longer guaranteed to end up back where you
             came from when you go back through an entrance.
@@ -3196,65 +3326,65 @@ setting_infos = [
             This also adds the one-way entrance from Gerudo Valley to Lake Hylia
             in the pool of overworld entrances when they are shuffled.
         ''',
-        default        = False,
-        shared         = True,
-        gui_params     = {
+        default=False,
+        shared=True,
+        gui_params={
             'randomize_key': 'randomize_settings',
         },
     ),
     Checkbutton(
-        name           = 'owl_drops',
-        gui_text       = 'Randomize Owl Drops',
-        gui_tooltip    = '''\
+        name='owl_drops',
+        gui_text='Randomize Owl Drops',
+        gui_tooltip='''\
             Randomize where Kaepora Gaebora (the Owl) drops you at 
             when you talk to him at Lake Hylia or at the top of 
             Death Mountain Trail.
         ''',
-        default        = False,
-        shared         = True,
-        gui_params     = {
+        default=False,
+        shared=True,
+        gui_params={
             'randomize_key': 'randomize_settings',
         },
     ),
     Checkbutton(
-        name           = 'warp_songs',
-        gui_text       = 'Randomize Warp Song Destinations',
-        gui_tooltip    = '''\
+        name='warp_songs',
+        gui_text='Randomize Warp Song Destinations',
+        gui_tooltip='''\
             Randomize where each of the 6 warp songs leads to.
         ''',
-        default        = False,
-        shared         = True,
-        gui_params     = {
+        default=False,
+        shared=True,
+        gui_params={
             'randomize_key': 'randomize_settings',
         },
     ),
     Checkbutton(
-        name           = 'spawn_positions',
-        gui_text       = 'Randomize Overworld Spawns',
-        gui_tooltip    = '''\
+        name='spawn_positions',
+        gui_text='Randomize Overworld Spawns',
+        gui_tooltip='''\
             Randomize where you start as Child or Adult when loading
             a save in the Overworld. This means you may not necessarily
             spawn inside Link's House or Temple of Time.
 
             This stays consistent after saving and loading the game again.
         ''',
-        default        = False,
-        shared         = True,
-        gui_params     = {
+        default=False,
+        shared=True,
+        gui_params={
             'randomize_key': 'randomize_settings',
         },
     ),
     Combobox(
-        name           = 'shuffle_scrubs',
-        gui_text       = 'Scrub Shuffle',
-        default        = 'off',
-        choices        = {
-            'off':     'Off',
-            'low':     'On (Affordable)',
+        name='shuffle_scrubs',
+        gui_text='Scrub Shuffle',
+        default='off',
+        choices={
+            'off': 'Off',
+            'low': 'On (Affordable)',
             'regular': 'On (Expensive)',
-            'random':  'On (Random Prices)',
+            'random': 'On (Random Prices)',
         },
-        gui_tooltip    = '''\
+        gui_tooltip='''\
             'Off': Only the 3 Scrubs that give one-time
             items in the vanilla game (PoH, Deku Nut
             capacity, and Deku Stick capacity) will
@@ -3271,77 +3401,116 @@ setting_infos = [
             between 0-99 rupees. This will on average
             be very, very expensive overall.
         ''',
-        shared         = True,
-        gui_params     = {
+        shared=True,
+        gui_params={
             'randomize_key': 'randomize_settings',
-            'distribution':  [
+            'distribution': [
                 ('off', 1),
                 ('low', 1),
             ],
         },
     ),
     Combobox(
-        name           = 'shopsanity',
-        gui_text       = 'Shopsanity',
-        default        = 'off',
-        choices        = {
-            'off':    'Off',
-            '0':      '0 Items Per Shop',
-            '1':      '1 Item Per Shop',
-            '2':      '2 Items Per Shop',
-            '3':      '3 Items Per Shop',
-            '4':      '4 Items Per Shop',
+        name='shopsanity',
+        gui_text='Shopsanity',
+        default='off',
+        choices={
+            'off': 'Off',
+            '0': '0 Items Per Shop',
+            '1': '1 Item Per Shop',
+            '2': '2 Items Per Shop',
+            '3': '3 Items Per Shop',
+            '4': '4 Items Per Shop',
             'random': 'Random # of Items Per Shop',
         },
-        gui_tooltip    = '''\
+        disable={
+            'off': {'settings': ['shopsanity_prices']},
+        },
+        gui_tooltip='''\
             Randomizes Shop contents.
-            
+
             'X Items Per Shop': Each shop will have the
             specified number of items randomized and they
             will always appear on the left side
             (identified by the Special Deal! text).
             Remaining items will be shuffled between shops.
-            
+
             'Random # of Items Per Shop': Each shop will
             have 0 to 4 Special Deals.
-            
+
             The randomized items have no requirements
             except money, while the remaining items retain
             normal requirements. Tunics that aren't a
             Special Deal! will still require you to be an
             adult to purchase for example.
-            
+
             Bombchu Special Deals will unlock the Bombchu
             slot in your inventory and allow purchase of
             Bombchu Refills if "Bombchus are considered in
             logic" is enabled. Otherwise, the Bomb Bag is
             required to purchase Bombchu Refills.
         ''',
-        shared         = True,
-        gui_params     = {
+        shared=True,
+        gui_params={
             'randomize_key': 'randomize_settings',
-            'distribution':  [
-                ('off',    6),
-                ('0',      1),
-                ('1',      1),
-                ('2',      1),
-                ('3',      1),
-                ('4',      1),
+            'distribution': [
+                ('off', 6),
+                ('0', 1),
+                ('1', 1),
+                ('2', 1),
+                ('3', 1),
+                ('4', 1),
                 ('random', 1),
             ],
         },
     ),
     Combobox(
-        name           = 'tokensanity',
-        gui_text       = 'Tokensanity',
-        default        = 'off',
-        choices        = {
-            'off':       'Off',
-            'dungeons':  'Dungeons Only',
+        name='shopsanity_prices',
+        gui_text='Shopsanity Prices',
+        default='random',
+        choices={
+            'random': 'Random',
+            'random_starting': 'Starting Wallet',
+            'random_adult': 'Adult\'s Wallet',
+            'random_giant': 'Giant\'s Wallet',
+            'random_tycoon': 'Tycoon\'s Wallet',
+            'affordable': 'Affordable',
+        },
+        disable={
+        },
+        gui_tooltip='''\
+            Controls the randomization of prices for shopsanity items.
+            For more control, utilize the plandomizer.
+
+            'Random': The default randomization. Shop prices for
+            shopsanity items will range between 0 to 300 rupees,
+            with a bias towards values slightly below the middle of the
+            range, in multiples of 5.
+
+            'X Wallet': Shop prices for shopsanity items will range
+            between 0 and the specified wallet's maximum capacity,
+            in multiples of 5.
+
+            'Affordable': Shop prices for shopsanity items will be
+            fixed to 10 rupees.
+        ''',
+        disabled_default='random',
+        shared=True,
+        gui_params={
+            "hide_when_disabled": True,
+        },
+    ),
+    Combobox(
+        name='tokensanity',
+        gui_text='Tokensanity',
+        default='off',
+        choices={
+            'off': 'Off',
+            'dungeons': 'Dungeons Only',
             'overworld': 'Overworld Only',
-            'all':       'All Tokens',
-            },
-        gui_tooltip    = '''\
+            'all': 'All Tokens',
+        },
+        gui_tooltip='''\
             Token reward from Gold Skulltulas are
             shuffled into the pool.
 
@@ -3358,25 +3527,25 @@ setting_infos = [
             'All Tokens': Effectively adds 100
             new locations for items to appear.
         ''',
-        shared         = True,
-        gui_params     = {
+        shared=True,
+        gui_params={
             'randomize_key': 'randomize_settings',
         },
     ),
     Combobox(
-        name           = 'shuffle_mapcompass',
-        gui_text       = 'Maps & Compasses',
-        default        = 'dungeon',
-        choices        = {
-            'remove':      'Remove',
-            'startwith':   'Start With',
-            'vanilla':     'Vanilla Locations',
-            'dungeon':     'Own Dungeon',
-            'overworld':   'Overworld Only',
+        name='shuffle_mapcompass',
+        gui_text='Maps & Compasses',
+        default='dungeon',
+        choices={
+            'remove': 'Remove',
+            'startwith': 'Start With',
+            'vanilla': 'Vanilla Locations',
+            'dungeon': 'Own Dungeon',
+            'overworld': 'Overworld Only',
             'any_dungeon': 'Any Dungeon',
-            'keysanity':   'Anywhere',
+            'keysanity': 'Anywhere',
         },
-        gui_tooltip    = '''\
+        gui_tooltip='''\
             'Remove': Maps and Compasses are removed.
             This will add a small amount of money and
             refill items to the pool.
@@ -3390,7 +3559,7 @@ setting_infos = [
 
             'Own Dungeon': Maps and Compasses can only appear
             in their respective dungeon.
-            
+
             'Overworld Only': Maps and Compasses can only appear
             outside of dungeons.
 
@@ -3405,24 +3574,24 @@ setting_infos = [
             This makes dungeons more profitable, especially
             Ice Cavern, Water Temple, and Jabu Jabu's Belly.
         ''',
-        shared         = True,
-        gui_params     = {
+        shared=True,
+        gui_params={
             'randomize_key': 'randomize_settings',
         },
     ),
     Combobox(
-        name           = 'shuffle_smallkeys',
-        gui_text       = 'Small Keys',
-        default        = 'dungeon',
-        choices        = {
-            'remove':      'Remove (Keysy)',
-            'vanilla':     'Vanilla Locations',
-            'dungeon':     'Own Dungeon',
-            'overworld':   'Overworld Only',
+        name='shuffle_smallkeys',
+        gui_text='Small Keys',
+        default='dungeon',
+        choices={
+            'remove': 'Remove (Keysy)',
+            'vanilla': 'Vanilla Locations',
+            'dungeon': 'Own Dungeon',
+            'overworld': 'Overworld Only',
             'any_dungeon': 'Any Dungeon',
-            'keysanity':   'Anywhere (Keysanity)',
+            'keysanity': 'Anywhere (Keysanity)',
         },
-        gui_tooltip    = '''\
+        gui_tooltip='''\
             'Remove': Small Keys are removed. All locked
             doors in dungeons will be unlocked. An easier
             mode.
@@ -3430,18 +3599,20 @@ setting_infos = [
             'Vanilla': Small Keys will appear in their 
             vanilla locations. You start with 3 keys in 
             Spirit Temple MQ because the vanilla key 
-            layout is not beatable in logic.
+            layout is not beatable in logic. You start with
+            2 keys in Vanilla/MQ Shadow Temple with its
+            dungeon shortcut enabled to prevent softlocks.
 
             'Own Dungeon': Small Keys can only appear in their
             respective dungeon. If Fire Temple is not a
             Master Quest dungeon, the door to the Boss Key
             chest will be unlocked.
-            
+
             'Overworld Only': Small Keys can only appear outside
             of dungeons. You may need to enter a dungeon multiple
             times to gain items to access the overworld locations
             with the keys required to finish a dungeon.
-            
+
             'Any Dungeon': Small Keys can only appear inside
             of any dungeon, but won't necessarily be in the
             dungeon that the key is for. A difficult mode since
@@ -3457,57 +3628,57 @@ setting_infos = [
             'Small Keys: Dungeon' + 'Boss Keys: Anywhere'
             for a milder Keysanity experience.
         ''',
-        disable        = {
-            'any_dungeon': {'settings': ['one_item_per_dungeon']},
+        disable={
+            'any_dungeon': {'settings': ['one_item_per_dungeon']}
         },
-        shared         = True,
-        gui_params     = {
+        shared=True,
+        gui_params={
             'randomize_key': 'randomize_settings',
         },
     ),
     Combobox(
-        name           = 'shuffle_hideoutkeys',
-        gui_text       = 'Thieves\' Hideout Keys',
-        default        = 'vanilla',
-        disabled_default = 'remove',
-        choices        = {
-            'vanilla':     'Vanilla Locations',
-            'overworld':   'Overworld Only',
+        name='shuffle_hideoutkeys',
+        gui_text='Thieves\' Hideout Keys',
+        default='vanilla',
+        disabled_default='remove',
+        choices={
+            'vanilla': 'Vanilla Locations',
+            'overworld': 'Overworld Only',
             'any_dungeon': 'Any Dungeon',
-            'keysanity':   'Anywhere (Keysanity)',
+            'keysanity': 'Anywhere (Keysanity)',
         },
-        gui_tooltip    = '''\
+        gui_tooltip='''\
             'Vanilla': Thieves' Hideout Keys will appear in their
             vanilla location, dropping from fighting Gerudo guards
             that attack when trying to free the jailed carpenters.
-            
+
             'Overworld Only': Thieves' Hideout Keys can only appear
             outside of dungeons.
-            
+
             'Any Dungeon': Thieves' Hideout Keys can only appear
             inside of dungeons.
 
             'Anywhere': Thieves' Hideout Keys can appear anywhere
             in the world.
         ''',
-        shared         = True,
-        gui_params     = {
+        shared=True,
+        gui_params={
             'randomize_key': 'randomize_settings',
         },
     ),
     Combobox(
-        name           = 'shuffle_bosskeys',
-        gui_text       = 'Boss Keys',
-        default        = 'dungeon',
-        choices        = {
-            'remove':      'Remove (Keysy)',
-            'vanilla':     'Vanilla Locations',
-            'dungeon':     'Own Dungeon',
-            'overworld':   'Overworld Only',
+        name='shuffle_bosskeys',
+        gui_text='Boss Keys',
+        default='dungeon',
+        choices={
+            'remove': 'Remove (Keysy)',
+            'vanilla': 'Vanilla Locations',
+            'dungeon': 'Own Dungeon',
+            'overworld': 'Overworld Only',
             'any_dungeon': 'Any Dungeon',
-            'keysanity':   'Anywhere (Keysanity)',
+            'keysanity': 'Anywhere (Keysanity)',
         },
-        gui_tooltip    = '''\
+        gui_tooltip='''\
             'Remove': Boss Keys are removed. All locked
             doors in dungeons will be unlocked. An easier
             mode.
@@ -3517,12 +3688,12 @@ setting_infos = [
 
             'Own Dungeon': Boss Keys can only appear in their
             respective dungeon.
-            
+
             'Overworld Only': Boss Keys can only appear outside
             of dungeons. You may need to enter a dungeon without
             the boss key to get items required to find the key
             in the overworld.
-            
+
             'Any Dungeon': Boss Keys can only appear inside
             of any dungeon, but won't necessarily be in the
             dungeon that the key is for. A difficult mode since
@@ -3538,30 +3709,30 @@ setting_infos = [
             'Small Keys: Dungeon' + 'Boss Keys: Anywhere'
             for a milder Keysanity experience.
         ''',
-        shared         = True,
-        gui_params     = {
+        shared=True,
+        gui_params={
             'randomize_key': 'randomize_settings',
         },
     ),
     Combobox(
-        name           = 'shuffle_ganon_bosskey',
-        gui_text       = 'Ganon\'s Boss Key',
-        default        = 'dungeon',
-        disabled_default = 'triforce',
-        choices        = {
-            'remove':          "Remove (Keysy)",
-            'vanilla':         "Vanilla Location",
-            'dungeon':         "Own Dungeon",
-            'overworld':       "Overworld Only",
-            'any_dungeon':     "Any Dungeon",
-            'keysanity':       "Anywhere (Keysanity)",
-            'on_lacs':         "Light Arrow Cutscene",
-            'stones':          "Stones",
-            'medallions':      "Medallions",
-            'dungeons':        "Dungeons",
-            'tokens':          "Tokens",
+        name='shuffle_ganon_bosskey',
+        gui_text='Ganon\'s Boss Key',
+        default='dungeon',
+        disabled_default='triforce',
+        choices={
+            'remove': "Remove (Keysy)",
+            'vanilla': "Vanilla Location",
+            'dungeon': "Own Dungeon",
+            'overworld': "Overworld Only",
+            'any_dungeon': "Any Dungeon",
+            'keysanity': "Anywhere (Keysanity)",
+            'on_lacs': "Light Arrow Cutscene",
+            'stones': "Stones",
+            'medallions': "Medallions",
+            'dungeons': "Dungeons",
+            'tokens': "Tokens",
         },
-        gui_tooltip    = '''\
+        gui_tooltip='''\
             'Remove': Ganon's Castle Boss Key is removed
             and the boss door in Ganon's Tower starts unlocked.
 
@@ -3570,10 +3741,10 @@ setting_infos = [
 
             'Vanilla': Ganon's Castle Boss Key will appear in 
             the vanilla location.
-            
+
             'Overworld Only': Ganon's Castle Boss Key can only appear
             outside of dungeons.
-            
+
             'Any Dungeon': Ganon's Castle Boss Key can only appear
             inside of a dungeon, but not necessarily Ganon's Castle.
 
@@ -3582,216 +3753,216 @@ setting_infos = [
 
             'Light Arrow Cutscene': Ganon's Castle Boss Key will
             appear on the Light Arrow Cutscene.
-            
+
             'Stones': Ganon's Castle Boss Key will be awarded
             when reaching the target number of Spiritual Stones.
-            
+
             'Medallions': Ganon's Castle Boss Key will be awarded
             when reaching the target number of Medallions.
-                        
+
             'Dungeons': Ganon's Castle Boss Key will be awarded
             when reaching the target number of Dungeon Rewards.
-            
+
             'Tokens': Ganon's Castle Boss Key will be awarded
             when reaching the target number of Gold Skulltula Tokens.
         ''',
-        shared         = True,
-        disable        = {
-            '!stones':  {'settings': ['ganon_bosskey_stones']},
-            '!medallions':  {'settings': ['ganon_bosskey_medallions']},
-            '!dungeons':  {'settings': ['ganon_bosskey_rewards']},
-            '!tokens':  {'settings': ['ganon_bosskey_tokens']},
+        shared=True,
+        disable={
+            '!stones': {'settings': ['ganon_bosskey_stones']},
+            '!medallions': {'settings': ['ganon_bosskey_medallions']},
+            '!dungeons': {'settings': ['ganon_bosskey_rewards']},
+            '!tokens': {'settings': ['ganon_bosskey_tokens']},
         },
-        gui_params     = {
+        gui_params={
             'randomize_key': 'randomize_settings',
             'distribution': [
-                ('remove',          4),
-                ('dungeon',         2),
-                ('vanilla',         2),
-                ('keysanity',       4),
-                ('on_lacs',         1)
+                ('remove', 4),
+                ('dungeon', 2),
+                ('vanilla', 2),
+                ('keysanity', 4),
+                ('on_lacs', 1)
             ],
         },
     ),
     Scale(
-        name           = 'ganon_bosskey_medallions',
-        gui_text       = "Medallions Required for Ganon's BK",
-        default        = 6,
-        min            = 1,
-        max            = 6,
-        gui_tooltip    = '''\
+        name='ganon_bosskey_medallions',
+        gui_text="Medallions Required for Ganon's BK",
+        default=6,
+        min=1,
+        max=6,
+        gui_tooltip='''\
             Select the amount of Medallions required to receive Ganon's Castle Boss Key.
         ''',
-        shared         = True,
-        disabled_default = 0,
-        gui_params     = {
+        shared=True,
+        disabled_default=0,
+        gui_params={
             "randomize_key": "randomize_settings",
             "hide_when_disabled": True,
             'distribution': [(6, 1)],
         },
     ),
     Scale(
-        name           = 'ganon_bosskey_stones',
-        gui_text       = "Spiritual Stones Required for Ganon's BK",
-        default        = 3,
-        min            = 1,
-        max            = 3,
-        gui_tooltip    = '''\
+        name='ganon_bosskey_stones',
+        gui_text="Spiritual Stones Required for Ganon's BK",
+        default=3,
+        min=1,
+        max=3,
+        gui_tooltip='''\
             Select the amount of Spiritual Stones required to receive Ganon's Castle Boss Key.
         ''',
-        shared         = True,
-        disabled_default = 0,
-        gui_params     = {
+        shared=True,
+        disabled_default=0,
+        gui_params={
             "randomize_key": "randomize_settings",
             "hide_when_disabled": True,
             'distribution': [(3, 1)],
         },
     ),
     Scale(
-        name           = 'ganon_bosskey_rewards',
-        gui_text       = "Dungeon Rewards Required for Ganon's BK",
-        default        = 9,
-        min            = 1,
-        max            = 9,
-        gui_tooltip    = '''\
+        name='ganon_bosskey_rewards',
+        gui_text="Dungeon Rewards Required for Ganon's BK",
+        default=9,
+        min=1,
+        max=9,
+        gui_tooltip='''\
             Select the amount of Dungeon Rewards (Medallions and Spiritual Stones)
             required to receive Ganon's Castle Boss Key.
         ''',
-        shared         = True,
-        disabled_default = 0,
-        gui_params     = {
+        shared=True,
+        disabled_default=0,
+        gui_params={
             "randomize_key": "randomize_settings",
             "hide_when_disabled": True,
             'distribution': [(9, 1)],
         },
     ),
     Scale(
-        name           = 'ganon_bosskey_tokens',
-        gui_text       = "Gold Skulltula Tokens Required for Ganon's BK",
-        default        = 100,
-        min            = 1,
-        max            = 100,
-        gui_tooltip    = '''\
+        name='ganon_bosskey_tokens',
+        gui_text="Gold Skulltula Tokens Required for Ganon's BK",
+        default=100,
+        min=1,
+        max=100,
+        gui_tooltip='''\
             Select the amount of Gold Skulltula Tokens
             required to receive Ganon's Castle Boss Key.
         ''',
-        shared         = True,
-        disabled_default = 0,
-        gui_params     = {
+        shared=True,
+        disabled_default=0,
+        gui_params={
             "hide_when_disabled": True,
         },
     ),
     Combobox(
-        name           = 'lacs_condition',
-        gui_text       = 'LACS Condition',
-        default        = 'vanilla',
-        choices        = {
-            'vanilla':    "Vanilla",
-            'stones':     "Stones",
+        name='lacs_condition',
+        gui_text='LACS Condition',
+        default='vanilla',
+        choices={
+            'vanilla': "Vanilla",
+            'stones': "Stones",
             'medallions': "Medallions",
-            'dungeons':   "Dungeons",
-            'tokens':     "Tokens",
+            'dungeons': "Dungeons",
+            'tokens': "Tokens",
         },
-        gui_tooltip    = '''\
+        gui_tooltip='''\
             Sets the condition for the Light Arrow Cutscene
             check to give you the item from Zelda.
-            
+
             'Vanilla': Shadow and Spirit Medallions.
             'Stones': A configurable amount of Spiritual Stones.
             'Medallions': A configurable amount of Medallions.
             'Dungeons': A configurable amount of Dungeon Rewards.
             'Tokens': A configurable amount of Gold Skulltula Tokens.
         ''',
-        shared         = True,
-        disable        = {
-            '!stones':  {'settings': ['lacs_stones']},
-            '!medallions':  {'settings': ['lacs_medallions']},
-            '!dungeons':  {'settings': ['lacs_rewards']},
-            '!tokens':  {'settings': ['lacs_tokens']},
+        shared=True,
+        disable={
+            '!stones': {'settings': ['lacs_stones']},
+            '!medallions': {'settings': ['lacs_medallions']},
+            '!dungeons': {'settings': ['lacs_rewards']},
+            '!tokens': {'settings': ['lacs_tokens']},
         },
-        gui_params     = {
+        gui_params={
             'optional': True,
             'distribution': [
-                ('vanilla',    1),
+                ('vanilla', 1),
                 ('medallions', 1),
-                ('stones',     1),
-                ('dungeons',   1),
+                ('stones', 1),
+                ('dungeons', 1),
             ],
         },
     ),
     Scale(
-        name           = 'lacs_medallions',
-        gui_text       = "Medallions Required for LACS",
-        default        = 6,
-        min            = 1,
-        max            = 6,
-        gui_tooltip    = '''\
+        name='lacs_medallions',
+        gui_text="Medallions Required for LACS",
+        default=6,
+        min=1,
+        max=6,
+        gui_tooltip='''\
             Select the amount of Medallions required to trigger the Light Arrow Cutscene.
         ''',
-        shared         = True,
-        disabled_default = 0,
-        gui_params     = {
+        shared=True,
+        disabled_default=0,
+        gui_params={
             'optional': True,
             "hide_when_disabled": True,
             'distribution': [(6, 1)],
         },
     ),
     Scale(
-        name           = 'lacs_stones',
-        gui_text       = "Spiritual Stones Required for LACS",
-        default        = 3,
-        min            = 1,
-        max            = 3,
-        gui_tooltip    = '''\
+        name='lacs_stones',
+        gui_text="Spiritual Stones Required for LACS",
+        default=3,
+        min=1,
+        max=3,
+        gui_tooltip='''\
             Select the amount of Spiritual Stones required to trigger the Light Arrow Cutscene.
         ''',
-        shared         = True,
-        disabled_default = 0,
-        gui_params     = {
+        shared=True,
+        disabled_default=0,
+        gui_params={
             'optional': True,
             "hide_when_disabled": True,
             'distribution': [(3, 1)],
         },
     ),
     Scale(
-        name           = 'lacs_rewards',
-        gui_text       = "Dungeon Rewards Required for LACS",
-        default        = 9,
-        min            = 1,
-        max            = 9,
-        gui_tooltip    = '''\
+        name='lacs_rewards',
+        gui_text="Dungeon Rewards Required for LACS",
+        default=9,
+        min=1,
+        max=9,
+        gui_tooltip='''\
             Select the amount of Dungeon Rewards (Medallions and Spiritual Stones)
             required to trigger the Light Arrow Cutscene.
         ''',
-        shared         = True,
-        disabled_default = 0,
-        gui_params     = {
+        shared=True,
+        disabled_default=0,
+        gui_params={
             'optional': True,
             "hide_when_disabled": True,
             'distribution': [(9, 1)],
         },
     ),
     Scale(
-        name           = 'lacs_tokens',
-        gui_text       = "Gold Skulltula Tokens Required for LACS",
-        default        = 100,
-        min            = 1,
-        max            = 100,
-        gui_tooltip    = '''\
+        name='lacs_tokens',
+        gui_text="Gold Skulltula Tokens Required for LACS",
+        default=100,
+        min=1,
+        max=100,
+        gui_tooltip='''\
             Select the amount of Gold Skulltula Tokens
             required to trigger the Light Arrow Cutscene.
         ''',
-        shared         = True,
-        disabled_default = 0,
-        gui_params     = {
+        shared=True,
+        disabled_default=0,
+        gui_params={
             'optional': True,
             "hide_when_disabled": True,
         },
     ),
     Checkbutton(
-        name           = 'enhance_map_compass',
-        gui_text       = 'Maps and Compasses Give Information',
-        gui_tooltip    = '''\
+        name='enhance_map_compass',
+        gui_text='Maps and Compasses Give Information',
+        gui_tooltip='''\
             Gives the Map and Compass extra functionality.
             Map will tell if a dungeon is vanilla or Master Quest.
             Compass will tell what medallion or stone is within.
@@ -3804,31 +3975,31 @@ setting_infos = [
             'Maps/Compasses: Start With': The dungeon information
             is available immediately from the dungeon menu.
         ''',
-        default        = False,
-        shared         = True,
-        gui_params     = {
+        default=False,
+        shared=True,
+        gui_params={
             'randomize_key': 'randomize_settings',
         },
     ),
     Checkbutton(
-        name           = 'mq_dungeons_random',
-        gui_text       = 'Random Number of MQ Dungeons',
-        gui_tooltip    = '''\
+        name='mq_dungeons_random',
+        gui_text='Random Number of MQ Dungeons',
+        gui_tooltip='''\
             If set, a random number of dungeons
             will have Master Quest designs.
         ''',
-        shared         = True,
-        disable        = {
-            True : {'settings' : ['mq_dungeons']}
+        shared=True,
+        disable={
+            True: {'settings': ['mq_dungeons']}
         },
     ),
     Scale(
-        name           = 'mq_dungeons',
-        gui_text       = "MQ Dungeon Count",
-        default        = 0,
-        min            = 0,
-        max            = 12,
-        gui_tooltip    = '''\
+        name='mq_dungeons',
+        gui_text="MQ Dungeon Count",
+        default=0,
+        min=0,
+        max=12,
+        gui_tooltip='''\
             Specify the number of Master Quest
             dungeons to appear in the game.
 
@@ -3841,20 +4012,20 @@ setting_infos = [
             12: All dungeons will have
             Master Quest redesigns.
         ''',
-        shared         = True,
+        shared=True,
     ),
     Setting_Info(
-        name           = 'disabled_locations',
-        type           = list,
-        gui_text       = "Exclude Locations",
-        gui_type       = "SearchBox",
-        shared         = True,
-        choices        = [location.name for location in LocationIterator(lambda loc: loc.filter_tags is not None)],
-        default        = [],
-        gui_tooltip    = '''
+        name='disabled_locations',
+        type=list,
+        gui_text="Exclude Locations",
+        gui_type="SearchBox",
+        shared=True,
+        choices=[location.name for location in LocationIterator(lambda loc: loc.filter_tags is not None)],
+        default=[],
+        gui_tooltip='''
             Locations in the left column may contain items
             required to complete the game. 
-            
+
             Locations in the right column will never have 
             items that are required to complete the game, 
             and will only contain junk.
@@ -3864,21 +4035,22 @@ setting_infos = [
             then it will be ignored. So make sure to
             disable both versions if that is the intent.
         ''',
-        gui_params     = {
-            'filterdata': {location.name: location.filter_tags for location in LocationIterator(lambda loc: loc.filter_tags is not None)},
+        gui_params={
+            'filterdata': {location.name: location.filter_tags for location in
+                           LocationIterator(lambda loc: loc.filter_tags is not None)},
         }
     ),
     Setting_Info(
-        name           = 'allowed_tricks',
-        type           = list,
-        gui_text       = "Enable Tricks",
-        gui_type       = "SearchBox",
-        shared         = True,
-        choices        = {
+        name='allowed_tricks',
+        type=list,
+        gui_text="Enable Tricks",
+        gui_type="SearchBox",
+        shared=True,
+        choices={
             val['name']: gui_text for gui_text, val in logic_tricks.items()
         },
-        default        = [],
-        gui_params     = {
+        default=[],
+        gui_params={
             'choice_tooltip': {choice['name']: choice['tooltip'] for choice in logic_tricks.values()},
             'filterdata': {val['name']: val['tags'] for _, val in logic_tricks.items()},
             "hide_when_disabled": True,
@@ -3886,180 +4058,180 @@ setting_infos = [
         gui_tooltip='''
             Tricks moved to the right column are in-logic
             and MAY be required to complete the game.
-            
+
             Tricks in the left column are NEVER required.
-            
+
             Tricks are only relevant for Glitchless logic.
         '''
     ),
     Setting_Info(
-        name           = 'tricks_list_msg',
-        type           = str,
-        gui_text       = "Your current logic setting does not support the enabling of tricks.",
-        gui_type       = "Textbox",
-        shared         = False,
-        gui_params     = {
+        name='tricks_list_msg',
+        type=str,
+        gui_text="Your current logic setting does not support the enabling of tricks.",
+        gui_type="Textbox",
+        shared=False,
+        gui_params={
             "hide_when_disabled": True
         },
-        choices        = {},
+        choices={},
     ),
     Combobox(
-        name           = 'logic_earliest_adult_trade',
-        gui_text       = 'Adult Trade Sequence Earliest Item',
-        default        = 'pocket_egg',
-        choices        = {
-            'pocket_egg':   'Pocket Egg',
+        name='logic_earliest_adult_trade',
+        gui_text='Adult Trade Sequence Earliest Item',
+        default='pocket_egg',
+        choices={
+            'pocket_egg': 'Pocket Egg',
             'pocket_cucco': 'Pocket Cucco',
-            'cojiro':       'Cojiro',
+            'cojiro': 'Cojiro',
             'odd_mushroom': 'Odd Mushroom',
             'poachers_saw': "Poacher's Saw",
             'broken_sword': 'Broken Sword',
             'prescription': 'Prescription',
             'eyeball_frog': 'Eyeball Frog',
-            'eyedrops':     'Eyedrops',
-            'claim_check':  'Claim Check',
+            'eyedrops': 'Eyedrops',
+            'claim_check': 'Claim Check',
         },
-        gui_tooltip    = '''\
+        gui_tooltip='''\
             Select the earliest item that can appear in the adult trade sequence.
         ''',
-        shared         = True,
+        shared=True,
     ),
     Combobox(
-        name           = 'logic_latest_adult_trade',
-        gui_text       = 'Adult Trade Sequence Latest Item',
-        default        = 'claim_check',
-        choices        = {
-            'pocket_egg':   'Pocket Egg',
+        name='logic_latest_adult_trade',
+        gui_text='Adult Trade Sequence Latest Item',
+        default='claim_check',
+        choices={
+            'pocket_egg': 'Pocket Egg',
             'pocket_cucco': 'Pocket Cucco',
-            'cojiro':       'Cojiro',
+            'cojiro': 'Cojiro',
             'odd_mushroom': 'Odd Mushroom',
             'poachers_saw': "Poacher's Saw",
             'broken_sword': 'Broken Sword',
             'prescription': 'Prescription',
             'eyeball_frog': 'Eyeball Frog',
-            'eyedrops':     'Eyedrops',
-            'claim_check':  'Claim Check',
+            'eyedrops': 'Eyedrops',
+            'claim_check': 'Claim Check',
         },
-        gui_tooltip    = '''\
+        gui_tooltip='''\
             Select the latest item that can appear in the adult trade sequence.
         ''',
-        shared         = True,
+        shared=True,
     ),
     Setting_Info(
-        name           = 'starting_equipment',
-        type           = list,
-        gui_text       = "Starting Equipment",
-        gui_type       = "SearchBox",
-        shared         = True,
-        choices        = {
+        name='starting_equipment',
+        type=list,
+        gui_text="Starting Equipment",
+        gui_type="SearchBox",
+        shared=True,
+        choices={
             key: value.guitext for key, value in StartingItems.equipment.items()
         },
-        default        = [],
-        gui_tooltip    = '''\
+        default=[],
+        gui_tooltip='''\
             Begin the game with the selected equipment.
         ''',
     ),
     Setting_Info(
-        name           = 'starting_items',
-        type           = list,
-        gui_text       = "Starting Items",
-        gui_type       = "SearchBox",
-        shared         = True,
-        choices        = {
+        name='starting_items',
+        type=list,
+        gui_text="Starting Items",
+        gui_type="SearchBox",
+        shared=True,
+        choices={
             key: value.guitext for key, value in StartingItems.inventory.items()
         },
-        default        = [],
-        gui_tooltip    = '''\
+        default=[],
+        gui_tooltip='''\
             Begin the game with the selected inventory items.
             Selecting multiple progressive items will give
             the appropriate number of upgrades.
-            
+
             If playing with Open Zora's Fountain, the Ruto's Letter
             is converted to a regular Bottle.
         ''',
     ),
     Setting_Info(
-        name           = 'starting_songs',
-        type           = list,
-        gui_text       = "Starting Songs",
-        gui_type       = "SearchBox",
-        shared         = True,
-        choices        = {
+        name='starting_songs',
+        type=list,
+        gui_text="Starting Songs",
+        gui_type="SearchBox",
+        shared=True,
+        choices={
             key: value.guitext for key, value in StartingItems.songs.items()
         },
-        default        = [],
-        gui_tooltip    = '''\
+        default=[],
+        gui_tooltip='''\
             Begin the game with the selected songs already learnt.
         ''',
     ),
     Checkbutton(
-        name           = 'ocarina_songs',
-        gui_text       = 'Randomize Ocarina Song Notes',
-        gui_tooltip    = '''\
+        name='ocarina_songs',
+        gui_text='Randomize Ocarina Song Notes',
+        gui_tooltip='''\
                          Will need to memorize a new set of songs.
                          Can be silly, but difficult. Songs are
                          generally sensible, and warp songs are
                          typically more difficult.
                          ''',
-        shared         = True,
+        shared=True,
     ),
     Combobox(
-        name           = 'correct_chest_appearances',
-        gui_text       = 'Chest Appearance Matches Contents',
-        default        = 'off',
-        choices        = {
+        name='correct_chest_appearances',
+        gui_text='Chest Appearance Matches Contents',
+        default='off',
+        choices={
             'off': 'Off',
-            'textures': 'Textures',
-            'sizes': 'Size and Textures'
+            'textures': 'Texture',
+            'sizes': 'Size and Texture'
         },
-        gui_tooltip    = '''\
-            Chest style will reflect its contents regardless
-            of size.  Fancy chests will contain keys, Gilded
-            chests will contain major items, shuffled tokens
-            will be in Webbed chests, and Wooden chests
+        gui_tooltip='''\
+            If enabled, chest texture will reflect its contents
+            regardless of size.  Fancy chests will contain keys,
+            Gilded chests will contain major items, shuffled
+            tokens will be in Webbed chests, and Wooden chests
             will contain the rest.
             This allows skipping chests if they are wooden. 
             However, skipping wooden chests will mean having 
             low health, ammo, and rupees, so doing so is a risk.
-            Size matches content will change chests with major
+            "Size and Texture" will change chests with major
             items and boss keys into big chests, and everything
             else into small chests.
         ''',
-        shared         = True,
+        shared=True,
     ),
     Checkbutton(
-        name           = 'clearer_hints',
-        gui_text       = 'Clearer Hints',
-        gui_tooltip    = '''\
+        name='clearer_hints',
+        gui_text='Clearer Hints',
+        gui_tooltip='''\
             The hints provided by Gossip Stones will
             be very direct if this option is enabled.
         ''',
-        shared         = True,
-        default        = True,
+        shared=True,
+        default=True,
     ),
     Checkbutton(
-        name           = 'no_collectible_hearts',
-        gui_text       = 'Hero Mode',
-        gui_tooltip    = '''\
+        name='no_collectible_hearts',
+        gui_text='Hero Mode',
+        gui_tooltip='''\
             No recovery hearts will drop from 
             enemies or objects.
             (You might still find some freestanding
             or in chests depending on other settings.)
         ''',
-        default        = False,
-        shared         = True,
+        default=False,
+        shared=True,
     ),
     Combobox(
-        name           = 'hints',
-        gui_text       = 'Gossip Stones',
-        default        = 'always',
-        choices        = {
-            'none':   'No Hints',
-            'mask':   'Hints; Need Mask of Truth',
-            'agony':  'Hints; Need Stone of Agony',
+        name='hints',
+        gui_text='Gossip Stones',
+        default='always',
+        choices={
+            'none': 'No Hints',
+            'mask': 'Hints; Need Mask of Truth',
+            'agony': 'Hints; Need Stone of Agony',
             'always': 'Hints; Need Nothing',
         },
-        gui_tooltip    = '''\
+        gui_tooltip='''\
             Gossip Stones can be made to give hints
             about where items can be found.
 
@@ -4074,27 +4246,27 @@ setting_infos = [
             locations that contain items that are
             required to beat the game.
         ''',
-        shared         = True,
+        shared=True,
     ),
     Combobox(
-        name           = 'hint_dist',
-        gui_text       = 'Hint Distribution',
-        default        = 'balanced',
-        choices        = HintDistList(),
-        gui_tooltip    = HintDistTips(),
-        shared         = True,
-        disable        = {
-            '!bingo' : {'settings' : ['bingosync_url']},
+        name='hint_dist',
+        gui_text='Hint Distribution',
+        default='balanced',
+        choices=HintDistList(),
+        gui_tooltip=HintDistTips(),
+        shared=True,
+        disable={
+            '!bingo': {'settings': ['bingosync_url']},
         },
     ),
     Setting_Info(
-        name           = "bingosync_url",
-        type           = str,
-        choices        = {},
-        gui_type       = "Textinput",
-        gui_text       = "Bingosync URL",
-        shared         = False,
-        gui_tooltip    = '''\
+        name="bingosync_url",
+        type=str,
+        choices={},
+        gui_type="Textinput",
+        gui_text="Bingosync URL",
+        shared=False,
+        gui_tooltip='''\
             Enter a URL to a Bingosync bingo board in
             order to have hints specific to items needed
             to beat the board. Goals which are completed simply
@@ -4110,31 +4282,31 @@ setting_infos = [
             Non Bingosync bingo boards are not directly
             supported, and will also generate generic item hints.
         ''',
-        disabled_default = None,
-        gui_params       = {
-            "size"               : "full",
-            "hide_when_disabled" : True,
+        disabled_default=None,
+        gui_params={
+            "size": "full",
+            "hide_when_disabled": True,
         },
     ),
     Setting_Info(
-        name           = 'item_hints',
-        type           =  list,
-        gui_type       = None,
-        gui_text       = None,
-        shared         = True,
-        choices        = [i for i in item_table if item_table[i][0] == 'Item']
+        name='item_hints',
+        type=list,
+        gui_type=None,
+        gui_text=None,
+        shared=True,
+        choices=[i for i in item_table if item_table[i][0] == 'Item']
     ),
-    Setting_Info('hint_dist_user',    dict, None, None, True, {}),
+    Setting_Info('hint_dist_user', dict, None, None, True, {}),
     Combobox(
-        name           = 'text_shuffle',
-        gui_text       = 'Text Shuffle',
-        default        = 'none',
-        choices        = {
-            'none':         'No Text Shuffled',
+        name='text_shuffle',
+        gui_text='Text Shuffle',
+        default='none',
+        choices={
+            'none': 'No Text Shuffled',
             'except_hints': 'Shuffled except Important Text',
-            'complete':     'All Text Shuffled',
+            'complete': 'All Text Shuffled',
         },
-        gui_tooltip    = '''\
+        gui_tooltip='''\
             Will make things confusing for comedic value.
 
             'Shuffled except Important Text': For when
@@ -4144,12 +4316,12 @@ setting_infos = [
             key text, Good Deal! items sold in shops, random
             price scrubs, chicken count and poe count.
         ''',
-        shared         = True,
+        shared=True,
     ),
     Checkbutton(
-        name           = 'misc_hints',
-        gui_text       = 'Misc. Hints',
-        gui_tooltip    = '''\
+        name='misc_hints',
+        gui_text='Misc. Hints',
+        gui_tooltip='''\
             This setting adds some hints at locations
             other than Gossip Stones:
 
@@ -4172,20 +4344,20 @@ setting_infos = [
             is reachable without Light Arrows, Gossip
             Stones will never hint the Light Arrows.
         ''',
-        shared         = True,
-        default        = True,
+        shared=True,
+        default=True,
     ),
     Combobox(
-        name           = 'ice_trap_appearance',
-        gui_text       = 'Ice Trap Appearance',
-        default        = 'major_only',
-        choices        = {
+        name='ice_trap_appearance',
+        gui_text='Ice Trap Appearance',
+        default='major_only',
+        choices={
             'major_only': 'Major Items Only',
-            'junk_only':  'Junk Items Only',
-            'anything':   'Anything',
-            'Rupee (1)':  'Green Rupee'
+            'junk_only': 'Junk Items Only',
+            'anything': 'Anything',
+            'Rupee (1)': 'Green Rupee'
         },
-        gui_tooltip    = '''\
+        gui_tooltip='''\
             Changes the categories of items Ice Traps may
             appear as, both when freestanding and when in
             chests with Chest Size Matches Contents enabled. 
@@ -4198,20 +4370,20 @@ setting_infos = [
 
             'Anything': Ice Traps may appear as anything.
         ''',
-        shared         = True,
+        shared=True,
     ),
     Combobox(
-        name           = 'junk_items',
-        gui_text       = 'Junk Item Level',
-        default        = 'normal',
-        choices        = {
-            'off':       'No Junk Items',
-            'normal':    'Normal Junk Items',
-            'on':        'Extra Junk Items',
-            'mayhem':    'Junk Items Mayhem',
+        name='junk_items',
+        gui_text='Junk Item Level',
+        default='normal',
+        choices={
+            'off': 'No Junk Items',
+            'normal': 'Normal Junk Items',
+            'on': 'Extra Junk Items',
+            'mayhem': 'Junk Items Mayhem',
             'onslaught': 'Junk Items Onslaught',
         },
-        gui_tooltip    = '''\
+        gui_tooltip='''\
             'Off': All Ice Traps are removed.
 
             'Normal': Only Ice Traps from the base item pool
@@ -4227,41 +4399,41 @@ setting_infos = [
             replaced by Ice Traps, even those in the
             base pool.
         ''',
-        shared         = True,
+        shared=True,
     ),
     Combobox(
-        name           = 'junk_item',
-        gui_text       = 'Junk Item',
-        default        = 'Ice Trap',
-        choices        = {
-            'Bombs (5)':       'Bombs',
-            'Arrows (5)':       'Arrows',
-            'Deku Stick (1)':       'Deku Stick',
-            'Deku Nuts (5)':       'Deku Nuts',
-            'Deku Seeds (30)':       'Deku Seeds',
-            'Rupee (1)':       'Green Rupee',
-            'Rupees (5)':       'Blue Rupee',
-            'Rupees (20)':       'Red Rupee',
-            'Rupees (50)':       'Gold Rupee',
-            'Chicken':       'Chicken',
-            'Ice Arrows':       'Ice Arrows',
-            'Ice Trap':       'Ice Traps'
+        name='junk_item',
+        gui_text='Junk Item',
+        default='Ice Trap',
+        choices={
+            'Bombs (5)': 'Bombs',
+            'Arrows (5)': 'Arrows',
+            'Deku Stick (1)': 'Deku Stick',
+            'Deku Nuts (5)': 'Deku Nuts',
+            'Deku Seeds (30)': 'Deku Seeds',
+            'Rupee (1)': 'Green Rupee',
+            'Rupees (5)': 'Blue Rupee',
+            'Rupees (20)': 'Red Rupee',
+            'Rupees (50)': 'Gold Rupee',
+            'Chicken': 'Chicken',
+            'Ice Arrows': 'Ice Arrows',
+            'Ice Trap': 'Ice Traps'
         },
-        gui_tooltip    = '''\
+        gui_tooltip='''\
         ''',
-        shared         = True,
+        shared=True,
     ),
     Combobox(
-        name           = 'item_pool_value',
-        gui_text       = 'Item Pool',
-        default        = 'balanced',
-        choices        = {
+        name='item_pool_value',
+        gui_text='Item Pool',
+        default='balanced',
+        choices={
             'plentiful': 'Plentiful',
-            'balanced':  'Balanced',
-            'scarce':    'Scarce',
-            'minimal':   'Minimal'
+            'balanced': 'Balanced',
+            'scarce': 'Scarce',
+            'minimal': 'Minimal'
         },
-        gui_tooltip    = '''\
+        gui_tooltip='''\
             Changes the amount of major items that are 
             available in the game.
 
@@ -4281,60 +4453,60 @@ setting_infos = [
             upgrades are removed. Only one Bombchu item is 
             available.
         ''',
-        shared         = True,
+        shared=True,
     ),
     Combobox(
-        name           = 'damage_multiplier',
-        gui_text       = 'Damage Multiplier',
-        default        = 'normal',
-        choices        = {
-            'half':      'Half',
-            'normal':    'Normal',
-            'double':    'Double',
+        name='damage_multiplier',
+        gui_text='Damage Multiplier',
+        default='normal',
+        choices={
+            'half': 'Half',
+            'normal': 'Normal',
+            'double': 'Double',
             'quadruple': 'Quadruple',
-            'ohko':      'OHKO',
+            'ohko': 'OHKO',
         },
-        gui_tooltip    = '''\
+        gui_tooltip='''\
             Changes the amount of damage taken.
 
             'OHKO': Link dies in one hit.
         ''',
-        shared         = True,
+        shared=True,
     ),
     Combobox(
-        name           = 'starting_tod',
-        gui_text       = 'Starting Time of Day',
-        default        = 'default',
-        choices        = {
-            'default':       'Default (10:00)',
-            'random':        'Random Choice',
-            'sunrise':       'Sunrise (6:30)',
-            'morning':       'Morning (9:00)',
-            'noon':          'Noon (12:00)',
-            'afternoon':     'Afternoon (15:00)',
-            'sunset':        'Sunset (18:00)',
-            'evening':       'Evening (21:00)',
-            'midnight':      'Midnight (00:00)',
+        name='starting_tod',
+        gui_text='Starting Time of Day',
+        default='default',
+        choices={
+            'default': 'Default (10:00)',
+            'random': 'Random Choice',
+            'sunrise': 'Sunrise (6:30)',
+            'morning': 'Morning (9:00)',
+            'noon': 'Noon (12:00)',
+            'afternoon': 'Afternoon (15:00)',
+            'sunset': 'Sunset (18:00)',
+            'evening': 'Evening (21:00)',
+            'midnight': 'Midnight (00:00)',
             'witching-hour': 'Witching Hour (03:00)',
         },
-        gui_tooltip    = '''\
+        gui_tooltip='''\
             Change up Link's sleep routine.
 
             Daytime officially starts at 6:30,
             nighttime at 18:00 (6:00 PM).
         ''',
-        shared         = True,
+        shared=True,
     ),
     Combobox(
-        name           = 'starting_age',
-        gui_text       = 'Starting Age',
-        default        = 'child',
-        choices        = {
-            'child':  'Child',
-            'adult':  'Adult',
+        name='starting_age',
+        gui_text='Starting Age',
+        default='child',
+        choices={
+            'child': 'Child',
+            'adult': 'Adult',
             'random': 'Random',
         },
-        gui_tooltip    = '''\
+        gui_tooltip='''\
             Choose which age Link will start as.
 
             Starting as adult means you start with
@@ -4343,8 +4515,8 @@ setting_infos = [
             Only the child option is compatible with
             Closed Forest.
         ''',
-        shared         = True,
-        gui_params     = {
+        shared=True,
+        gui_params={
             'randomize_key': 'randomize_settings',
             'distribution': [
                 ('random', 1),
@@ -4352,35 +4524,35 @@ setting_infos = [
         }
     ),
     Combobox(
-        name           = 'default_targeting',
-        gui_text       = 'Default Targeting Option',
-        shared         = False,
-        cosmetic       = True,
-        default        = 'hold',
-        choices        = {
-            'hold':   'Hold',
+        name='default_targeting',
+        gui_text='Default Targeting Option',
+        shared=False,
+        cosmetic=True,
+        default='hold',
+        choices={
+            'hold': 'Hold',
             'switch': 'Switch',
         },
     ),
     Combobox(
-        name           = 'background_music',
-        gui_text       = 'Background Music',
-        shared         = False,
-        cosmetic       = True,
-        default        = 'normal',
-        choices        = {
-            'normal':               'Normal',
-            'off':                  'No Music',
-            'random':               'Random',
-            'random_custom_only':   'Random (Custom Only)',
+        name='background_music',
+        gui_text='Background Music',
+        shared=False,
+        cosmetic=True,
+        default='normal',
+        choices={
+            'normal': 'Normal',
+            'off': 'No Music',
+            'random': 'Random',
+            'random_custom_only': 'Random (Custom Only)',
         },
-        gui_tooltip    = '''\
+        gui_tooltip='''\
             'No Music': No background music is played.
 
             'Random': Area background music is randomized. 
             Additional music can be loaded from data/Music/
         ''',
-        gui_params  = {
+        gui_params={
             'randomize_key': 'randomize_all_sfx',
             'distribution': [
                 ('random', 1),
@@ -4389,40 +4561,40 @@ setting_infos = [
         },
     ),
     Checkbutton(
-        name           = 'disable_battle_music',
-        gui_text       = 'Disable battle music',
-        shared         = False,
-        cosmetic       = True,
-        gui_tooltip    = '''\
+        name='disable_battle_music',
+        gui_text='Disable battle music',
+        shared=False,
+        cosmetic=True,
+        gui_tooltip='''\
             Disable standard battle music.
 	    This prevents background music from being
 	    interrupted by the battle theme when being
 	    near enemies.
         ''',
-        default        = False,
+        default=False,
     ),
     Combobox(
-        name           = 'fanfares',
-        gui_text       = 'Fanfares',
-        shared         = False,
-        cosmetic       = True,
-        default        = 'normal',
-        choices        = {
-            'normal':               'Normal',
-            'off':                  'No Fanfares',
-            'random':               'Random',
-            'random_custom_only':   'Random (Custom Only)',
+        name='fanfares',
+        gui_text='Fanfares',
+        shared=False,
+        cosmetic=True,
+        default='normal',
+        choices={
+            'normal': 'Normal',
+            'off': 'No Fanfares',
+            'random': 'Random',
+            'random_custom_only': 'Random (Custom Only)',
         },
-        disable        = {
-            'normal' : {'settings' : ['ocarina_fanfares']},
+        disable={
+            'normal': {'settings': ['ocarina_fanfares']},
         },
-        gui_tooltip    = '''\
+        gui_tooltip='''\
             'No Fanfares': No fanfares (short non-looping tracks) are played.
 
             'Random': Fanfares are randomized.
             Additional fanfares can be loaded from data/Music/
         ''',
-        gui_params  = {
+        gui_params={
             'randomize_key': 'randomize_all_sfx',
             'distribution': [
                 ('random', 1),
@@ -4431,42 +4603,42 @@ setting_infos = [
         },
     ),
     Checkbutton(
-        name           = 'ocarina_fanfares',
-        gui_text       = 'Ocarina Songs as Fanfares',
-        shared         = False,
-        cosmetic       = True,
-        gui_tooltip    = '''\
+        name='ocarina_fanfares',
+        gui_text='Ocarina Songs as Fanfares',
+        shared=False,
+        cosmetic=True,
+        gui_tooltip='''\
             Include the songs that play when an ocarina song
             is played as part of the fanfare pool when
             shuffling or disabling fanfares. Note that these
             are a bit longer than most fanfares.
         ''',
-        gui_params  = {
+        gui_params={
             "hide_when_disabled": True,
             'randomize_key': 'randomize_all_sfx',
             'distribution': [
                 (True, 1),
             ]
         },
-        default        = False,
+        default=False,
     ),
     Checkbutton(
-        name           = 'display_dpad',
-        gui_text       = 'Display D-Pad HUD',
-        shared         = False,
-        cosmetic       = True,
-        gui_tooltip    = '''\
+        name='display_dpad',
+        gui_text='Display D-Pad HUD',
+        shared=False,
+        cosmetic=True,
+        gui_tooltip='''\
             Shows an additional HUD element displaying
             current available options on the D-Pad.
         ''',
-        default        = True,
+        default=True,
     ),
     Checkbutton(
-        name           = 'correct_model_colors',
-        gui_text       = 'Item Model Colors Match Cosmetics',
-        shared         = False,
-        cosmetic       = True,
-        gui_tooltip    = '''\
+        name='correct_model_colors',
+        gui_text='Item Model Colors Match Cosmetics',
+        shared=False,
+        cosmetic=True,
+        gui_tooltip='''\
             In-game models for items such as Heart Containers have
             colors matching the colors chosen for cosmetic settings.
             Heart and magic drop icons also have matching colors.
@@ -4474,38 +4646,38 @@ setting_infos = [
             Tunic colors are excluded from this to prevent not being 
             able to discern freestanding Tunics from each other.
         ''',
-        default        = False,
+        default=False,
     ),
     Checkbutton(
-        name           = 'randomize_all_cosmetics',
-        gui_text       = 'Randomize All Cosmetics',
-        shared         = False,
-        cosmetic       = True,
-        gui_tooltip    = '''\
+        name='randomize_all_cosmetics',
+        gui_text='Randomize All Cosmetics',
+        shared=False,
+        cosmetic=True,
+        gui_tooltip='''\
             Randomize all cosmetics settings.
         ''',
-        default        = False,
-        disable    = {
-            True : {'sections' : [ "equipment_color_section", "ui_color_section", "misc_color_section" ]
-            }
+        default=False,
+        disable={
+            True: {'sections': ["equipment_color_section", "ui_color_section", "misc_color_section"]
+                   }
         }
     ),
     Setting_Info(
-        name           = 'kokiri_color',
-        type           = str,
-        gui_text       = "Kokiri Tunic",
-        gui_type       = "Combobox",
-        shared         = False,
-        cosmetic       = True,
-        choices        = get_tunic_color_options(),
-        default        = 'Kokiri Green',
-        gui_tooltip    = '''\
+        name='kokiri_color',
+        type=str,
+        gui_text="Kokiri Tunic",
+        gui_type="Combobox",
+        shared=False,
+        cosmetic=True,
+        choices=get_tunic_color_options(),
+        default='Kokiri Green',
+        gui_tooltip='''\
             'Random Choice': Choose a random
             color from this list of colors.
             'Completely Random': Choose a random
             color from any color the N64 can draw.
         ''',
-        gui_params     = {
+        gui_params={
             'randomize_key': 'randomize_all_cosmetics',
             'distribution': [
                 ('Completely Random', 1),
@@ -4513,44 +4685,21 @@ setting_infos = [
         }
     ),
     Setting_Info(
-        name           = 'goron_color',
-        type           = str,
-        gui_text       = "Goron Tunic",
-        gui_type       = "Combobox",
-        shared         = False,
-        cosmetic       = True,
-        choices        = get_tunic_color_options(),
-        default        = 'Goron Red',
-        gui_tooltip    = '''\
+        name='goron_color',
+        type=str,
+        gui_text="Goron Tunic",
+        gui_type="Combobox",
+        shared=False,
+        cosmetic=True,
+        choices=get_tunic_color_options(),
+        default='Goron Red',
+        gui_tooltip='''\
             'Random Choice': Choose a random
             color from this list of colors.
             'Completely Random': Choose a random
             color from any color the N64 can draw.
         ''',
-        gui_params     = {
-            'randomize_key': 'randomize_all_cosmetics',
-            'distribution': [
-                ('Completely Random', 1),
-            ]
-        }
-
-    ),
-    Setting_Info(
-        name           = 'zora_color',
-        type           = str,
-        gui_text       = "Zora Tunic",
-        gui_type       = "Combobox",
-        shared         = False,
-        cosmetic       = True,
-        choices        = get_tunic_color_options(),
-        default        = 'Zora Blue',
-        gui_tooltip    = '''\
-            'Random Choice': Choose a random
-            color from this list of colors.
-            'Completely Random': Choose a random
-            color from any color the N64 can draw.
-        ''',
-        gui_params     = {
+        gui_params={
             'randomize_key': 'randomize_all_cosmetics',
             'distribution': [
                 ('Completely Random', 1),
@@ -4559,46 +4708,21 @@ setting_infos = [
 
     ),
     Setting_Info(
-        name           = 'navi_color_default_inner',
-        type           = str,
-        gui_text       = "Navi Idle Inner",
-        gui_type       = "Combobox",
-        shared         = False,
-        cosmetic       = True,
-        choices        = get_navi_color_options(),
-        default        = 'White',
-        gui_tooltip    = '''\
+        name='zora_color',
+        type=str,
+        gui_text="Zora Tunic",
+        gui_type="Combobox",
+        shared=False,
+        cosmetic=True,
+        choices=get_tunic_color_options(),
+        default='Zora Blue',
+        gui_tooltip='''\
             'Random Choice': Choose a random
             color from this list of colors.
             'Completely Random': Choose a random
             color from any color the N64 can draw.
-            'Rainbow': Cycle through a color rainbow.
         ''',
-        gui_params     = {
-            'no_line_break' : True,
-            'randomize_key': 'randomize_all_cosmetics',
-            'distribution': [
-                ('Completely Random', 1),
-            ]
-        }
-    ),
-    Setting_Info(
-        name           = 'navi_color_default_outer',
-        type           = str,
-        gui_text       = "Outer",
-        gui_type       = "Combobox",
-        shared         = False,
-        cosmetic       = True,
-        choices        = get_navi_color_options(True),
-        default        = '[Same as Inner]',
-        gui_tooltip    = '''\
-            'Random Choice': Choose a random
-            color from this list of colors.
-            'Completely Random': Choose a random
-            color from any color the N64 can draw.
-            'Rainbow': Cycle through a color rainbow.
-        ''',
-        gui_params     = {
+        gui_params={
             'randomize_key': 'randomize_all_cosmetics',
             'distribution': [
                 ('Completely Random', 1),
@@ -4607,23 +4731,46 @@ setting_infos = [
 
     ),
     Setting_Info(
-        name           = 'navi_color_enemy_inner',
-        type           = str,
-        gui_text       = 'Navi Targeting Enemy Inner',
-        gui_type       = "Combobox",
-        shared         = False,
-        cosmetic       = True,
-        choices        = get_navi_color_options(),
-        default        = 'Yellow',
-        gui_tooltip    = '''\
+        name='navi_color_default_inner',
+        type=str,
+        gui_text="Navi Idle Inner",
+        gui_type="Combobox",
+        shared=False,
+        cosmetic=True,
+        choices=get_navi_color_options(),
+        default='White',
+        gui_tooltip='''\
             'Random Choice': Choose a random
             color from this list of colors.
             'Completely Random': Choose a random
             color from any color the N64 can draw.
             'Rainbow': Cycle through a color rainbow.
         ''',
-        gui_params     = {
-            'no_line_break' : True,
+        gui_params={
+            'no_line_break': True,
+            'randomize_key': 'randomize_all_cosmetics',
+            'distribution': [
+                ('Completely Random', 1),
+            ]
+        }
+    ),
+    Setting_Info(
+        name='navi_color_default_outer',
+        type=str,
+        gui_text="Outer",
+        gui_type="Combobox",
+        shared=False,
+        cosmetic=True,
+        choices=get_navi_color_options(True),
+        default='[Same as Inner]',
+        gui_tooltip='''\
+            'Random Choice': Choose a random
+            color from this list of colors.
+            'Completely Random': Choose a random
+            color from any color the N64 can draw.
+            'Rainbow': Cycle through a color rainbow.
+        ''',
+        gui_params={
             'randomize_key': 'randomize_all_cosmetics',
             'distribution': [
                 ('Completely Random', 1),
@@ -4632,22 +4779,23 @@ setting_infos = [
 
     ),
     Setting_Info(
-        name           = 'navi_color_enemy_outer',
-        type           = str,
-        gui_text       = 'Outer',
-        gui_type       = "Combobox",
-        shared         = False,
-        cosmetic       = True,
-        choices        = get_navi_color_options(True),
-        default        = '[Same as Inner]',
-        gui_tooltip    = '''\
+        name='navi_color_enemy_inner',
+        type=str,
+        gui_text='Navi Targeting Enemy Inner',
+        gui_type="Combobox",
+        shared=False,
+        cosmetic=True,
+        choices=get_navi_color_options(),
+        default='Yellow',
+        gui_tooltip='''\
             'Random Choice': Choose a random
             color from this list of colors.
             'Completely Random': Choose a random
             color from any color the N64 can draw.
             'Rainbow': Cycle through a color rainbow.
         ''',
-        gui_params     = {
+        gui_params={
+            'no_line_break': True,
             'randomize_key': 'randomize_all_cosmetics',
             'distribution': [
                 ('Completely Random', 1),
@@ -4656,23 +4804,22 @@ setting_infos = [
 
     ),
     Setting_Info(
-        name           = 'navi_color_npc_inner',
-        type           = str,
-        gui_text       = 'Navi Targeting NPC Inner',
-        gui_type       = "Combobox",
-        shared         = False,
-        cosmetic       = True,
-        choices        = get_navi_color_options(),
-        default        = 'Light Blue',
-        gui_tooltip    = '''\
+        name='navi_color_enemy_outer',
+        type=str,
+        gui_text='Outer',
+        gui_type="Combobox",
+        shared=False,
+        cosmetic=True,
+        choices=get_navi_color_options(True),
+        default='[Same as Inner]',
+        gui_tooltip='''\
             'Random Choice': Choose a random
             color from this list of colors.
             'Completely Random': Choose a random
             color from any color the N64 can draw.
             'Rainbow': Cycle through a color rainbow.
         ''',
-        gui_params     = {
-            'no_line_break' : True,
+        gui_params={
             'randomize_key': 'randomize_all_cosmetics',
             'distribution': [
                 ('Completely Random', 1),
@@ -4681,22 +4828,23 @@ setting_infos = [
 
     ),
     Setting_Info(
-        name           = 'navi_color_npc_outer',
-        type           = str,
-        gui_text       = 'Outer',
-        gui_type       = "Combobox",
-        shared         = False,
-        cosmetic       = True,
-        choices        = get_navi_color_options(True),
-        default        = '[Same as Inner]',
-        gui_tooltip    = '''\
+        name='navi_color_npc_inner',
+        type=str,
+        gui_text='Navi Targeting NPC Inner',
+        gui_type="Combobox",
+        shared=False,
+        cosmetic=True,
+        choices=get_navi_color_options(),
+        default='Light Blue',
+        gui_tooltip='''\
             'Random Choice': Choose a random
             color from this list of colors.
             'Completely Random': Choose a random
             color from any color the N64 can draw.
             'Rainbow': Cycle through a color rainbow.
         ''',
-        gui_params     = {
+        gui_params={
+            'no_line_break': True,
             'randomize_key': 'randomize_all_cosmetics',
             'distribution': [
                 ('Completely Random', 1),
@@ -4705,23 +4853,22 @@ setting_infos = [
 
     ),
     Setting_Info(
-        name           = 'navi_color_prop_inner',
-        type           = str,
-        gui_text       = 'Navi Targeting Prop Inner',
-        gui_type       = "Combobox",
-        shared         = False,
-        cosmetic       = True,
-        choices        = get_navi_color_options(),
-        default        = 'Green',
-        gui_tooltip    = '''\
+        name='navi_color_npc_outer',
+        type=str,
+        gui_text='Outer',
+        gui_type="Combobox",
+        shared=False,
+        cosmetic=True,
+        choices=get_navi_color_options(True),
+        default='[Same as Inner]',
+        gui_tooltip='''\
             'Random Choice': Choose a random
             color from this list of colors.
             'Completely Random': Choose a random
             color from any color the N64 can draw.
             'Rainbow': Cycle through a color rainbow.
         ''',
-        gui_params     = {
-            'no_line_break' : True,
+        gui_params={
             'randomize_key': 'randomize_all_cosmetics',
             'distribution': [
                 ('Completely Random', 1),
@@ -4730,22 +4877,23 @@ setting_infos = [
 
     ),
     Setting_Info(
-        name           = 'navi_color_prop_outer',
-        type           = str,
-        gui_text       = 'Outer',
-        gui_type       = "Combobox",
-        shared         = False,
-        cosmetic       = True,
-        choices        = get_navi_color_options(True),
-        default        = '[Same as Inner]',
-        gui_tooltip    = '''\
+        name='navi_color_prop_inner',
+        type=str,
+        gui_text='Navi Targeting Prop Inner',
+        gui_type="Combobox",
+        shared=False,
+        cosmetic=True,
+        choices=get_navi_color_options(),
+        default='Green',
+        gui_tooltip='''\
             'Random Choice': Choose a random
             color from this list of colors.
             'Completely Random': Choose a random
             color from any color the N64 can draw.
             'Rainbow': Cycle through a color rainbow.
         ''',
-        gui_params     = {
+        gui_params={
+            'no_line_break': True,
             'randomize_key': 'randomize_all_cosmetics',
             'distribution': [
                 ('Completely Random', 1),
@@ -4754,23 +4902,22 @@ setting_infos = [
 
     ),
     Setting_Info(
-        name           = 'bombchu_trail_color_inner',
-        type           = str,
-        gui_text       = 'Bombchu Trail Inner',
-        gui_type       = "Combobox",
-        shared         = False,
-        cosmetic       = True,
-        choices        = get_bombchu_trail_color_options(),
-        default        = 'Red',
-        gui_tooltip    = '''\
+        name='navi_color_prop_outer',
+        type=str,
+        gui_text='Outer',
+        gui_type="Combobox",
+        shared=False,
+        cosmetic=True,
+        choices=get_navi_color_options(True),
+        default='[Same as Inner]',
+        gui_tooltip='''\
             'Random Choice': Choose a random
             color from this list of colors.
             'Completely Random': Choose a random
             color from any color the N64 can draw.
             'Rainbow': Cycle through a color rainbow.
         ''',
-        gui_params     = {
-            'no_line_break' : True,
+        gui_params={
             'randomize_key': 'randomize_all_cosmetics',
             'distribution': [
                 ('Completely Random', 1),
@@ -4779,22 +4926,23 @@ setting_infos = [
 
     ),
     Setting_Info(
-        name           = 'bombchu_trail_color_outer',
-        type           = str,
-        gui_text       = 'Outer',
-        gui_type       = "Combobox",
-        shared         = False,
-        cosmetic       = True,
-        choices        = get_bombchu_trail_color_options(True),
-        default        = '[Same as Inner]',
-        gui_tooltip    = '''\
+        name='bombchu_trail_color_inner',
+        type=str,
+        gui_text='Bombchu Trail Inner',
+        gui_type="Combobox",
+        shared=False,
+        cosmetic=True,
+        choices=get_bombchu_trail_color_options(),
+        default='Red',
+        gui_tooltip='''\
             'Random Choice': Choose a random
             color from this list of colors.
             'Completely Random': Choose a random
             color from any color the N64 can draw.
             'Rainbow': Cycle through a color rainbow.
         ''',
-        gui_params     = {
+        gui_params={
+            'no_line_break': True,
             'randomize_key': 'randomize_all_cosmetics',
             'distribution': [
                 ('Completely Random', 1),
@@ -4803,23 +4951,22 @@ setting_infos = [
 
     ),
     Setting_Info(
-        name           = 'boomerang_trail_color_inner',
-        type           = str,
-        gui_text       = 'Boomerang Trail Inner',
-        gui_type       = "Combobox",
-        shared         = False,
-        cosmetic       = True,
-        choices        = get_boomerang_trail_color_options(),
-        default        = 'Yellow',
-        gui_tooltip    = '''\
+        name='bombchu_trail_color_outer',
+        type=str,
+        gui_text='Outer',
+        gui_type="Combobox",
+        shared=False,
+        cosmetic=True,
+        choices=get_bombchu_trail_color_options(True),
+        default='[Same as Inner]',
+        gui_tooltip='''\
             'Random Choice': Choose a random
             color from this list of colors.
             'Completely Random': Choose a random
             color from any color the N64 can draw.
             'Rainbow': Cycle through a color rainbow.
         ''',
-        gui_params     = {
-            'no_line_break' : True,
+        gui_params={
             'randomize_key': 'randomize_all_cosmetics',
             'distribution': [
                 ('Completely Random', 1),
@@ -4828,22 +4975,23 @@ setting_infos = [
 
     ),
     Setting_Info(
-        name           = 'boomerang_trail_color_outer',
-        type           = str,
-        gui_text       = 'Outer',
-        gui_type       = "Combobox",
-        shared         = False,
-        cosmetic       = True,
-        choices        = get_boomerang_trail_color_options(True),
-        default        = '[Same as Inner]',
-        gui_tooltip    = '''\
+        name='boomerang_trail_color_inner',
+        type=str,
+        gui_text='Boomerang Trail Inner',
+        gui_type="Combobox",
+        shared=False,
+        cosmetic=True,
+        choices=get_boomerang_trail_color_options(),
+        default='Yellow',
+        gui_tooltip='''\
             'Random Choice': Choose a random
             color from this list of colors.
             'Completely Random': Choose a random
             color from any color the N64 can draw.
             'Rainbow': Cycle through a color rainbow.
         ''',
-        gui_params     = {
+        gui_params={
+            'no_line_break': True,
             'randomize_key': 'randomize_all_cosmetics',
             'distribution': [
                 ('Completely Random', 1),
@@ -4852,23 +5000,22 @@ setting_infos = [
 
     ),
     Setting_Info(
-        name           = 'sword_trail_color_inner',
-        type           = str,
-        gui_text       = 'Sword Trail Inner',
-        gui_type       = "Combobox",
-        shared         = False,
-        cosmetic       = True,
-        choices        = get_sword_trail_color_options(),
-        default        = 'White',
-        gui_tooltip    = '''\
+        name='boomerang_trail_color_outer',
+        type=str,
+        gui_text='Outer',
+        gui_type="Combobox",
+        shared=False,
+        cosmetic=True,
+        choices=get_boomerang_trail_color_options(True),
+        default='[Same as Inner]',
+        gui_tooltip='''\
             'Random Choice': Choose a random
             color from this list of colors.
             'Completely Random': Choose a random
             color from any color the N64 can draw.
             'Rainbow': Cycle through a color rainbow.
         ''',
-        gui_params     = {
-            'no_line_break' : True,
+        gui_params={
             'randomize_key': 'randomize_all_cosmetics',
             'distribution': [
                 ('Completely Random', 1),
@@ -4877,22 +5024,47 @@ setting_infos = [
 
     ),
     Setting_Info(
-        name           = 'sword_trail_color_outer',
-        type           = str,
-        gui_text       = 'Outer',
-        gui_type       = "Combobox",
-        shared         = False,
-        cosmetic       = True,
-        choices        = get_sword_trail_color_options(True),
-        default        = '[Same as Inner]',
-        gui_tooltip    = '''\
+        name='sword_trail_color_inner',
+        type=str,
+        gui_text='Sword Trail Inner',
+        gui_type="Combobox",
+        shared=False,
+        cosmetic=True,
+        choices=get_sword_trail_color_options(),
+        default='White',
+        gui_tooltip='''\
             'Random Choice': Choose a random
             color from this list of colors.
             'Completely Random': Choose a random
             color from any color the N64 can draw.
             'Rainbow': Cycle through a color rainbow.
         ''',
-        gui_params     = {
+        gui_params={
+            'no_line_break': True,
+            'randomize_key': 'randomize_all_cosmetics',
+            'distribution': [
+                ('Completely Random', 1),
+            ]
+        }
+
+    ),
+    Setting_Info(
+        name='sword_trail_color_outer',
+        type=str,
+        gui_text='Outer',
+        gui_type="Combobox",
+        shared=False,
+        cosmetic=True,
+        choices=get_sword_trail_color_options(True),
+        default='[Same as Inner]',
+        gui_tooltip='''\
+            'Random Choice': Choose a random
+            color from this list of colors.
+            'Completely Random': Choose a random
+            color from any color the N64 can draw.
+            'Rainbow': Cycle through a color rainbow.
+        ''',
+        gui_params={
             'randomize_key': 'randomize_all_cosmetics',
             'distribution': [
                 ('Completely Random', 1),
@@ -4901,21 +5073,21 @@ setting_infos = [
 
     ),
     Combobox(
-        name           = 'sword_trail_duration',
-        gui_text       = 'Sword Trail Duration',
-        shared         = False,
-        cosmetic       = True,
-        choices        = {
+        name='sword_trail_duration',
+        gui_text='Sword Trail Duration',
+        shared=False,
+        cosmetic=True,
+        choices={
             4: 'Default',
             10: 'Long',
             15: 'Very Long',
             20: 'Lightsaber',
         },
-        default        = 4,
-        gui_tooltip    = '''\
+        default=4,
+        gui_tooltip='''\
             Select the duration for sword trails.
         ''',
-        gui_params     = {
+        gui_params={
             'randomize_key': 'randomize_all_cosmetics',
             'distribution': [
                 (4, 1),
@@ -4926,21 +5098,21 @@ setting_infos = [
         }
     ),
     Setting_Info(
-        name           = 'silver_gauntlets_color',
-        type           = str,
-        gui_text       = 'Silver Gauntlets Color',
-        gui_type       = "Combobox",
-        shared         = False,
-        cosmetic       = True,
-        choices        = get_gauntlet_color_options(),
-        default        = 'Silver',
-        gui_tooltip    = '''\
+        name='silver_gauntlets_color',
+        type=str,
+        gui_text='Silver Gauntlets Color',
+        gui_type="Combobox",
+        shared=False,
+        cosmetic=True,
+        choices=get_gauntlet_color_options(),
+        default='Silver',
+        gui_tooltip='''\
             'Random Choice': Choose a random
             color from this list of colors.
             'Completely Random': Choose a random
             color from any color the N64 can draw.
         ''',
-        gui_params     = {
+        gui_params={
             'randomize_key': 'randomize_all_cosmetics',
             'distribution': [
                 ('Completely Random', 1),
@@ -4949,21 +5121,21 @@ setting_infos = [
 
     ),
     Setting_Info(
-        name           = 'golden_gauntlets_color',
-        type           = str,
-        gui_text       = 'Golden Gauntlets Color',
-        gui_type       = "Combobox",
-        shared         = False,
-        cosmetic       = True,
-        choices        = get_gauntlet_color_options(),
-        default        = 'Gold',
-        gui_tooltip    = '''\
+        name='golden_gauntlets_color',
+        type=str,
+        gui_text='Golden Gauntlets Color',
+        gui_type="Combobox",
+        shared=False,
+        cosmetic=True,
+        choices=get_gauntlet_color_options(),
+        default='Gold',
+        gui_tooltip='''\
             'Random Choice': Choose a random
             color from this list of colors.
             'Completely Random': Choose a random
             color from any color the N64 can draw.
         ''',
-        gui_params     = {
+        gui_params={
             'randomize_key': 'randomize_all_cosmetics',
             'distribution': [
                 ('Completely Random', 1),
@@ -4972,21 +5144,21 @@ setting_infos = [
 
     ),
     Setting_Info(
-        name           = 'mirror_shield_frame_color',
-        type           = str,
-        gui_text       = 'Mirror Shield Frame Color',
-        gui_type       = "Combobox",
-        shared         = False,
-        cosmetic       = True,
-        choices        = get_shield_frame_color_options(),
-        default        = 'Red',
-        gui_tooltip    = '''\
+        name='mirror_shield_frame_color',
+        type=str,
+        gui_text='Mirror Shield Frame Color',
+        gui_type="Combobox",
+        shared=False,
+        cosmetic=True,
+        choices=get_shield_frame_color_options(),
+        default='Red',
+        gui_tooltip='''\
             'Random Choice': Choose a random
             color from this list of colors.
             'Completely Random': Choose a random
             color from any color the N64 can draw.
         ''',
-        gui_params     = {
+        gui_params={
             'randomize_key': 'randomize_all_cosmetics',
             'distribution': [
                 ('Completely Random', 1),
@@ -4994,17 +5166,17 @@ setting_infos = [
         }
     ),
     Checkbutton(
-        name           = 'extra_equip_colors',
-        gui_text       = 'Randomize Extra Colors (Experimental)',
-        shared         = False,
-        cosmetic       = True,
-        gui_tooltip    = '''\
+        name='extra_equip_colors',
+        gui_text='Randomize Extra Colors (Experimental)',
+        shared=False,
+        cosmetic=True,
+        gui_tooltip='''\
             Randomize many other equipment and item colors.
 
             More colors may be added to this setting in the future.
         ''',
-        default        = False,
-        gui_params     = {
+        default=False,
+        gui_params={
             'randomize_key': 'randomize_all_cosmetics',
             'distribution': [
                 (True, 1),
@@ -5012,21 +5184,21 @@ setting_infos = [
         }
     ),
     Setting_Info(
-        name           = 'heart_color',
-        type           = str,
-        gui_text       = 'Heart Color',
-        gui_type       = "Combobox",
-        shared         = False,
-        cosmetic       = True,
-        choices        = get_heart_color_options(),
-        default        = 'Red',
-        gui_tooltip    = '''\
+        name='heart_color',
+        type=str,
+        gui_text='Heart Color',
+        gui_type="Combobox",
+        shared=False,
+        cosmetic=True,
+        choices=get_heart_color_options(),
+        default='Red',
+        gui_tooltip='''\
             'Random Choice': Choose a random
             color from this list of colors.
             'Completely Random': Choose a random
             color from any color the N64 can draw.
         ''',
-        gui_params     = {
+        gui_params={
             'randomize_key': 'randomize_all_cosmetics',
             'distribution': [
                 ('Completely Random', 1),
@@ -5035,21 +5207,21 @@ setting_infos = [
 
     ),
     Setting_Info(
-        name           = 'magic_color',
-        type           = str,
-        gui_text       = 'Magic Color',
-        gui_type       = "Combobox",
-        shared         = False,
-        cosmetic       = True,
-        choices        = get_magic_color_options(),
-        default        = 'Green',
-        gui_tooltip    = '''\
+        name='magic_color',
+        type=str,
+        gui_text='Magic Color',
+        gui_type="Combobox",
+        shared=False,
+        cosmetic=True,
+        choices=get_magic_color_options(),
+        default='Green',
+        gui_tooltip='''\
             'Random Choice': Choose a random
             color from this list of colors.
             'Completely Random': Choose a random
             color from any color the N64 can draw.
         ''',
-        gui_params     = {
+        gui_params={
             'randomize_key': 'randomize_all_cosmetics',
             'distribution': [
                 ('Completely Random', 1),
@@ -5058,21 +5230,21 @@ setting_infos = [
 
     ),
     Setting_Info(
-        name           = 'a_button_color',
-        type           = str,
-        gui_text       = 'A Button Color',
-        gui_type       = "Combobox",
-        shared         = False,
-        cosmetic       = True,
-        choices        = get_a_button_color_options(),
-        default        = 'N64 Blue',
-        gui_tooltip    = '''\
+        name='a_button_color',
+        type=str,
+        gui_text='A Button Color',
+        gui_type="Combobox",
+        shared=False,
+        cosmetic=True,
+        choices=get_a_button_color_options(),
+        default='N64 Blue',
+        gui_tooltip='''\
             'Random Choice': Choose a random
             color from this list of colors.
             'Completely Random': Choose a random
             color from any color the N64 can draw.
         ''',
-        gui_params     = {
+        gui_params={
             'randomize_key': 'randomize_all_cosmetics',
             'distribution': [
                 ('Completely Random', 1),
@@ -5081,21 +5253,21 @@ setting_infos = [
 
     ),
     Setting_Info(
-        name           = 'b_button_color',
-        type           = str,
-        gui_text       = 'B Button Color',
-        gui_type       = "Combobox",
-        shared         = False,
-        cosmetic       = True,
-        choices        = get_b_button_color_options(),
-        default        = 'N64 Green',
-        gui_tooltip    = '''\
+        name='b_button_color',
+        type=str,
+        gui_text='B Button Color',
+        gui_type="Combobox",
+        shared=False,
+        cosmetic=True,
+        choices=get_b_button_color_options(),
+        default='N64 Green',
+        gui_tooltip='''\
             'Random Choice': Choose a random
             color from this list of colors.
             'Completely Random': Choose a random
             color from any color the N64 can draw.
         ''',
-        gui_params     = {
+        gui_params={
             'randomize_key': 'randomize_all_cosmetics',
             'distribution': [
                 ('Completely Random', 1),
@@ -5104,21 +5276,21 @@ setting_infos = [
 
     ),
     Setting_Info(
-        name           = 'c_button_color',
-        type           = str,
-        gui_text       = 'C Button Color',
-        gui_type       = "Combobox",
-        shared         = False,
-        cosmetic       = True,
-        choices        = get_c_button_color_options(),
-        default        = 'Yellow',
-        gui_tooltip    = '''\
+        name='c_button_color',
+        type=str,
+        gui_text='C Button Color',
+        gui_type="Combobox",
+        shared=False,
+        cosmetic=True,
+        choices=get_c_button_color_options(),
+        default='Yellow',
+        gui_tooltip='''\
             'Random Choice': Choose a random
             color from this list of colors.
             'Completely Random': Choose a random
             color from any color the N64 can draw.
         ''',
-        gui_params     = {
+        gui_params={
             'randomize_key': 'randomize_all_cosmetics',
             'distribution': [
                 ('Completely Random', 1),
@@ -5127,21 +5299,21 @@ setting_infos = [
 
     ),
     Setting_Info(
-        name           = 'start_button_color',
-        type           = str,
-        gui_text       = 'Start Button Color',
-        gui_type       = "Combobox",
-        shared         = False,
-        cosmetic       = True,
-        choices        = get_start_button_color_options(),
-        default        = 'N64 Red',
-        gui_tooltip    = '''\
+        name='start_button_color',
+        type=str,
+        gui_text='Start Button Color',
+        gui_type="Combobox",
+        shared=False,
+        cosmetic=True,
+        choices=get_start_button_color_options(),
+        default='N64 Red',
+        gui_tooltip='''\
             'Random Choice': Choose a random
             color from this list of colors.
             'Completely Random': Choose a random
             color from any color the N64 can draw.
         ''',
-        gui_params     = {
+        gui_params={
             'randomize_key': 'randomize_all_cosmetics',
             'distribution': [
                 ('Completely Random', 1),
@@ -5150,32 +5322,32 @@ setting_infos = [
 
     ),
     Checkbutton(
-        name           = 'randomize_all_sfx',
-        gui_text       = 'Randomize All Sound Effects',
-        shared         = False,
-        cosmetic       = True,
-        gui_tooltip    = '''\
+        name='randomize_all_sfx',
+        gui_text='Randomize All Sound Effects',
+        shared=False,
+        cosmetic=True,
+        gui_tooltip='''\
             Randomize all sound effects and music settings (ear safe)
         ''',
-        default        = False,
-        disable    = {
-            True : {'sections' : [ "generalsfx_section", "menusfx_section", "npcsfx_section" ]
-            }
+        default=False,
+        disable={
+            True: {'sections': ["generalsfx_section", "menusfx_section", "npcsfx_section"]
+                   }
         }
 
     ),
     Combobox(
-        name           = 'sfx_low_hp',
-        gui_text       = 'Low HP',
-        shared         = False,
-        cosmetic       = True,
-        choices        = sfx.get_setting_choices(sfx.SoundHooks.HP_LOW),
-        default        = 'default',
-        gui_tooltip    = '''\
+        name='sfx_low_hp',
+        gui_text='Low HP',
+        shared=False,
+        cosmetic=True,
+        choices=sfx.get_setting_choices(sfx.SoundHooks.HP_LOW),
+        default='default',
+        gui_tooltip='''\
             'Random Choice': Choose a random sound from this list.
             'Default': Beep. Beep. Beep.
         ''',
-        gui_params     = {
+        gui_params={
             'randomize_key': 'randomize_all_sfx',
             'distribution': [
                 ('random-ear-safe', 1),
@@ -5183,13 +5355,13 @@ setting_infos = [
         }
     ),
     Combobox(
-        name           = 'sfx_navi_overworld',
-        gui_text       = 'Navi Overworld',
-        shared         = False,
-        cosmetic       = True,
-        choices        = sfx.get_setting_choices(sfx.SoundHooks.NAVI_OVERWORLD),
-        default        = 'default',
-        gui_params     = {
+        name='sfx_navi_overworld',
+        gui_text='Navi Overworld',
+        shared=False,
+        cosmetic=True,
+        choices=sfx.get_setting_choices(sfx.SoundHooks.NAVI_OVERWORLD),
+        default='default',
+        gui_params={
             'randomize_key': 'randomize_all_sfx',
             'distribution': [
                 ('random-ear-safe', 1),
@@ -5197,13 +5369,13 @@ setting_infos = [
         }
     ),
     Combobox(
-        name           = 'sfx_navi_enemy',
-        gui_text       = 'Navi Enemy',
-        shared         = False,
-        cosmetic       = True,
-        choices        = sfx.get_setting_choices(sfx.SoundHooks.NAVI_ENEMY),
-        default        = 'default',
-        gui_params     = {
+        name='sfx_navi_enemy',
+        gui_text='Navi Enemy',
+        shared=False,
+        cosmetic=True,
+        choices=sfx.get_setting_choices(sfx.SoundHooks.NAVI_ENEMY),
+        default='default',
+        gui_params={
             'randomize_key': 'randomize_all_sfx',
             'distribution': [
                 ('random-ear-safe', 1),
@@ -5211,13 +5383,13 @@ setting_infos = [
         }
     ),
     Combobox(
-        name           = 'sfx_menu_cursor',
-        gui_text       = 'Menu Cursor',
-        shared         = False,
-        cosmetic       = True,
-        choices        = sfx.get_setting_choices(sfx.SoundHooks.MENU_CURSOR),
-        default        = 'default',
-        gui_params     = {
+        name='sfx_menu_cursor',
+        gui_text='Menu Cursor',
+        shared=False,
+        cosmetic=True,
+        choices=sfx.get_setting_choices(sfx.SoundHooks.MENU_CURSOR),
+        default='default',
+        gui_params={
             'randomize_key': 'randomize_all_sfx',
             'distribution': [
                 ('random-ear-safe', 1),
@@ -5225,13 +5397,13 @@ setting_infos = [
         }
     ),
     Combobox(
-        name           = 'sfx_menu_select',
-        gui_text       = 'Menu Select',
-        shared         = False,
-        cosmetic       = True,
-        choices        = sfx.get_setting_choices(sfx.SoundHooks.MENU_SELECT),
-        default        = 'default',
-        gui_params     = {
+        name='sfx_menu_select',
+        gui_text='Menu Select',
+        shared=False,
+        cosmetic=True,
+        choices=sfx.get_setting_choices(sfx.SoundHooks.MENU_SELECT),
+        default='default',
+        gui_params={
             'randomize_key': 'randomize_all_sfx',
             'distribution': [
                 ('random-ear-safe', 1),
@@ -5239,13 +5411,13 @@ setting_infos = [
         }
     ),
     Combobox(
-        name           = 'sfx_horse_neigh',
-        gui_text       = 'Horse',
-        shared         = False,
-        cosmetic       = True,
-        choices        = sfx.get_setting_choices(sfx.SoundHooks.HORSE_NEIGH),
-        default        = 'default',
-        gui_params     = {
+        name='sfx_horse_neigh',
+        gui_text='Horse',
+        shared=False,
+        cosmetic=True,
+        choices=sfx.get_setting_choices(sfx.SoundHooks.HORSE_NEIGH),
+        default='default',
+        gui_params={
             'randomize_key': 'randomize_all_sfx',
             'distribution': [
                 ('random-ear-safe', 1),
@@ -5253,13 +5425,13 @@ setting_infos = [
         }
     ),
     Combobox(
-        name           = 'sfx_nightfall',
-        gui_text       = 'Nightfall',
-        shared         = False,
-        cosmetic       = True,
-        choices        = sfx.get_setting_choices(sfx.SoundHooks.NIGHTFALL),
-        default        = 'default',
-        gui_params     = {
+        name='sfx_nightfall',
+        gui_text='Nightfall',
+        shared=False,
+        cosmetic=True,
+        choices=sfx.get_setting_choices(sfx.SoundHooks.NIGHTFALL),
+        default='default',
+        gui_params={
             'randomize_key': 'randomize_all_sfx',
             'distribution': [
                 ('random-ear-safe', 1),
@@ -5267,13 +5439,13 @@ setting_infos = [
         }
     ),
     Combobox(
-        name           = 'sfx_hover_boots',
-        gui_text       = 'Hover Boots',
-        shared         = False,
-        cosmetic       = True,
-        choices        = sfx.get_setting_choices(sfx.SoundHooks.BOOTS_HOVER),
-        default        = 'default',
-        gui_params     = {
+        name='sfx_hover_boots',
+        gui_text='Hover Boots',
+        shared=False,
+        cosmetic=True,
+        choices=sfx.get_setting_choices(sfx.SoundHooks.BOOTS_HOVER),
+        default='default',
+        gui_params={
             'randomize_key': 'randomize_all_sfx',
             'distribution': [
                 ('random-ear-safe', 1),
@@ -5281,24 +5453,24 @@ setting_infos = [
         }
     ),
     Combobox(
-        name           = 'sfx_ocarina',
-        gui_text       = 'Ocarina',
-        shared         = False,
-        cosmetic       = True,
-        choices        = {
-            'ocarina':       'Default',
+        name='sfx_ocarina',
+        gui_text='Ocarina',
+        shared=False,
+        cosmetic=True,
+        choices={
+            'ocarina': 'Default',
             'random-choice': 'Random Choice',
-            'flute':         'Flute',
-            'harp':          'Harp',
-            'whistle':       'Whistle',
-            'malon':         'Malon',
-            'grind-organ':   'Grind Organ',
+            'flute': 'Flute',
+            'harp': 'Harp',
+            'whistle': 'Whistle',
+            'malon': 'Malon',
+            'grind-organ': 'Grind Organ',
         },
-        default        = 'ocarina',
-        gui_tooltip    = '''\
+        default='ocarina',
+        gui_tooltip='''\
             Change the sound of the ocarina.
         ''',
-        gui_params     = {
+        gui_params={
             'randomize_key': 'randomize_all_sfx',
             'distribution': [
                 ('random-choice', 1),
@@ -5307,8 +5479,9 @@ setting_infos = [
     ),
 ]
 
-
 si_dict = {si.name: si for si in setting_infos}
+
+
 def get_setting_info(name):
     return si_dict[name]
 
@@ -5320,7 +5493,8 @@ def create_dependency(setting, disabling_setting, option, negative=False):
         disabled_info.dependency = lambda settings: op(getattr(settings, disabling_setting.name), option)
     else:
         old_dependency = disabled_info.dependency
-        disabled_info.dependency = lambda settings: op(getattr(settings, disabling_setting.name), option) or old_dependency(settings)
+        disabled_info.dependency = lambda settings: op(getattr(settings, disabling_setting.name),
+                                                       option) or old_dependency(settings)
 
 
 def get_settings_from_section(section_name):
@@ -5339,6 +5513,7 @@ def get_settings_from_tab(tab_name):
                 for setting in section['settings']:
                     yield setting
             return
+
 
 def is_mapped(setting_name):
     for tab in setting_map['Tabs']:
@@ -5370,7 +5545,7 @@ def build_close_match(name, value_type, source_list=None):
     close_match = difflib.get_close_matches(str(name), map(str, source), 1)
     if len(close_match) > 0:
         return "Did you mean %r?" % (close_match[0])
-    return "" # No matches
+    return ""  # No matches
 
 
 def validate_settings(settings_dict):
@@ -5381,12 +5556,14 @@ def validate_settings(settings_dict):
         info = get_setting_info(setting)
         # Ensure the type of the supplied choice is correct
         if type(choice) != info.type:
-            raise TypeError('Supplied choice %r for setting %r is of type %r, expecting %r' % (choice, setting, type(choice).__name__, info.type.__name__))
+            raise TypeError('Supplied choice %r for setting %r is of type %r, expecting %r' % (
+            choice, setting, type(choice).__name__, info.type.__name__))
         # If setting is a list, must check each element
         if isinstance(choice, list):
             for element in choice:
                 if element not in info.choice_list:
-                    raise ValueError('%r is not a valid choice for setting %r. %s' % (element, setting, build_close_match(element, 'choice', info.choice_list)))
+                    raise ValueError('%r is not a valid choice for setting %r. %s' % (
+                    element, setting, build_close_match(element, 'choice', info.choice_list)))
         # Ignore dictionary settings such as hint_dist_user
         elif isinstance(choice, dict):
             continue
@@ -5394,7 +5571,9 @@ def validate_settings(settings_dict):
         elif info.choice_list and choice not in info.choice_list:
             if setting == 'compress_rom' and choice == 'Temp':
                 continue
-            raise ValueError('%r is not a valid choice for setting %r. %s' % (choice, setting, build_close_match(choice, 'choice', info.choice_list)))
+            raise ValueError('%r is not a valid choice for setting %r. %s' % (
+            choice, setting, build_close_match(choice, 'choice', info.choice_list)))
+
 
 class UnmappedSettingError(Exception):
     pass
@@ -5405,7 +5584,8 @@ with open(data_path('settings_mapping.json')) as f:
 
 for info in setting_infos:
     if info.gui_text is not None and not info.gui_params.get('optional') and not is_mapped(info.name):
-        raise UnmappedSettingError(f'{info.name} is defined but is not in the settings map. Add it to the settings_mapping or set the gui_text to None to suppress.')
+        raise UnmappedSettingError(
+            f'{info.name} is defined but is not in the settings map. Add it to the settings_mapping or set the gui_text to None to suppress.')
 
     if info.disable != None:
         for option, disabling in info.disable.items():
