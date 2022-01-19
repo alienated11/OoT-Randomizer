@@ -3944,6 +3944,8 @@ setting_infos = [
             'Rupees (50)':       'Gold Rupee',
             'Chicken':       'Chicken',
             'Ice Arrows':       'Ice Arrows',
+            'Deku Shield':       'Deku Shield',
+            'Hylian Shield':       'Hylian Shield',
             'Ice Trap':       'Ice Traps'
         },
         gui_tooltip    = '''\
