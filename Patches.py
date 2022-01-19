@@ -777,6 +777,7 @@ def patch_rom(spoiler:Spoiler, world:World, rom:Rom):
         if super_cucco_count == 3:
             talon_count_string = "these \x05\x44three\x05\x40"
 
+    talon_cost = 10
     if world.settings.talon_cost:
         # don't mess up logic, so keep cost under 100 rupees
         talon_cost = random.randint(0, 99)
@@ -881,7 +882,7 @@ def patch_rom(spoiler:Spoiler, world:World, rom:Rom):
     hba_large_target = [40, 120, 160]
     hba_score_1 = 1000
     hba_score_2 = 1500
-    hba_ammo = 2*hba_score_1/100
+    hba_ammo = divmod(2*hba_score_1, 100)[0]
     hba_cost = 20
 
     if world.settings.hba_cost:
