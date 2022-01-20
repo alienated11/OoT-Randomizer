@@ -852,7 +852,7 @@ def patch_rom(spoiler:Spoiler, world:World, rom:Rom):
 
     dampe_race_time = 60
     dampe_race_fire_frames = 32
-    dampe_race_fire_color = [0x8B, 0x2A, 0xCB]
+    dampe_race_fire_color = [random.randint(0, 255), random.randint(0, 255), random.randint(0, 255)]
     dampe_race_fire_frames_string = "\x05\43normal\x05\x40"
     if world.settings.dampe_race_level != 'normal':
         if world.settings.dampe_race_level == 'easy':
@@ -870,11 +870,11 @@ def patch_rom(spoiler:Spoiler, world:World, rom:Rom):
             dampe_race_time = 45
             dampe_race_fire_frames = 2
             dampe_race_fire_frames_string = "\x05\41r\x05\42u\x05\43t\x05\44h\x05\45l\x05\46e\x05\41s\x05\42s\x05\x40"
-        rom.write_int16(0xDFF962, dampe_race_time)
-        rom.write_int16(0xDFEF12, dampe_race_fire_frames)
-        rom.write_byte(0xDFA09A, dampe_race_fire_color[0])
-        rom.write_byte(0xDFA09B, dampe_race_fire_color[1])
-        rom.write_byte(0xDFA09E, dampe_race_fire_color[2])
+    rom.write_int16(0xDFF962, dampe_race_time)
+    rom.write_int16(0xDFEF12, dampe_race_fire_frames)
+    rom.write_byte(0xDFA09A, dampe_race_fire_color[0])
+    rom.write_byte(0xDFA09B, dampe_race_fire_color[1])
+    rom.write_byte(0xDFA09E, dampe_race_fire_color[2])
 
 
     hba_small_target = [20, 40, 60]
