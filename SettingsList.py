@@ -4419,6 +4419,8 @@ setting_infos = [
             'Ice Arrows':       'Ice Arrows',
             'Deku Shield':       'Deku Shield',
             'Hylian Shield':       'Hylian Shield',
+            'Heart Container':  'Heart Container',
+            'Piece of Heart':  'Piece of Heart',
             'Ice Trap':       'Ice Traps'
         },
         gui_tooltip    = '''\

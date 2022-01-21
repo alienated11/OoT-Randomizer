@@ -657,6 +657,10 @@ junk_pool_base = [
     ('Rupees (50)',     1),
     ('Chicken',         1),
     ('Ice Arrows',         1),
+    ('Hylian Shield',         1),
+    ('Deku Shield',         1),
+    ('Heart Container',         1),
+    ('Piece of Heart',         1),
 ]
 
 pending_junk_pool = []
