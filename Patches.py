@@ -760,6 +760,13 @@ def patch_rom(spoiler:Spoiler, world:World, rom:Rom):
     # Speed dig text for Dampe
     rom.write_bytes(0x9532F8, [0x08, 0x08, 0x08, 0x59])
 
+    # Health Capacity Items Remove from Capacity
+    if world.settings.negative_health_cap:
+        rom.write_int16(0xAE6F9E, 0xFFF0)
+        rom.write_int16(0xAE6FA2, 0xFFF0)
+        rom.write_int16(0xB574B6, 0xFFF0)
+        rom.write_int16(0xB574BA, 0xFFF0)
+
     # randomize Talon's chickens
     super_cucco_count = world.settings.talon_count
     talon_count_string = "these \x05\x44three\x05\x40"

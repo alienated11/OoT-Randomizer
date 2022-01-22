@@ -366,6 +366,7 @@
             "text_shuffle",
             "damage_multiplier",
 			"no_collectible_hearts",
+            "negative_health_cap",
             "starting_tod"
           ]
         },

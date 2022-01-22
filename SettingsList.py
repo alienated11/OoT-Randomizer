@@ -4221,6 +4221,16 @@ setting_infos = [
         default=False,
         shared=True,
     ),
+    Checkbutton(
+        name='negative_health_cap',
+        gui_text='Change of Heart',
+        gui_tooltip='''\
+            Heart Containers remove 1 heart from total capacity
+            Four Pieces of Heart remove 1 heart from total capacity
+        ''',
+        default=False,
+        shared=True,
+    ),
     Combobox(
         name='hints',
         gui_text='Gossip Stones',
