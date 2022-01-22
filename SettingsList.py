@@ -2632,12 +2632,22 @@ setting_infos = [
         },
         shared=True,
     ),
+    Checkbutton(
+        name='chicken_day_night',
+        gui_text='Ageless Cuccos',
+        gui_tooltip='''\
+            Anju will give both of her rewards to Link regardless of age
+            Collect Cucco in daytime
+            Speak with Anju at night
+        ''',
+        shared=True,
+    ),
     Scale(
         name='chicken_count',
         gui_text='Cucco Count',
         default=7,
         min=0,
-        max=7,
+        max=10,
         gui_tooltip='''\
             Anju will give a reward for turning
             in the chosen number of Cuccos.

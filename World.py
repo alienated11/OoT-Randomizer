@@ -341,7 +341,7 @@ class World(object):
                 self.settings.starting_age = random.choice(['child', 'adult'])
             self.randomized_list.append('starting_age')
         if self.settings.chicken_count_random and 'chicken_count' not in dist_keys:
-            self.settings.chicken_count = random.randint(0, 7)
+            self.settings.chicken_count = random.randint(0, 10)
             self.randomized_list.append('chicken_count')
 
         # Handle random Rainbow Bridge condition
