@@ -655,12 +655,15 @@ junk_pool_base = [
     ('Rupees (5)',      5),
     ('Rupees (20)',     4),
     ('Rupees (50)',     1),
+]
+
+junk_pool_extended = [
     ('Chicken',         1),
-    ('Ice Arrows',         1),
-    ('Hylian Shield',         1),
-    ('Deku Shield',         1),
-    ('Heart Container',         1),
-    ('Piece of Heart',         1),
+    ('Ice Arrows',      1),
+    ('Hylian Shield',   1),
+    ('Deku Shield',     1),
+    ('Heart Container', 1),
+    ('Piece of Heart',  1)
 ]
 
 pending_junk_pool = []
@@ -753,7 +756,7 @@ def replace_max_item(items, item, max):
 
 
 def generate_itempool(world):
-    junk_pool[:] = list(junk_pool_base)
+    junk_pool[:] = list(junk_pool_base) + list(junk_pool_extended)
     if world.settings.junk_items == 'on':
         if any(world.settings.junk_item in junk_item for junk_item in junk_pool):
             junk_pool.append((world.settings.junk_item, 10))
