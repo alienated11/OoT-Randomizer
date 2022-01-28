@@ -14,7 +14,7 @@ from Item import Item, ItemFactory, MakeEventItem
 from ItemList import item_table
 from ItemPool import TriforceCounts
 from Location import Location, LocationFactory
-from LocationList import business_scrubs
+from LocationList import business_scrubs, location_table
 from Plandomizer import InvalidFileException
 from Region import Region, TimeOfDay
 from Rules import set_rules, set_shop_rules
@@ -67,6 +67,11 @@ class World(object):
         if settings.open_forest == 'closed' and (self.shuffle_special_interior_entrances or settings.shuffle_overworld_entrances or 
                                                  settings.warp_songs or settings.spawn_positions or settings.decouple_entrances or (settings.mix_entrance_pools != 'off')):
             self.settings.open_forest = 'closed_deku'
+
+        # Randomize rewards to be 0-48
+        gs_reward_max_tokens = 6*divmod(72, 6)[0]
+        self.gs_token_rewards = [6*divmod(random.randint(1, gs_reward_max_tokens), 6)[0] for i in range(0, 5)] if settings.gs_rewards \
+            else [10, 20, 30, 40, 50]
 
         self.triforce_goal = settings.triforce_goal_per_world * settings.world_count
 
@@ -408,6 +413,16 @@ class World(object):
             if new_region.name == 'Ganons Castle Grounds':
                 new_region.provides_time = TimeOfDay.DAMPE
             if 'locations' in region:
+                if region['region_name'] == 'Kak House of Skulltula' and len(region['locations'].items()) == len(self.gs_token_rewards):
+                    region['locations'] = {}
+                    i = 0
+                    while i < len(self.gs_token_rewards):
+                        new_loc_string = "Kak {} Gold Skulltula Reward".format(self.gs_token_rewards[i])
+                        new_rule_string = "(Gold_Skulltula_Token, {})".format(self.gs_token_rewards[i])
+                        region['locations'].update({new_loc_string: new_rule_string})
+                        if 'Kak {}0 Gold Skulltula Reward'.format(i+1) in location_table:
+                            location_table[new_loc_string] = location_table['Kak {}0 Gold Skulltula Reward'.format(i+1)]
+                        i += 1
                 for location, rule in region['locations'].items():
                     new_location = LocationFactory(location)
                     new_location.parent_region = new_region

@@ -4241,6 +4241,16 @@ setting_infos = [
         default=False,
         shared=True,
     ),
+    Checkbutton(
+        name='gs_rewards',
+        gui_text='Random Gold Skulltula Rewards',
+        gui_tooltip='''\
+            Rewards from the House of Skulltula are now randomized
+            Tokens needed will always be less than 50 and a multiple of 6
+        ''',
+        default=False,
+        shared=True,
+    ),
     Combobox(
         name='hints',
         gui_text='Gossip Stones',

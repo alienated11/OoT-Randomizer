@@ -368,6 +368,7 @@
             "damage_multiplier",
 			"no_collectible_hearts",
             "negative_health_cap",
+            "gs_rewards",
             "starting_tod"
           ]
         },

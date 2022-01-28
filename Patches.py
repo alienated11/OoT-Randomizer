@@ -760,17 +760,37 @@ def patch_rom(spoiler:Spoiler, world:World, rom:Rom):
     # Speed dig text for Dampe
     rom.write_bytes(0x9532F8, [0x08, 0x08, 0x08, 0x59])
 
+    if world.settings.gs_rewards:
+        # Modify Golden Skulltula rewards to be 6x actor param instead of 10x
+        # These modify when the actors are killed/not killed
+        # Cursed
+        rom.write_bytes(0xEA2218, [0x03, 0x03, 0xC0, 0x23])
+        # Un-cursed (gives reward)
+        rom.write_bytes(0xEA330C, [0x03, 0x03, 0xC0, 0x23])
+        # Randomize rewards to be 0-48
+        # Done at world level to make sure logic works
+        # gs_reward_max_tokens = 6*divmod(50, 6)[0]
+        # gs_reward_values = [random.randint(0, gs_reward_max_tokens) for i in range(0, 5)]
+
+        # Write actor params
+        rom.write_int16(0x343B07E, divmod(world.gs_token_rewards[0], 6)[0])
+        rom.write_int16(0x343B08E, divmod(world.gs_token_rewards[0], 6)[0])
+        rom.write_int16(0x343B09E, divmod(world.gs_token_rewards[1], 6)[0])
+        rom.write_int16(0x343B0AE, divmod(world.gs_token_rewards[1], 6)[0])
+        rom.write_int16(0x343B0BE, divmod(world.gs_token_rewards[2], 6)[0])
+        rom.write_int16(0x343B0CE, divmod(world.gs_token_rewards[2], 6)[0])
+        rom.write_int16(0x343B0DE, divmod(world.gs_token_rewards[3], 6)[0])
+        rom.write_int16(0x343B0EE, divmod(world.gs_token_rewards[3], 6)[0])
+        rom.write_int16(0x343B0FE, divmod(world.gs_token_rewards[4], 6)[0])
+        rom.write_int16(0x343B10E, divmod(world.gs_token_rewards[4], 6)[0])
+
     # Extra Anju Chickens code
-    if world.settings.chicken_day_night:
+    if world.settings.chicken_count > 7:
         # Modify Entrance Windmill -> Kakariko to be at the top of the Windmill as Child and Adult
         # Child + Day
         rom.write_bytes(0x1FF9112, [0x05, 0x5C, 0x03, 0x86, 0x02, 0x77])
         # Child + Night
         # rom.write_bytes(0x2002A6A, [0x05, 0x5C, 0x03, 0x86, 0x02, 0x77])
-        # Adult + Day
-        rom.write_bytes(0x20021BA, [0x05, 0x5C, 0x03, 0x86, 0x02, 0x77])
-        # Adult + Night
-        # rom.write_bytes(0x2002612, [0x05, 0x5C, 0x03, 0x86, 0x02, 0x77])
 
         # Add Cucco to top of Windmill as Child in Day
         rom.write_bytes(0x20161A4, [0x00, 0x19, 0x05, 0x5D, 0x03, 0x86, 0x02, 0x77])
@@ -781,6 +801,13 @@ def patch_rom(spoiler:Spoiler, world:World, rom:Rom):
         rom.write_int16(0x2016154, 0x0019)
         rom.write_int16(0x2016162, 0xFFFF)
 
+    # Separate Anju rewards based on Day/Night cycle
+    if world.settings.chicken_day_night:
+        if world.settings.chicken_count > 7:
+            # Adult + Day
+            rom.write_bytes(0x20021BA, [0x05, 0x5C, 0x03, 0x86, 0x02, 0x77])
+            # Adult + Night
+            # rom.write_bytes(0x2002612, [0x05, 0x5C, 0x03, 0x86, 0x02, 0x77])
         # Add Cucco to Child Night, replaces Carpenter's Son and some pots
         # rom.write_int16(0x2016C90, 0x0013)
         # rom.write_int16s(0x2016D08, [0x0019, 0xF95F, 0x0050, 0x0366, 0x0000, 0x127D, 0x0000, 0xFFFF])
@@ -807,9 +834,10 @@ def patch_rom(spoiler:Spoiler, world:World, rom:Rom):
         rom.write_int16s(0x201680C, [0x0019, 0x031C, 0x0050, 0x0667, 0x0000, 0x4889, 0x0000, 0xFFFF])
         rom.write_int16s(0x201681C, [0x0019, 0x0590, 0x01D1, 0x00A9, 0x0000, 0x0000, 0x0000, 0xFFFF])
         rom.write_int16s(0x201682C, [0x0019, 0xFFC4, 0x0000, 0xFFD2, 0x0000, 0x0000, 0x0000, 0x0004])
-        rom.write_int16s(0x201683C, [0x0019, 0xFF09, 0x0050, 0x0356, 0x0000, 0xDDDE, 0x0000, 0x0008])
-        rom.write_int16s(0x201684C, [0x0019, 0x0437, 0x0050, 0xFFD1, 0x0000, 0x1F4A, 0x0000, 0x0008])
-        rom.write_int16(0x201685C, 0x0019)
+        if world.settings.chicken_count > 7:
+            rom.write_int16s(0x201683C, [0x0019, 0xFF09, 0x0050, 0x0356, 0x0000, 0xDDDE, 0x0000, 0x0008])
+            rom.write_int16s(0x201684C, [0x0019, 0x0437, 0x0050, 0xFFD1, 0x0000, 0x1F4A, 0x0000, 0x0008])
+            rom.write_int16(0x201685C, 0x0019)
 
         # Add Cucco to Adult Night, replaces Well Crossbeam (only object) and some crates
         # rom.write_int16(0x2016940, 0x0013)
