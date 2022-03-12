@@ -1,4 +1,5 @@
 #include "triforce.h"
+#include "song_name_draw.h"
 #include "dungeon_info.h"
 #include "file_select.h"
 #include "get_items.h"
@@ -39,6 +40,7 @@ void after_game_state_update() {
     draw_dungeon_info(&(z64_ctxt.gfx->overlay));
     draw_triforce_count(&(z64_ctxt.gfx->overlay));
     give_ganon_boss_key();
+    draw_song_name(&(z64_ctxt.gfx->overlay));
 }
 
 void before_skybox_init(z64_game_t* game, int16_t skyboxId) {

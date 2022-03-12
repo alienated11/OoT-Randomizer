@@ -466,6 +466,7 @@
           "settings": [
             "background_music",
             "disable_battle_music",
+            "show_song_name",
             "fanfares",
             "ocarina_fanfares",
             "sfx_low_hp",

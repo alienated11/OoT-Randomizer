@@ -42,6 +42,28 @@ def patch_music(rom, settings, log, symbols):
     if settings.disable_battle_music:
         rom.write_byte(0xBE447F, 0x00)
 
+    if (settings.background_music == 'normal'):
+        rom.write_int16(rom.sym('song_name_enabled'), 0)
+    if settings.show_song_name != 'off':
+        rom.write_int16(rom.sym('song_name_enabled'), 1)
+        if settings.show_song_name == 'transition':
+            rom.write_int16(rom.sym('song_in_transitions'), 1)
+        if settings.show_song_name == 'always':
+            rom.write_int16(rom.sym('song_always_on_screen'), 1)
+
+        bgms = list(log.bgm.items())
+        charWord = []
+        for bgm in bgms:
+            song = bgm[1]
+            i = 0
+            while i < 40:
+                if (i < len(song)):
+                    charWord.append(ord(song[i]))
+                else:
+                    charWord.append(ord(" "))
+                i += 1
+
+        rom.write_bytes(rom.sym('songs'), charWord)
 
 def patch_model_colors(rom, color, model_addresses):
     main_addresses, dark_addresses = model_addresses

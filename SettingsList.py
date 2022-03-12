@@ -4345,6 +4345,10 @@ setting_infos = [
             ],
             'web:option_remove': ['random_custom_only'],
         },
+        disable        = {
+            'normal' : {'settings' : ['show_song_name']},
+            'off' : {'settings' : ['show_song_name']},
+        },
     ),
     Checkbutton(
         name           = 'disable_battle_music',
@@ -4358,6 +4362,31 @@ setting_infos = [
 	        near enemies.
         ''',
         default        = False,
+    ),
+    Setting_Info(
+        name           = 'show_song_name',
+        type           = str,
+        gui_text       = 'Show Song Name',
+        gui_type       = "Combobox",
+        shared         = False,
+        cosmetic       = True,
+        default        = 'off',
+        choices        = {
+            'off':          'Never',
+            'pause':        'On Pause Screen Only',
+            'transition':   'On Scenes Transitions',
+            'always':       'Always',
+        },
+        gui_tooltip    = '''\
+            'On Pause Screen Only': The current song name appears only when on pause screen.
+
+            'On Scenes Transitions': The current song name will fade in and out at each screen transition. 
+
+            'Always': The current song name name will always be on screen.
+        ''',
+        gui_params  = {
+            "hide_when_disabled": True,
+        },
     ),
     Combobox(
         name           = 'fanfares',

@@ -1,6 +1,7 @@
 #include "file_select.h"
 
 #include "file_icons.h"
+#include "song_name_draw.h"
 #include "gfx.h"
 #include "text.h"
 #include "util.h"
@@ -86,6 +87,7 @@ void draw_file_select_hash(uint32_t fade_out_alpha, z64_menudata_t* menu_data) {
     }
     
     draw_file_icons(db, menu_data);
+    draw_song_name_on_file_select(db);
 
     // Fade out once a file is selected
 
