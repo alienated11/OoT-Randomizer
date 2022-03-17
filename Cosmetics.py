@@ -9,6 +9,7 @@ import IconManip as icon
 from JSONDump import dump_obj, CollapseList, CollapseDict, AlignedDict, SortedDict
 from SettingsList import setting_infos
 from Plandomizer import InvalidFileException
+from Utils import compare_version
 import json
 
 
@@ -42,28 +43,34 @@ def patch_music(rom, settings, log, symbols):
     if settings.disable_battle_music:
         rom.write_byte(0xBE447F, 0x00)
 
-    if (settings.background_music == 'normal'):
-        rom.write_int16(rom.sym('song_name_enabled'), 0)
+    # Show song name
     if settings.show_song_name != 'off':
-        rom.write_int16(rom.sym('song_name_enabled'), 1)
-        if settings.show_song_name == 'transition':
-            rom.write_int16(rom.sym('song_in_transitions'), 1)
-        if settings.show_song_name == 'always':
-            rom.write_int16(rom.sym('song_always_on_screen'), 1)
+        canShowSongName = True
+        if settings.patch_file != '':
+            rom_version_bytes = rom.read_bytes(0x35, 3)
+            rom_version = f'{rom_version_bytes[0]}.{rom_version_bytes[1]}.{rom_version_bytes[2]}'
+            if compare_version(rom_version, '6.2.44') < 0:
+                log.errors.append("Song name on screen is not supported by this version.")
+                canShowSongName = False
+        if canShowSongName:
+            rom.write_int16(rom.sym('song_name_enabled'), 1)
+            if settings.show_song_name == 'transition':
+                rom.write_int16(rom.sym('song_in_transitions'), 1)
+            if settings.show_song_name == 'always':
+                rom.write_int16(rom.sym('song_always_on_screen'), 1)
 
-        bgms = list(log.bgm.items())
-        charWord = []
-        for bgm in bgms:
-            song = bgm[1]
-            i = 0
-            while i < 40:
-                if (i < len(song)):
-                    charWord.append(ord(song[i]))
-                else:
-                    charWord.append(ord(" "))
-                i += 1
-
-        rom.write_bytes(rom.sym('songs'), charWord)
+            bgms = list(log.bgm.items())
+            charWord = []
+            for bgm in bgms:
+                song = bgm[1]
+                i = 0
+                while i < 40:
+                    if (i < len(song)):
+                        charWord.append(ord(song[i]))
+                    else:
+                        charWord.append(ord(" "))
+                    i += 1
+            rom.write_bytes(rom.sym('songs'), charWord)
 
 def patch_model_colors(rom, color, model_addresses):
     main_addresses, dark_addresses = model_addresses
