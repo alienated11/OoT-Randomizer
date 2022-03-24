@@ -1,4 +1,6 @@
 # Run unittests with python -m unittest Unittest[.ClassName[.test_func]]
+# With python3.10, you can instead run pytest Unittest.py
+# See `python -m unittest -h` or `pytest -h` for more options.
 
 from collections import Counter, defaultdict
 import json
@@ -9,7 +11,7 @@ import re
 import unittest
 
 from EntranceShuffle import EntranceShuffleError
-from ItemList import item_table
+from Item import ItemInfo
 from ItemPool import remove_junk_items, item_groups
 from LocationList import location_groups, location_is_viewable
 from Main import main, resolve_settings, build_world_graphs, place_items
@@ -29,8 +31,8 @@ never_suffix = ['Capacity']
 never = {
     'Bunny Hood', 'Recovery Heart', 'Milk', 'Ice Arrows', 'Ice Trap',
     'Double Defense', 'Biggoron Sword', 'Giants Knife',
-} | {item for item, (t, adv, _, special) in item_table.items() if adv is False
-     or any(map(item.startswith, never_prefix)) or any(map(item.endswith, never_suffix))}
+} | {name for name, item in ItemInfo.items.items() if item.priority
+     or any(map(name.startswith, never_prefix)) or any(map(name.endswith, never_suffix))}
 
 # items required at most once, specifically things with multiple possible names
 # (except bottles)
@@ -38,23 +40,18 @@ once = {
     'Goron Tunic', 'Zora Tunic',
 }
 
-progressive = {
-    item for item, (_, _, _, special) in item_table.items()
-    if special and 'progressive' in special
-}
-
-bottles = {
-    item for item, (_, _, _, special) in item_table.items()
-    if special and 'bottle' in special and item != 'Deliver Letter'
-}
-
+progressive = {name for name, item in ItemInfo.items.items() if item.special.get('progressive', None)}
+bottles = {name for name, item in ItemInfo.items.items() if item.special.get('bottle', None) and name != 'Deliver Letter'}
 junk = set(remove_junk_items)
 
 
 def make_settings_for_test(settings_dict, seed=None, outfilename=None):
     # Some consistent settings for testability
     settings_dict.update({
-        'compress_rom': "None",
+        'create_patch_file': False,
+        'create_compressed_rom': False,
+        'create_wad_file': False,
+        'create_uncompressed_rom': False,
         'count': 1,
         'create_spoiler': True,
         'output_file': os.path.join(test_dir, 'Output', outfilename),
@@ -95,7 +92,10 @@ def generate_with_plandomizer(filename, live_copy=False):
         settings = Settings({
             'enable_distribution_file': True,
             'distribution_file': os.path.join(test_dir, 'plando', filename + '.json'),
-            'compress_rom': "None",
+            'create_patch_file': False,
+            'create_compressed_rom': False,
+            'create_wad_file': False,
+            'create_uncompressed_rom': False,
             'count': 1,
             'create_spoiler': True,
             'output_file': os.path.join(test_dir, 'Output', filename),
@@ -175,7 +175,7 @@ class TestPlandomizer(unittest.TestCase):
 
     def test_excess_starting_items(self):
         distribution_file, spoiler = generate_with_plandomizer("plando-excess-starting-items")
-        excess_item = list(distribution_file['starting_items'])[0]
+        excess_item = list(distribution_file['settings']['starting_items'])[0]
         for location, item in spoiler['locations'].items():
             if isinstance(item, dict):
                 test_item = spoiler['locations'][location]['item']
@@ -190,7 +190,11 @@ class TestPlandomizer(unittest.TestCase):
         settings = Settings({
             'enable_distribution_file': True,
             'distribution_file': os.path.join(test_dir, 'plando', filename + '.json'),
-            'compress_rom': "Patch",
+            'patch_without_output': True,
+            'create_patch_file': False,
+            'create_compressed_rom': False,
+            'create_wad_file': False,
+            'create_uncompressed_rom': False,
             'count': 1,
             'create_spoiler': True,
             'create_cosmetics_log': False,
@@ -253,6 +257,16 @@ class TestPlandomizer(unittest.TestCase):
             "plando-egg-shuffled-two-pool",
             "no-ice-trap-pending-junk",
             "disabled-song-location",
+            "plando-keyrings-all-anydungeon-allmq",
+            "plando-keyrings-all-anydungeon-halfmq",
+            "plando-keyrings-all-anydungeon-nomq",
+            "plando-keyrings-all-anywhere-allmq",
+            "plando-keyrings-all-anywhere-halfmq",
+            "plando-keyrings-all-anywhere-nomq",
+            "plando-keyrings-all-dungeon-allmq",
+            "plando-keyrings-all-dungeon-halfmq",
+            "plando-keyrings-all-dungeon-nomq",
+            "plando-mirrored-ice-traps",
         ]
         for filename in filenames:
             with self.subTest(filename):
@@ -296,7 +310,7 @@ class TestPlandomizer(unittest.TestCase):
         with self.subTest("starting items not in actual_pool"):
             distribution_file, spoiler = generate_with_plandomizer(filename)
             actual_pool = get_actual_pool(spoiler)
-            for item in distribution_file['starting_items']:
+            for item in distribution_file['settings']['starting_items']:
                 self.assertNotIn(item, actual_pool)
 
     def test_weird_egg_in_pool(self):
@@ -316,6 +330,61 @@ class TestPlandomizer(unittest.TestCase):
         shuffled_two = "plando-egg-shuffled-two-pool"
         distribution_file, spoiler = generate_with_plandomizer(shuffled_two)
         self.assertEqual(spoiler['item_pool']['Weird Egg'], 1)
+
+    def test_key_rings(self):
+        # Checking dungeon keys using forest temple
+        # Minimal and balanced pools: Should be one key ring
+        distribution_file, spoiler = generate_with_plandomizer("plando-keyrings-forest-anywhere-minimal")
+        self.assertNotIn('Small Key (Forest Temple)', spoiler['locations'].values())
+        self.assertEqual(get_actual_pool(spoiler)['Small Key Ring (Forest Temple)'], 1)
+        distribution_file, spoiler = generate_with_plandomizer("plando-keyrings-forest-anywhere-balanced")
+        self.assertNotIn('Small Key (Forest Temple)', spoiler['locations'].values())
+        self.assertEqual(get_actual_pool(spoiler)['Small Key Ring (Forest Temple)'], 1)
+        # Plentiful pool: Should be two key rings
+        distribution_file, spoiler = generate_with_plandomizer("plando-keyrings-forest-anywhere-plentiful")
+        self.assertNotIn('Small Key (Forest Temple)', spoiler['locations'].values())
+        self.assertEqual(get_actual_pool(spoiler)['Small Key Ring (Forest Temple)'], 2)
+        # Keysy: Should be no small keys or key rings (regardless of item pool)
+        distribution_file, spoiler = generate_with_plandomizer("plando-keyrings-forest-keysy-plentiful")
+        self.assertNotIn('Small Key (Forest Temple)', spoiler['locations'].values())
+        self.assertNotIn('Small Key Ring (Forest Temple)', spoiler['locations'].values())
+        # Vanilla: Should be no keys of either type in vanilla (small keys will be placed but not listed in locations)
+        distribution_file, spoiler = generate_with_plandomizer("plando-keyrings-forest-vanilla-plentiful")
+        self.assertNotIn('Small Key (Forest Temple)', spoiler['locations'].values())
+        self.assertNotIn('Small Key Ring (Forest Temple)', spoiler['locations'].values())
+
+        # Checking hideout keys
+        # If fortress is fast or keys are vanilla, should be no key rings
+        distribution_file, spoiler = generate_with_plandomizer("plando-keyrings-hideout-default-vanilla")
+        self.assertNotIn('Small Key (Thieves Hideout)', spoiler['locations'].values())
+        self.assertNotIn('Small Key Ring (Thieves Hideout)', spoiler['locations'].values())
+        distribution_file, spoiler = generate_with_plandomizer("plando-keyrings-hideout-fast-vanilla")
+        self.assertNotIn('Small Key (Thieves Hideout)', spoiler['locations'].values())
+        self.assertNotIn('Small Key Ring (Thieves Hideout)', spoiler['locations'].values())
+        distribution_file, spoiler = generate_with_plandomizer("plando-keyrings-hideout-fast-anywhere-balanced")
+        self.assertEqual(get_actual_pool(spoiler)['Small Key (Thieves Hideout)'], 1)
+        self.assertNotIn('Small Key Ring (Thieves Hideout)', spoiler['locations'].values())
+        distribution_file, spoiler = generate_with_plandomizer("plando-keyrings-hideout-fast-anywhere-plentiful")
+        self.assertEqual(get_actual_pool(spoiler)['Small Key (Thieves Hideout)'], 2)
+        self.assertNotIn('Small Key Ring (Thieves Hideout)', spoiler['locations'].values())
+        # If default behaviour (so 4 keys necessary) and keys not vanilla, should be 1 or 2 keyrings (balanced or plentiful)
+        distribution_file, spoiler = generate_with_plandomizer("plando-keyrings-hideout-default-anywhere-balanced")
+        self.assertNotIn('Small Key (Thieves Hideout)', spoiler['locations'].values())
+        self.assertEqual(get_actual_pool(spoiler)['Small Key Ring (Thieves Hideout)'], 1)
+        distribution_file, spoiler = generate_with_plandomizer("plando-keyrings-hideout-default-anywhere-plentiful")
+        self.assertNotIn('Small Key (Thieves Hideout)', spoiler['locations'].values())
+        self.assertEqual(get_actual_pool(spoiler)['Small Key Ring (Thieves Hideout)'], 2)
+        # Should be neither if fortress is open, regardless of item pool
+        distribution_file, spoiler = generate_with_plandomizer("plando-keyrings-hideout-open-plentiful")
+        self.assertNotIn('Small Key (Thieves Hideout)', spoiler['locations'].values())
+        self.assertNotIn('Small Key Ring (Thieves Hideout)', spoiler['locations'].values())
+
+        # No key rings: Make sure none in item pool on plentiful
+        distribution_file, spoiler = generate_with_plandomizer("plando-keyrings-none-anywhere-plentiful")
+        self.assertEqual(get_actual_pool(spoiler)['Small Key (Forest Temple)'], 6)
+        self.assertNotIn('Small Key Ring (Forest Temple)', spoiler['locations'].values())
+        self.assertEqual(get_actual_pool(spoiler)['Small Key (Thieves Hideout)'], 5)
+        self.assertNotIn('Small Key Ring (Thieves Hideout)', spoiler['locations'].values())
 
 class TestHints(unittest.TestCase):
     def test_skip_zelda(self):
@@ -516,16 +585,21 @@ class TestValidSpoilers(unittest.TestCase):
                     self.verify_playthrough(spoiler)
                     self.verify_disables(spoiler)
 
+    # remove this to run the fuzzer
+    @unittest.skip("generally slow and failures can be ignored")
     def test_fuzzer(self):
         random.seed()
         fuzz_settings = [Settings({
             'randomize_settings': True,
-            'compress_rom': "None",
+            'create_patch_file': False,
+            'create_compressed_rom': False,
+            'create_wad_file': False,
+            'create_uncompressed_rom': False,
             'create_spoiler': True,
             'output_file': os.path.join(output_dir, 'fuzz-%d' % i),
         }) for i in range(10)]
-        out_keys = ['randomize_settings', 'compress_rom',
-                    'create_spoiler', 'output_file', 'seed']
+        out_keys = ['randomize_settings', 'create_patch_file', 'create_compressed_rom', 'create_wad_file',
+                    'create_uncompressed_rom', 'patch_without_output', 'create_spoiler', 'output_file', 'seed']
         for settings in fuzz_settings:
             output_file = '%s_Spoiler.json' % settings.output_file
             settings_file = '%s_%s_Settings.json' % (settings.output_file, settings.seed)

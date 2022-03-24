@@ -1,7 +1,9 @@
 from itertools import chain
 from enum import IntEnum
+from ItemPool import IGNORE_LOCATION
 
 class Scenes(IntEnum):
+    # Dungeons
     DEKU_TREE = 0x00
     DODONGOS_CAVERN = 0x01
     KING_DODONGO_LOBBY = 0x12
@@ -11,6 +13,16 @@ class Scenes(IntEnum):
     WATER_TEMPLE = 0x05
     SPIRIT_TEMPLE = 0x06
     SHADOW_TEMPLE = 0x07
+    # Bean patch scenes
+    GRAVEYARD = 0x53
+    ZORAS_RIVER = 0x54
+    KOKIRI_FOREST = 0x55
+    LAKE_HYLIA = 0x57
+    GERUDO_VALLEY = 0x5A
+    LOST_WOODS = 0x5B
+    DESERT_COLOSSUS = 0x5C
+    DEATH_MOUNTAIN_TRAIL = 0x60
+    DEATH_MOUNTAIN_CRATER = 0x61
 
 class FlagType(IntEnum):
     CHEST = 0x00
@@ -250,15 +262,13 @@ class SaveContext():
         self.addresses['quest']['heart_pieces'].value = int((health % 1) * 4)
 
 
-    def give_raw_item(self, item):
-        if item.endswith(')'):
-            item_base, count = item[:-1].split(' (', 1)
-            if count.isdigit():
-                return self.give_item(item_base, count=int(count))
-        return self.give_item(item)
-
-
     def give_item(self, item, count=1):
+        if item.endswith(')'):
+            item_base, implicit_count = item[:-1].split(' (', 1)
+            if implicit_count.isdigit():
+                item = item_base
+                count *= int(implicit_count)
+
         if item in SaveContext.bottle_types:
             self.give_bottle(item, count)
         elif item in ["Piece of Heart", "Piece of Heart (Treasure Chest Game)"]:
@@ -267,6 +277,8 @@ class SaveContext():
             self.give_health(count)
         elif item == "Bombchu Item":
             self.give_bombchu_item()
+        elif item == IGNORE_LOCATION:
+            pass # used to disable some skipped and inaccessible locations
         elif item in SaveContext.save_writes_table:
             for address, value in SaveContext.save_writes_table[item].items():
                 if value is None:
@@ -954,7 +966,7 @@ class SaveContext():
     }
 
     giveable_items = set(chain(save_writes_table.keys(), bottle_types.keys(),
-        ["Piece of Heart", "Piece of Heart (Treasure Chest Game)", "Heart Container", "Rupee (1)"]))
+        ["Piece of Heart", "Piece of Heart (Treasure Chest Game)", "Heart Container", "Rupee (1)", "Recovery Heart"]))
 
 
     equipable_items = {
