@@ -8,12 +8,14 @@ static int last_scene_shown = -1;
 #define SONG_FRAMES_FADE_AWAY 60
 #define SONG_FRAMES_FADE_INTO 5
 
-#define TEXT_WIDTH 4
+#define TEXT_WIDTH 5
 #define TEXT_HEIGHT 10
 
-uint16_t song_name_enabled = 0;
-uint16_t song_always_on_screen = 0;
-uint16_t song_in_transitions = 0;
+extern uint8_t CFG_SONG_NAME_ENABLED;
+extern uint8_t CFG_SONG_ALWAYS_ON_SCREEN;
+extern uint8_t CFG_SONG_IN_TRANSITION;
+extern int8_t SONGS_NAMES[40*47];
+
 int8_t songs_ids[] = { 
     0x02, 0x18, 0x19, 0x1A,
     0x1B, 0x1C, 0x1D, 0x1E,
@@ -27,11 +29,10 @@ int8_t songs_ids[] = {
     0x5B, 0x5C, 0x5F, 0x60,
     0x61, 0x62, 0x63, 0x64,
     0x65, 0x6B, 0x6C };
-int8_t songs[47*40];
 
 void draw_song_name(z64_disp_buf_t *db) {
 
-    if (!song_name_enabled)
+    if (!CFG_SONG_NAME_ENABLED)
         return;
 
     // Find index of current scene
@@ -48,13 +49,13 @@ void draw_song_name(z64_disp_buf_t *db) {
         return;
 
     uint8_t alpha = 0;
-    if (song_in_transitions && 
+    if (CFG_SONG_IN_TRANSITION && 
         scene != last_scene_shown) {
         render_song_flag = 1;
         frames = frames > SONG_FRAMES_FADE_INTO ? SONG_FRAMES_FADE_INTO : frames;
     }
 
-    if (!song_always_on_screen) {
+    if (!CFG_SONG_ALWAYS_ON_SCREEN) {
         // Pause screen
         if (z64_game.pause_ctxt.state == 6) {
             alpha = 255;
@@ -90,7 +91,7 @@ void draw_song_name(z64_disp_buf_t *db) {
     int size_text = 1;
     for (int i = 1; i < 40; i++) {
         // Stop at two consecutive spaces
-        if (songs[index*40 + i] == 32 && songs[index*40 + i - 1] == 32) {
+        if (SONGS_NAMES[index*40 + i] == 32 && SONGS_NAMES[index*40 + i - 1] == 32) {
             break;
         }
         size_text++;
@@ -100,15 +101,16 @@ void draw_song_name(z64_disp_buf_t *db) {
 
     char text[size_text];
     for (int i = 0; i < size_text - 1; i++) {
-        text[i] = (char)(songs[index*40 + i]);
+        text[i] = (char)(SONGS_NAMES[index*40 + i]);
     }
-
     // Call setup display list
     gSPDisplayList(db->p++, &setup_db);
     gDPPipeSync(db->p++);
     gDPSetCombineMode(db->p++, G_CC_MODULATEIA_PRIM, G_CC_MODULATEIA_PRIM);
-
     text_print_size(text, draw_x, draw_y_text, TEXT_WIDTH);
+    // Rainbow text SMILERS
+    //colorRGB8_t color = get_rainbow_color(frames, 2); 
+    //gDPSetPrimColor(db->p++, 0, 0, color.r, color.g, color.b, alpha);
     gDPSetPrimColor(db->p++, 0, 0, 0xFF, 0xFF, 0xFF, alpha);
 
     text_flush_size(db, TEXT_WIDTH, TEXT_HEIGHT, 0, 0);
@@ -119,7 +121,7 @@ void draw_song_name(z64_disp_buf_t *db) {
 
 void draw_song_name_on_file_select(z64_disp_buf_t *db) {
 
-    if (!song_name_enabled)
+    if (!CFG_SONG_NAME_ENABLED)
         return;
 
     // Fairy fountain track
@@ -132,7 +134,7 @@ void draw_song_name_on_file_select(z64_disp_buf_t *db) {
     int size_text = 1;
     for (int i = 1; i < 40; i++) {
         // Stop at two consecutive spaces
-        if (songs[index*40 + i] == 32 && songs[index*40 + i - 1] == 32) {
+        if (SONGS_NAMES[index*40 + i] == 32 && SONGS_NAMES[index*40 + i - 1] == 32) {
             break;
         }
         size_text++;
@@ -142,7 +144,7 @@ void draw_song_name_on_file_select(z64_disp_buf_t *db) {
 
     char text[size_text];
     for (int i = 0; i < size_text - 1; i++) {
-        text[i] = (char)(songs[index*40 + i]);
+        text[i] = (char)(SONGS_NAMES[index*40 + i]);
     }
 
     // Call setup display list

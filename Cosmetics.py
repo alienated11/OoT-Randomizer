@@ -43,23 +43,27 @@ def patch_music(rom, settings, log, symbols):
     if settings.disable_battle_music:
         rom.write_byte(0xBE447F, 0x00)
 
+def patch_song_name(rom, settings, log, symbols):
     # Show song name
     if settings.show_song_name != 'off':
         canShowSongName = True
         if settings.patch_file != '':
             rom_version_bytes = rom.read_bytes(0x35, 3)
             rom_version = f'{rom_version_bytes[0]}.{rom_version_bytes[1]}.{rom_version_bytes[2]}'
-            if compare_version(rom_version, '6.2.44') < 0:
+            if compare_version(rom_version, '6.2.50') < 0:
                 log.errors.append("Song name on screen is not supported by this version.")
                 canShowSongName = False
         if canShowSongName:
-            rom.write_int16(rom.sym('song_name_enabled'), 1)
+            rom.write_byte(symbols['CFG_SONG_NAME_ENABLED'], 0x01)
             if settings.show_song_name == 'transition':
-                rom.write_int16(rom.sym('song_in_transitions'), 1)
+                rom.write_byte(symbols['CFG_SONG_IN_TRANSITION'], 0x01)
+                rom.write_byte(symbols['CFG_SONG_ALWAYS_ON_SCREEN'], 0x00)
             if settings.show_song_name == 'always':
-                rom.write_int16(rom.sym('song_always_on_screen'), 1)
+                rom.write_byte(symbols['CFG_SONG_ALWAYS_ON_SCREEN'], 0x01)
+                rom.write_byte(symbols['CFG_SONG_IN_TRANSITION'], 0x00)
 
             bgms = list(log.bgm.items())
+
             charWord = []
             for bgm in bgms:
                 song = bgm[1]
@@ -69,8 +73,10 @@ def patch_music(rom, settings, log, symbols):
                         charWord.append(ord(song[i]))
                     else:
                         charWord.append(ord(" "))
-                    i += 1
-            rom.write_bytes(rom.sym('songs'), charWord)
+                    i += 1     
+            rom.write_bytes(symbols['SONGS_NAMES'], charWord)
+        else:
+            rom.write_byte(symbols['CFG_SONG_NAME_ENABLED'], 0x00)
 
 def patch_model_colors(rom, color, model_addresses):
     main_addresses, dark_addresses = model_addresses
@@ -880,6 +886,7 @@ patch_sets = {
             patch_button_colors,
             patch_boomerang_trails,
             patch_bombchu_trails,
+            patch_song_name,
         ],
         "symbols": {
             "CFG_MAGIC_COLOR": 0x0004,
@@ -910,6 +917,10 @@ patch_sets = {
             "CFG_RAINBOW_NAVI_NPC_OUTER_ENABLED": 0x0052,
             "CFG_RAINBOW_NAVI_PROP_INNER_ENABLED": 0x0053,
             "CFG_RAINBOW_NAVI_PROP_OUTER_ENABLED": 0x0054,
+            "CFG_SONG_NAME_ENABLED": 0x0055,
+            "CFG_SONG_ALWAYS_ON_SCREEN": 0x0056,
+            "CFG_SONG_IN_TRANSITION": 0x0057,
+            "SONGS_NAMES": 0x0058, #size : 0x758
         }
     },
 }
