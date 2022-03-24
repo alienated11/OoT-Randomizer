@@ -108,9 +108,10 @@ class Checkbutton(Setting_Info):
 class Combobox(Setting_Info):
 
     def __init__(self, name, gui_text, choices, default, gui_tooltip=None,
-            disable=None, disabled_default=None, shared=False, gui_params=None, cosmetic=False):
-
-        super().__init__(name, str, gui_text, 'Combobox', shared, choices, default, disabled_default, disable, gui_tooltip, gui_params, cosmetic)
+            disable=None, disabled_default=None, shared=False, gui_params=None, cosmetic=False, multiple_select=False):
+        gui_type = 'Combobox' if not multiple_select else 'MultipleSelect'
+        type = str if not multiple_select else list
+        super().__init__(name, type, gui_text, gui_type, shared, choices, default, disabled_default, disable, gui_tooltip, gui_params, cosmetic)
 
 
 class Scale(Setting_Info):
@@ -4645,33 +4646,29 @@ setting_infos = [
         shared         = True,
     ),
     Combobox(
-        name           = 'junk_ice_traps',
-        gui_text       = 'Ice Traps',
-        default        = 'normal',
-        choices        = {
-            'off':       'No Ice Traps',
-            'normal':    'Normal Ice Traps',
-            'on':        'Extra Ice Traps',
-            'mayhem':    'Ice Trap Mayhem',
-            'onslaught': 'Ice Trap Onslaught',
+        name='junk_items',
+        gui_text='Junk Item Level',
+        default='normal',
+        choices={
+            'off': 'No Junk Items',
+            'normal': 'Normal Junk Items',
+            'on': 'Extra Junk Items',
+            'mayhem': 'Junk Items Mayhem',
+            'onslaught': 'Junk Items Onslaught',
         },
-        gui_tooltip    = '''\
+        gui_tooltip='''\
             'Off': All Ice Traps are removed.
-
             'Normal': Only Ice Traps from the base item pool
             are placed.
-
             'Extra Ice Traps': Chance to add extra Ice Traps
             when junk items are added to the itempool.
-
             'Ice Trap Mayhem': All added junk items will
             be Ice Traps.
-
             'Ice Trap Onslaught': All junk items will be
             replaced by Ice Traps, even those in the
             base pool.
         ''',
-        shared         = True,
+        shared=True,
     ),
     Combobox(
         name           = 'junk_item',
