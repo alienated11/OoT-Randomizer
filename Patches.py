@@ -766,7 +766,7 @@ def patch_rom(spoiler:Spoiler, world:World, rom:Rom):
         # Cursed
         rom.write_bytes(0xEA2218, [0x03, 0x03, 0xC0, 0x23])
         # Un-cursed (gives reward)
-        rom.write_bytes(0xEA330C, [0x03, 0x03, 0xC0, 0x23])
+        rom.write_bytes(0xEA330C, [0x03, 0x02, 0xC0, 0x23])
         # Randomize rewards to be 0-48
         # Done at world level to make sure logic works
         # gs_reward_max_tokens = 6*divmod(50, 6)[0]
