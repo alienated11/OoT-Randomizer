@@ -1044,6 +1044,11 @@ def patch_rom(spoiler:Spoiler, world:World, rom:Rom):
     rom.write_f32(0xE0B060, hba_large_target[1])
     rom.write_f32(0xE0B064, hba_large_target[2])
 
+    # Make Treasure Chest Minigame be All LEFT
+    if world.settings.easy_treasure_game:
+        # 0xE435B0: 0x3C013F80 -> 0x3C014000
+        rom.write_bytes(0xE435B0, [0x3C, 0x01, 0x40, 0x00])
+
     # Make item descriptions into a single box
     short_item_descriptions = [0x92EC84, 0x92F9E3, 0x92F2B4, 0x92F37A, 0x92F513, 0x92F5C6, 0x92E93B, 0x92EA12]
     for address in short_item_descriptions:
