@@ -350,7 +350,9 @@
             "hba_ammo",
             "hba_score",
             "dampe_race_level",
-            "easy_treasure_game"
+            "easy_treasure_game",
+            "diving_rupees",
+            "diving_cost"
           ]
         },
         {

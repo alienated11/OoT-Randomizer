@@ -1049,6 +1049,15 @@ def patch_rom(spoiler:Spoiler, world:World, rom:Rom):
         # 0xE435B0: 0x3C013F80 -> 0x3C014000
         rom.write_bytes(0xE435B0, [0x3C, 0x01, 0x40, 0x00])
 
+    # Diving Game
+    number_of_rupees_round_1 = random.randint(1, 9) if world.settings.diving_rupees else 5
+    diving_cost = random.randint(1, 99) if world.settings.diving_cost else 20
+
+    rom.write_int16(0xE00B7E, number_of_rupees_round_1)
+    rom.write_int16(0xE0125E, number_of_rupees_round_1)
+    rom.write_int16(0xE00F1A, diving_cost)
+    rom.write_int16(0xE00F2A, 0xFFFF - diving_cost + 1)
+
     # Make item descriptions into a single box
     short_item_descriptions = [0x92EC84, 0x92F9E3, 0x92F2B4, 0x92F37A, 0x92F513, 0x92F5C6, 0x92E93B, 0x92EA12]
     for address in short_item_descriptions:
