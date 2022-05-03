@@ -67,9 +67,10 @@ class World(object):
             self.settings.open_forest = 'closed_deku'
 
         # Randomize rewards to be 0-48
-        gs_reward_max_tokens = 6*divmod(72, 6)[0]
-        self.gs_token_rewards = [6*divmod(random.randint(1, gs_reward_max_tokens), 6)[0] for i in range(0, 5)] if settings.gs_rewards \
+        gs_reward_max_tokens = 6*divmod(48, 6)[0]
+        self.gs_token_rewards = random.sample(range(6, gs_reward_max_tokens, 6), 5) if settings.gs_rewards \
             else [10, 20, 30, 40, 50]
+        self.gs_token_rewards.sort()
 
         if settings.triforce_goal_per_world > settings.triforce_count_per_world:
             raise ValueError("Triforces required cannot be more than the triforce count.")

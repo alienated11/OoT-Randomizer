@@ -766,7 +766,7 @@ def patch_rom(spoiler:Spoiler, world:World, rom:Rom):
         # Cursed
         rom.write_bytes(0xEA2218, [0x03, 0x03, 0xC0, 0x23])
         # Un-cursed (gives reward)
-        rom.write_bytes(0xEA330C, [0x03, 0x03, 0xC0, 0x23])
+        rom.write_bytes(0xEA330C, [0x03, 0x02, 0xC0, 0x23])
         # Randomize rewards to be 0-48
         # Done at world level to make sure logic works
         # gs_reward_max_tokens = 6*divmod(50, 6)[0]
@@ -1043,6 +1043,20 @@ def patch_rom(spoiler:Spoiler, world:World, rom:Rom):
     rom.write_f32(0xE0B05C, hba_large_target[0])
     rom.write_f32(0xE0B060, hba_large_target[1])
     rom.write_f32(0xE0B064, hba_large_target[2])
+
+    # Make Treasure Chest Minigame be All LEFT
+    if world.settings.easy_treasure_game:
+        # 0xE435B0: 0x3C013F80 -> 0x3C014000
+        rom.write_bytes(0xE435B0, [0x3C, 0x01, 0x40, 0x00])
+
+    # Diving Game
+    number_of_rupees_round_1 = random.randint(1, 9) if world.settings.diving_rupees else 5
+    diving_cost = random.randint(1, 99) if world.settings.diving_cost else 20
+
+    rom.write_int16(0xE00B7E, number_of_rupees_round_1)
+    rom.write_int16(0xE0125E, number_of_rupees_round_1)
+    rom.write_int16(0xE00F1A, diving_cost)
+    rom.write_int16(0xE00F2A, 0xFFFF - diving_cost + 1)
 
     # Make item descriptions into a single box
     short_item_descriptions = [0x92EC84, 0x92F9E3, 0x92F2B4, 0x92F37A, 0x92F513, 0x92F5C6, 0x92E93B, 0x92EA12]

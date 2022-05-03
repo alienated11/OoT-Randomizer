@@ -3110,6 +3110,42 @@ setting_infos = [
 
     ),
     Checkbutton(
+        name='easy_treasure_game',
+        gui_text='Easy Treasure Chest Game',
+        gui_tooltip='''\
+            Makes the keys in Treasure Chest minigame always be in the left chests.
+        ''',
+        default=False,
+        shared=True,
+        gui_params={
+            'randomize_key': 'randomize_settings',
+        },
+    ),
+    Checkbutton(
+        name='diving_rupees',
+        gui_text='Random Diving Game Rupees',
+        gui_tooltip='''\
+            Throws between 1 and 9 rupees
+        ''',
+        default=False,
+        shared=True,
+        gui_params={
+            'randomize_key': 'randomize_settings',
+        },
+    ),
+    Checkbutton(
+        name='diving_cost',
+        gui_text='Random Diving Game Cost',
+        gui_tooltip='''\
+            Randomizes cost to play the Diving Game in Zora's Domain
+        ''',
+        default=False,
+        shared=True,
+        gui_params={
+            'randomize_key': 'randomize_settings',
+        },
+    ),
+    Checkbutton(
         name           = 'shuffle_kokiri_sword',
         gui_text       = 'Shuffle Kokiri Sword',
         gui_tooltip    = '''\
