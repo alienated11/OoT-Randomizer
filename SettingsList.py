@@ -3486,6 +3486,18 @@ setting_infos = [
             'randomize_key': 'randomize_settings',
         },
     ),
+    Checkbutton(
+        name           = 'shuffle_ganon_arrows',
+        gui_text       = 'Random Magic Arrows',
+        gui_tooltip    = '''\
+            Shuffle the arrows required in the Ganondorf fight
+        ''',
+        default        = False,
+        shared         = True,
+        gui_params     = {
+            'randomize_key': 'randomize_settings',
+        },
+    ),
     Combobox(
         name           = 'mix_entrance_pools',
         gui_text       = 'Mix Entrance Pools',
@@ -3575,6 +3587,51 @@ setting_infos = [
         gui_params     = {
             'randomize_key': 'randomize_settings',
         },
+    ),
+    Checkbutton(
+        name           = 'climb_anywhere',
+        gui_text       = 'Climb anything',
+        gui_tooltip    = '''\
+            Modifies collision polygons to become climbable
+            
+            Note: Ladders do not always work with this setting
+        ''',
+        default        = False,
+        shared         = True,
+        gui_params     = {
+            'randomize_key': 'randomize_settings',
+        },
+    ),
+    Checkbutton(
+        name           = 'hookshot_anywhere',
+        gui_text       = 'Hookshot anything',
+        gui_tooltip    = '''\
+            Modifies collision polygons to become Hookshot-able
+        ''',
+        default        = False,
+        shared         = True,
+        gui_params     = {
+            'randomize_key': 'randomize_settings',
+        },
+    ),
+    Combobox(
+        name            = 'floor_type',
+        multiple_select = True,
+        gui_text        = 'Floor Type',
+        choices         = {
+            'lava':       "Lava",
+            'ice':        "Ice",
+            'sand':       "Shallow Sand",
+        },
+        default         = [],
+        gui_tooltip     = '''\
+            Randomizes the type for floor collision polygons
+            
+            Boss arenas are excluded from floor randomization
+            
+            Note: Shallow sand can cause void outs and Lava inside of archery games will prevent progession
+        ''',
+        shared          = True
     ),
     Combobox(
         name           = 'shuffle_scrubs',

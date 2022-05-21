@@ -107,13 +107,13 @@
                 (Sticks or ((Nuts or Boomerang) and (Kokiri_Sword or Slingshot)))"
         },
         "exits": {
-            "Dodongos Cavern Boss Room": "
+            "Dodongos Cavern Boss": "
                 is_adult or has_explosives or can_use(Dins_Fire) or dodongos_cavern_shortcuts or
                 (Sticks or ((Nuts or Boomerang) and (Kokiri_Sword or Slingshot)))"
         }
     },
     {
-        "region_name": "Dodongos Cavern Boss Room",
+        "region_name": "Dodongos Cavern Boss",
         "dungeon": "Dodongos Cavern",
         "locations": {
             "Dodongos Cavern Boss Room Chest": "True",
@@ -128,6 +128,9 @@
                 (Bombs or Progressive_Strength_Upgrade) and 
                 (is_adult or Sticks or Kokiri_Sword)",
             "Fairy Pot": "has_bottle"
+        },
+        "exits": {
+            "Dodongos Cavern Boss Area": "True"
         }
     }
 ]

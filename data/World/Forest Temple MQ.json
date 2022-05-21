@@ -158,15 +158,22 @@
         "region_name": "Forest Temple Boss Region",
         "dungeon": "Forest Temple",
         "locations": {
-            "Forest Temple MQ Basement Chest": "True",
-            "Forest Temple Phantom Ganon Heart": "
-                Boss_Key_Forest_Temple and
-                ((is_adult and (Bow or Hookshot)) or
-                (is_child and (Slingshot and Kokiri_Sword)))",
-            "Phantom Ganon": "
-                Boss_Key_Forest_Temple and
-                ((is_adult and (Bow or Hookshot)) or
-                (is_child and (Slingshot and Kokiri_Sword)))"
+            "Forest Temple MQ Basement Chest": "True"
+        },
+        "exits": {
+            "Forest Temple Lobby": "True",
+            "Forest Temple Boss": "Boss_Key_Forest_Temple"
+        }
+    },
+    {
+        "region_name": "Forest Temple Boss",
+        "dungeon": "Forest Temple",
+        "locations": {
+            "Forest Temple Phantom Ganon Heart": "(can_use(Hookshot) or can_use(Bow)) or (can_use(Slingshot) and (Kokiri_Sword or Sticks))",
+            "Phantom Ganon": "(can_use(Hookshot) or can_use(Bow)) or (can_use(Slingshot) and (Kokiri_Sword or Sticks))"
+        },
+        "exits": {
+            "Forest Temple Boss Region": "True"
         }
     }
 ]

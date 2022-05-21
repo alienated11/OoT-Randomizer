@@ -1058,6 +1058,86 @@ def patch_rom(spoiler:Spoiler, world:World, rom:Rom):
     rom.write_int16(0xE00F1A, diving_cost)
     rom.write_int16(0xE00F2A, 0xFFFF - diving_cost + 1)
 
+    if world.settings.shuffle_ganon_arrows:
+        if world.ganon_arrows == "Fire Arrows":
+            rom.write_int16(0xD85E36, 0x0800)
+            rom.write_int16(0xE87D6E, 0x0800)
+        elif world.ganon_arrows == "Ice Arrows":
+            rom.write_int16(0xD85E36, 0x1000)
+            rom.write_int16(0xE87D6E, 0x1000)
+
+    scene_table_offset = 0x00B71440
+    scene_table_offset_end = 0x00B71C24
+    current_scene_table_location = scene_table_offset
+    scene_counter = 0x00
+    while current_scene_table_location < scene_table_offset_end:
+        if scene_counter == 0x44 or scene_counter == 0x47:
+        # if scene_counter < 0x51:
+            scene_counter += 1
+            current_scene_table_location += 0x14
+            next
+
+        scene_offset = rom.read_int32(current_scene_table_location)
+        collision_offset = 0x00
+        room_list_offset = 0x00
+        collision_off_found = False
+        room_list_found = False
+        number_of_rooms = 0
+        rom.seek_address(scene_offset)
+        while not collision_off_found or not room_list_found:
+            r = rom.read_int32()
+            if (r >> 24) & 0xFF == 0x03:
+                collision_off_found = True
+                collision_offset = rom.read_int32() & 0x00FFFFFF
+            elif (r >> 24) & 0xFF == 0x04:
+                number_of_rooms = (r >> 16) & 0x00FF
+                room_list_found = True
+                room_list_offset = rom.read_int32() & 0x00FFFFFF
+        i = 0
+        rom.seek_address(scene_offset + room_list_offset)
+        rooms = []
+        while i < number_of_rooms:
+            room_start = rom.read_int32()
+            room_end = rom.read_int32()
+            rooms.append({'start': room_start, 'end': room_end})
+            i += 1
+        if collision_off_found and (world.settings.climb_anywhere or world.settings.hookshot_anywhere or world.settings.floor_type):
+            total_polygons = rom.read_int16(scene_offset + collision_offset + 0x14)
+            type_offset = rom.read_int32(scene_offset + collision_offset + 0x1C) & 0x00FFFFFF
+            poly_offset = rom.read_int32(scene_offset + collision_offset + 0x18) & 0x00FFFFFF
+            current_type_address = scene_offset + type_offset
+            rom.seek_address(current_type_address)
+            polygon_type_count = 0
+            while current_type_address < scene_offset + poly_offset:
+                high_val = rom.read_int32(current_type_address)
+                low_val = rom.read_int32(current_type_address + 0x04)
+                poly_special = high_val & 0x0003E000
+                hookshot_surface = low_val & 0x00020000
+                special_values = [0x00000000]
+
+                new_high_val = high_val
+                if world.settings.climb_anywhere:
+                    new_high_val = (new_high_val | 0x00800000) & ~0x00600000
+
+                if 'lava' in world.settings.floor_type:
+                    special_values.append(0x00006000)
+                if 'sand' in world.settings.floor_type:
+                    special_values.append(0x00008000)
+                if 'ice' in world.settings.floor_type:
+                    special_values.append(0x0000A000)
+                if world.settings.floor_type:
+                    new_high_val = new_high_val | random.choice(special_values)
+
+                if 0x11 <= scene_counter <= 0x1A:
+                    rom.write_int32(current_type_address, new_high_val)
+                else:
+                    rom.write_int32(current_type_address, new_high_val)
+                if world.settings.hookshot_anywhere:
+                    rom.write_int32(current_type_address + 0x04, low_val | 0x00020000)
+                polygon_type_count += 1
+                current_type_address += 0x08
+        scene_counter += 1
+        current_scene_table_location += 0x14
     # Make item descriptions into a single box
     short_item_descriptions = [0x92EC84, 0x92F9E3, 0x92F2B4, 0x92F37A, 0x92F513, 0x92F5C6, 0x92E93B, 0x92EA12]
     for address in short_item_descriptions:

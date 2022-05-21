@@ -339,6 +339,6 @@ def search_goals(categories, reachable_goals, search, priority_locations, all_lo
 
 
 def maybe_set_light_arrows(location):
-    if not location.item.world.light_arrow_location and location.item and location.item.name == 'Light Arrows':
+    if not location.item.world.light_arrow_location and location.item and location.item.name == location.item.world.ganon_arrows:
         location.item.world.light_arrow_location = location
         logging.getLogger('').debug(f'Light Arrows [{location.item.world.id}] set to [{location.name}]')

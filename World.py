@@ -81,6 +81,11 @@ class World(object):
             # (specifically, for randomize_settings)
             self.settings.shuffle_ganon_bosskey = 'triforce'
 
+        if settings.shuffle_ganon_arrows:
+            self.ganon_arrows = random.choice(['Light Arrows', 'Ice Arrows', 'Fire Arrows'])
+        else:
+            self.ganon_arrows = 'Light Arrows'
+
         # trials that can be skipped will be decided later
         self.skipped_trials = {
             'Forest': False,
@@ -689,12 +694,12 @@ class World(object):
                     # one copy if the other is unreachable.
                     # 
                     # Similar criteria is used for Ganon's Boss Key in plentiful keysanity. 
-                    if not 'Light Arrows' in self.item_added_hint_types['always']:
+                    if not self.ganon_arrows in self.item_added_hint_types['always']:
                         if self.settings.item_pool_value == 'plentiful':
                             arrows = 2
                         else:
                             arrows = 1
-                        b.add_goal(Goal(self, 'Evil\'s Bane', 'path to Evil\'s Bane', 'Light Blue', items=[{'name': 'Light Arrows', 'quantity': arrows, 'minimum': 1, 'hintable': True}]))
+                        b.add_goal(Goal(self, 'Evil\'s Bane', 'path to Evil\'s Bane', 'Light Blue', items=[{'name': self.ganon_arrows, 'quantity': arrows, 'minimum': 1, 'hintable': True}]))
                         min_goals += 1
                     b.minimum_goals = min_goals
                 # Goal count within a category is currently unused. Testing is in progress

@@ -192,11 +192,15 @@
             "shuffle_dungeon_bosses",
             "shuffle_overworld_entrances",
             "shuffle_ganon_castle_entrances",
+            "shuffle_ganon_arrows",
             "mix_entrance_pools",
             "decouple_entrances",
             "owl_drops",
             "warp_songs",
-            "spawn_positions"
+            "spawn_positions",
+            "climb_anywhere",
+            "hookshot_anywhere",
+            "floor_type"
           ]
         },
         {

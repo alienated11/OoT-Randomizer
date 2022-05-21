@@ -158,7 +158,10 @@
         "exits": {
             "Shadow Temple Invisible Maze": "Bow and can_play(Song_of_Time) and Longshot",
             "Shadow Temple Near Boss": "
-                (Bow or (logic_shadow_statue and has_bombchus) or shadow_temple_shortcuts) and Hover_Boots"
+                (Bow or (logic_shadow_statue and has_bombchus) or shadow_temple_shortcuts) and Hover_Boots",
+            "Shadow Temple Boss": "
+                (Small_Key_Shadow_Temple, 5) and Boss_Key_Shadow_Temple and
+                (Bow or can_use(Distant_Scarecrow) or (logic_shadow_statue and has_bombchus) or shadow_temple_shortcuts)"
         }
     },
     {
@@ -178,11 +181,18 @@
         "region_name": "Shadow Temple Near Boss",
         "dungeon": "Shadow Temple",
         "locations": {
-            "Shadow Temple Bongo Bongo Heart": "
-                Boss_Key_Shadow_Temple and (logic_shadow_bongo or Bow or Hookshot)",
-            "Bongo Bongo": "
-                Boss_Key_Shadow_Temple and (logic_shadow_bongo or Bow or Hookshot)",
             "Shadow Temple MQ GS Near Boss": "has_projectile(adult) or can_use(Dins_Fire)"
+        }
+    },
+    {
+        "region_name": "Shadow Temple Boss",
+        "dungeon": "Shadow Temple",
+        "locations": {
+            "Shadow Temple Bongo Bongo Heart": "logic_shadow_bongo or Bow or Hookshot",
+            "Bongo Bongo": "logic_shadow_bongo or Bow or Hookshot"
+        },
+        "exits": {
+            "Shadow Temple Beyond Boat": "True"
         }
     }
 ]

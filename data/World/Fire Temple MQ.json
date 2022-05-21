@@ -15,7 +15,7 @@
         },
         "exits": {
             "DMC Fire Temple Entrance": "True",
-            "Fire Boss Room": "
+            "Fire Temple Boss": "
                 can_use(Goron_Tunic) and can_use(Megaton_Hammer) and Boss_Key_Fire_Temple and
                 ((has_fire_source and (logic_fire_boss_door_jump or Hover_Boots or fire_temple_shortcuts))
                 or at('Fire Temple Upper', True))",
@@ -105,11 +105,14 @@
         }
     },
     {
-        "region_name": "Fire Boss Room",
+        "region_name": "Fire Temple Boss",
         "dungeon": "Fire Temple",
         "locations": {
-            "Fire Temple Volvagia Heart": "True",
-            "Volvagia": "True"
+            "Fire Temple Volvagia Heart": "can_use(Goron_Tunic) and can_use(Megaton_Hammer)",
+            "Volvagia": "can_use(Goron_Tunic) and can_use(Megaton_Hammer)"
+        },
+        "exits": {
+            "Fire Temple Lower":  "True"
         }
     }
 ]

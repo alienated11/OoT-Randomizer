@@ -85,13 +85,23 @@
         "dungeon": "Jabu Jabus Belly",
         "locations": {
             "Jabu Jabus Belly MQ Near Boss Chest": "can_use(Slingshot)",
-            "Jabu Jabus Belly Barinade Heart": "can_use(Boomerang) and (Sticks or Kokiri_Sword)",
-            "Barinade": "can_use(Boomerang) and (Sticks or Kokiri_Sword)",
             "Jabu Jabus Belly MQ GS Near Boss": "can_use(Boomerang) or can_use(Longshot)",
             "Fairy Pot": "has_bottle"
         },
         "exits": {
-            "Jabu Jabus Belly Main": "True"
+            "Jabu Jabus Belly Main": "True",
+            "Jabu Jabus Belly Boss": "True"
+        }
+    },
+    {
+        "region_name": "Jabu Jabus Belly Boss",
+        "dungeon": "Jabu Jabus Belly",
+        "locations": {
+            "Jabu Jabus Belly Barinade Heart": "can_use(Boomerang) and (Sticks or Kokiri_Sword)",
+            "Barinade": "can_use(Boomerang) and (Sticks or Kokiri_Sword)"
+        },
+        "exits": {
+            "Jabu Jabus Belly Boss Area": "True"
         }
     }
 ]
