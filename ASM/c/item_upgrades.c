@@ -112,11 +112,26 @@ uint16_t seeds_to_rupee(z64_file_t *save, uint16_t item_id) {
     return save->bullet_bag ? item_id : 0x4D; // Blue Rupee
 }
 
+uint16_t magic_jar_to_rupee(z64_file_t *save, uint16_t item_id) {
+    return save->magic_acquired ? item_id : 0x4D; // Blue Rupee
+}
+
 uint16_t letter_to_bottle(z64_file_t *save, uint16_t item_id) {
     if (save->event_chk_inf[3] & 0x0008) // "King Zora Moved Aside"
         return 0xC8; // Redundant Letter Bottle
     if (save->items[Z64_SLOT_BOTTLE_1] == 0x1B || save->items[Z64_SLOT_BOTTLE_2] == 0x1B
      || save->items[Z64_SLOT_BOTTLE_3] == 0x1B || save->items[Z64_SLOT_BOTTLE_4] == 0x1B)
         return 0xC8; // Redundant Letter Bottle
+    return item_id;
+}
+
+uint16_t health_upgrade_cap(z64_file_t *save, uint16_t item_id) {
+    if (save->energy_capacity >= 20 * 0x10) {  // Already at capped health.
+        if (item_id == 0x76)  // Piece of Heart (Chest Game)
+            return 0x7F;
+        if (item_id == 0x3D)  // Heart Container
+            return 0x7E;
+        return 0x7D;          // Piece of Heart / Fallthrough
+    }
     return item_id;
 }

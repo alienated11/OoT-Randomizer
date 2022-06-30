@@ -62,6 +62,15 @@ class Region(object):
 
 
     def can_fill(self, item, manual=False):
+        if not manual and self.world.settings.empty_dungeons_mode != 'none' and item.dungeonitem:
+            # An empty dungeon can only store its own dungeon items
+            if self.dungeon and self.dungeon.world.empty_dungeons[self.dungeon.name].empty:
+                return self.dungeon.is_dungeon_item(item) and item.world.id == self.world.id
+            # Items from empty dungeons can only be in their own dungeons
+            for dungeon in item.world.dungeons:
+                if item.world.empty_dungeons[dungeon.name].empty and dungeon.is_dungeon_item(item):
+                    return False
+
         is_self_dungeon_restricted = False
         is_dungeon_restricted = False
         is_overworld_restricted = False
@@ -84,6 +93,10 @@ class Region(object):
             is_self_dungeon_restricted = self.world.settings.shuffle_ganon_bosskey in ['dungeon', 'vanilla']
             is_dungeon_restricted = self.world.settings.shuffle_ganon_bosskey == 'any_dungeon'
             is_overworld_restricted = self.world.settings.shuffle_ganon_bosskey == 'overworld'
+        elif item.type == 'SilverRupee':
+            is_self_dungeon_restricted = self.world.settings.shuffle_silver_rupees in ['dungeon', 'vanilla']
+            is_dungeon_restricted = self.world.settings.shuffle_silver_rupees == 'any_dungeon'
+            is_overworld_restricted = self.world.settings.shuffle_silver_rupees == 'overworld'
 
         if is_self_dungeon_restricted and not manual:
             return self.dungeon and self.dungeon.is_dungeon_item(item) and item.world.id == self.world.id
@@ -107,6 +120,15 @@ class Region(object):
             return self.dungeon.name
         else: 
             return None
+
+
+    def change_dungeon(self, new_dungeon):
+        # Change the dungeon of this region, removing it from the old dungeon list and adding it to the new one.
+        if new_dungeon == self.dungeon:
+            return
+        self.dungeon.regions.remove(self)
+        self.dungeon = new_dungeon
+        new_dungeon.regions.append(self)
 
 
     def __str__(self):

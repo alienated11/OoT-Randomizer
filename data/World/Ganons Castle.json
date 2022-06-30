@@ -25,10 +25,10 @@
         "region_name": "Ganons Castle Deku Scrubs",
         "dungeon": "Ganons Castle",
         "locations": {
-            "Ganons Castle Deku Scrub Center-Left": "True",
-            "Ganons Castle Deku Scrub Center-Right": "True",
-            "Ganons Castle Deku Scrub Right": "True",
-            "Ganons Castle Deku Scrub Left": "True",
+            "Ganons Castle Deku Scrub Center-Left": "can_stun_deku",
+            "Ganons Castle Deku Scrub Center-Right": "can_stun_deku",
+            "Ganons Castle Deku Scrub Right": "can_stun_deku",
+            "Ganons Castle Deku Scrub Left": "can_stun_deku",
             "Free Fairies": "has_bottle"
         }
     },
@@ -36,10 +36,18 @@
         "region_name": "Ganons Castle Forest Trial",
         "dungeon": "Ganons Castle",
         "events": {
-            "Forest Trial Clear": "can_use(Light_Arrows) and (Fire_Arrows or Dins_Fire)"
+            "Forest Trial Clear": "(Silver_Rupee_Ganons_Castle_Forest_Trial,5) and can_use(Light_Arrows) and (Fire_Arrows or Dins_Fire)"
         },
         "locations": {
-            "Ganons Castle Forest Trial Chest": "True"
+            "Ganons Castle Forest Trial Chest": "is_adult or (is_child and (Slingshot or Sticks or
+                Kokiri_Sword or can_use(Dins_Fire)))",
+            "Ganons Castle Forest Trial Silver Rupee Front Right": "can_use(Fire_Arrows) or (can_use(Dins_Fire) and can_use(Bow))",
+            "Ganons Castle Forest Trial Silver Rupee Front Left": "can_use(Fire_Arrows) or (can_use(Dins_Fire) and can_use(Bow))",
+            "Ganons Castle Forest Trial Silver Rupee Back Right": "can_use(Fire_Arrows) or (can_use(Dins_Fire) and can_use(Bow))",
+            "Ganons Castle Forest Trial Silver Rupee Back Center": "can_use(Fire_Arrows) or (can_use(Dins_Fire) and can_use(Bow))",
+            "Ganons Castle Forest Trial Silver Rupee Center Left": "can_use(Fire_Arrows) or (can_use(Dins_Fire) and can_use(Bow))",
+            "Ganons Castle Forest Trial Pot 1" : "(Silver_Rupee_Ganons_Castle_Forest_Trial,5) and (can_use(Fire_Arrows) or (can_use(Dins_Fire) and (can_use(Bow) or can_use(Hookshot))))",
+            "Ganons Castle Forest Trial Pot 2" : "(Silver_Rupee_Ganons_Castle_Forest_Trial,5) and (can_use(Fire_Arrows) or (can_use(Dins_Fire) and (can_use(Bow) or can_use(Hookshot))))"
         }
     },
     {
@@ -47,8 +55,18 @@
         "dungeon": "Ganons Castle",
         "events": {
             "Fire Trial Clear": "
-                can_use(Goron_Tunic) and can_use(Golden_Gauntlets) and 
+                can_use(Goron_Tunic) and (Silver_Rupee_Ganons_Castle_Fire_Trial, 5) and
                 can_use(Light_Arrows) and can_use(Longshot)"
+        },
+        "locations": {
+            "Ganons Castle Fire Trial Recovery Heart": "logic_fewer_tunic_requirements or can_use(Goron_Tunic)",
+            "Ganons Castle Fire Trial Silver Rupee Right Back": "logic_fewer_tunic_requirements or can_use(Goron_Tunic)",
+            "Ganons Castle Fire Trial Silver Rupee Flamethrower": "logic_fewer_tunic_requirements or can_use(Goron_Tunic)",
+            "Ganons Castle Fire Trial Silver Rupee Right Center": "can_use(Golden_Gauntlets) and (logic_fewer_tunic_requirements or can_use(Goron_Tunic))",
+            "Ganons Castle Fire Trial Silver Rupee Right Front": "logic_fewer_tunic_requirements or can_use(Goron_Tunic)",
+            "Ganons Castle Fire Trial Silver Rupee Inside Pillar": "can_use(Golden_Gauntlets) and (logic_fewer_tunic_requirements or can_use(Goron_Tunic))",
+            "Ganons Castle Fire Trial Pot 1": "can_use(Goron_Tunic) and (Silver_Rupee_Ganons_Castle_Fire_Trial, 5) and can_use(Longshot)",
+            "Ganons Castle Fire Trial Pot 2": "can_use(Goron_Tunic) and (Silver_Rupee_Ganons_Castle_Fire_Trial, 5) and can_use(Longshot)"
         }
     },
     {
@@ -60,8 +78,10 @@
         "locations": {
             "Ganons Castle Water Trial Left Chest": "True",
             "Ganons Castle Water Trial Right Chest": "True",
-            "Fairy Pot": "Blue_Fire and has_bottle",
-            "Blue Fire": "has_bottle"
+            "Ganons Castle Water Trial Pot 1" : "Blue_Fire and can_use(Megaton_Hammer)",
+            "Ganons Castle Water Trial Pot 2" : "Blue_Fire and can_use(Megaton_Hammer)",
+            "Fairy Pot": "Blue_Fire and has_bottle and (is_adult or (is_child and (has_explosives or can_use(Dins_Fire))))",
+            "Blue Fire": "has_bottle and (is_adult or (is_child and (Sticks or Kokiri_Sword or has_explosives)))"
         }
     },
     {
@@ -76,10 +96,33 @@
         "locations": {
             "Ganons Castle Shadow Trial Front Chest": "
                 can_use(Fire_Arrows) or Progressive_Hookshot or 
-                Hover_Boots or can_play(Song_of_Time)",
+                Hover_Boots or can_play(Song_of_Time) or is_child",
             "Ganons Castle Shadow Trial Golden Gauntlets Chest": "
                 can_use(Fire_Arrows) or 
-                (can_use(Longshot) and (Hover_Boots or can_use(Dins_Fire)))"
+                (can_use(Longshot) and (Hover_Boots or can_use(Dins_Fire)))",
+            "Ganons Castle Shadow Trial Recovery Heart 1": 
+                "((can_use(Longshot) or can_use(Fire_Arrows)) and can_use(Hover_Boots)) or
+                ((logic_lens_castle or can_use(Lens_of_Truth)) and (
+                    can_use(Fire_Arrows) or 
+                    (can_use(Longshot) and can_use(Dins_Fire))))",
+            "Ganons Castle Shadow Trial Recovery Heart 2": 
+                "((can_use(Longshot) or can_use(Fire_Arrows)) and can_use(Hover_Boots)) or
+                ((logic_lens_castle or can_use(Lens_of_Truth)) and (
+                    can_use(Fire_Arrows) or 
+                    (can_use(Longshot) and can_use(Dins_Fire))))",
+            "Ganons Castle Shadow Trial Recovery Heart 3": 
+                "((can_use(Longshot) or can_use(Fire_Arrows)) and can_use(Hover_Boots)) or
+                ((logic_lens_castle or can_use(Lens_of_Truth)) and (
+                    can_use(Fire_Arrows) or 
+                    (can_use(Longshot) and can_use(Dins_Fire))))",
+            "Ganons Castle Shadow Trial Like Like Pot 1" : "can_use(Fire_Arrows) or can_use(Longshot)",
+            "Ganons Castle Shadow Trial Like Like Pot 2" : "can_use(Fire_Arrows) or can_use(Longshot)",
+            "Ganons Castle Shadow Trial Pot 1" : "can_use(Megaton_Hammer) and 
+                ((can_use(Fire_Arrows) and (logic_lens_castle or can_use(Lens_of_Truth))) or 
+                (can_use(Longshot) and (can_use(Hover_Boots) or (can_use(Dins_Fire) and (logic_lens_castle or can_use(Lens_of_Truth))))))",
+            "Ganons Castle Shadow Trial Pot 2" : "can_use(Megaton_Hammer) and 
+                ((can_use(Fire_Arrows) and (logic_lens_castle or can_use(Lens_of_Truth))) or 
+                (can_use(Longshot) and (Hover_Boots or (can_use(Dins_Fire) and (logic_lens_castle or can_use(Lens_of_Truth))))))"
         }
     },
     {
@@ -88,17 +131,33 @@
         "events": {
             "Spirit Trial Clear": "
                 can_use(Light_Arrows) and Mirror_Shield and has_bombchus and
-                (logic_spirit_trial_hookshot or Progressive_Hookshot)"
+                (Silver_Rupee_Ganons_Castle_Spirit_Trial, 5)"
         },
         "locations": {
             "Ganons Castle Spirit Trial Crystal Switch Chest": "
-                (logic_spirit_trial_hookshot or Progressive_Hookshot)",
+                (Silver_Rupee_Ganons_Castle_Spirit_Trial, 5)",
             "Ganons Castle Spirit Trial Invisible Chest": "
-                (logic_spirit_trial_hookshot or Progressive_Hookshot) and
+                (Silver_Rupee_Ganons_Castle_Spirit_Trial, 5) and
                 has_bombchus and (logic_lens_castle or can_use(Lens_of_Truth))",
             "Nut Pot": "
-                (logic_spirit_trial_hookshot or Progressive_Hookshot) and
-                has_bombchus and Bow and Mirror_Shield"
+                (Silver_Rupee_Ganons_Castle_Spirit_Trial, 5) and
+                has_bombchus and can_use(Bow) and can_use(Mirror_Shield)",
+            "Ganons Castle Spirit Trial Recovery Heart": "True",
+            "Ganons Castle Spirit Trial Silver Rupee Ceiling": "((logic_spirit_trial_hookshot and (is_adult or Kokiri_Sword or Sticks)) or can_use(Hookshot))",
+            "Ganons Castle Spirit Trial Silver Rupee Front Right": "True",
+            "Ganons Castle Spirit Trial Silver Rupee Center": "True",
+            "Ganons Castle Spirit Trial Silver Rupee Back Left": "True",
+            "Ganons Castle Spirit Trial Silver Rupee Back Right": "True",
+            "Ganons Castle Spirit Trial Pot 1" : "
+                can_use(Bow) and 
+                can_use(Mirror_Shield) and 
+                has_bombchus and
+                (Silver_Rupee_Ganons_Castle_Spirit_Trial, 5)",
+            "Ganons Castle Spirit Trial Pot 2" : "
+                can_use(Bow) and 
+                can_use(Mirror_Shield) and 
+                has_bombchus and
+                (Silver_Rupee_Ganons_Castle_Spirit_Trial, 5)"
         }
     },
     {
@@ -106,7 +165,7 @@
         "dungeon": "Ganons Castle",
         "events": {
             "Light Trial Clear": "
-                can_use(Light_Arrows) and Progressive_Hookshot and 
+                can_use(Light_Arrows) and (Silver_Rupee_Ganons_Castle_Light_Trial, 5) and
                 (Small_Key_Ganons_Castle, 2) and (logic_lens_castle or can_use(Lens_of_Truth))"
         },
         "locations": {
@@ -118,7 +177,15 @@
             "Ganons Castle Light Trial Third Right Chest": "True",
             "Ganons Castle Light Trial Invisible Enemies Chest": "logic_lens_castle or can_use(Lens_of_Truth)",
             "Ganons Castle Light Trial Lullaby Chest": "
-                can_play(Zeldas_Lullaby) and (Small_Key_Ganons_Castle, 1)"
+                can_play(Zeldas_Lullaby) and (Small_Key_Ganons_Castle, 1)",
+            "Ganons Castle Light Trial Silver Rupee Right Alcove": "(Small_Key_Ganons_Castle, 2)",
+            "Ganons Castle Light Trial Silver Rupee Left Alcove": "(Small_Key_Ganons_Castle, 2)",
+            "Ganons Castle Light Trial Silver Rupee Center Top": "(Small_Key_Ganons_Castle, 2) and Progressive_Hookshot",
+            "Ganons Castle Light Trial Silver Rupee Center Right": "(Small_Key_Ganons_Castle, 2)",
+            "Ganons Castle Light Trial Silver Rupee Center Left": "(Small_Key_Ganons_Castle, 2)",
+            "Ganons Castle Light Trial Boulder Pot" : "(Small_Key_Ganons_Castle, 2)",
+            "Ganons Castle Light Trial Pot 1" : "(Small_Key_Ganons_Castle, 2) and (Silver_Rupee_Ganons_Castle_Light_Trial, 5) and (logic_lens_castle or can_use(Lens_of_Truth))",
+            "Ganons Castle Light Trial Pot 2" : "(Small_Key_Ganons_Castle, 2) and (Silver_Rupee_Ganons_Castle_Light_Trial, 5) and (logic_lens_castle or can_use(Lens_of_Truth))"
         }
     },
     {
@@ -127,7 +194,7 @@
         "dungeon": "Ganons Castle",
         "exits": {
             "Ganons Castle Lobby": "True",
-            "Ganons Boss Room": "Boss_Key_Ganons_Castle"
+            "Ganons Boss Room": "Boss_Key_Ganons_Castle or unlock_ganons_first_boss_door"
         },
         "locations": {
             "Ganons Tower Boss Key Chest": "True"
@@ -141,8 +208,22 @@
             "Ganons Castle Tower": "True"
         },
         "locations": {
-            "Ganondorf Hint": "Boss_Key_Ganons_Castle",
-            "Ganon": "Boss_Key_Ganons_Castle and can_use(Light_Arrows)"
+            "Ganondorf Hint": "True",
+            "Ganons Tower Pot 1": "unlock_ganons_first_boss_door or (shuffle_ganon_bosskey != 'triforce')",
+            "Ganons Tower Pot 2": "unlock_ganons_first_boss_door or (shuffle_ganon_bosskey != 'triforce')",
+            "Ganons Tower Pot 3": "unlock_ganons_first_boss_door or (shuffle_ganon_bosskey != 'triforce')",
+            "Ganons Tower Pot 4": "unlock_ganons_first_boss_door or (shuffle_ganon_bosskey != 'triforce')",
+            "Ganons Tower Pot 5": "unlock_ganons_first_boss_door or (shuffle_ganon_bosskey != 'triforce')",
+            "Ganons Tower Pot 6": "unlock_ganons_first_boss_door or (shuffle_ganon_bosskey != 'triforce')",
+            "Ganons Tower Pot 7": "unlock_ganons_first_boss_door or (shuffle_ganon_bosskey != 'triforce')",
+            "Ganons Tower Pot 8": "unlock_ganons_first_boss_door or (shuffle_ganon_bosskey != 'triforce')",
+            "Ganons Tower Pot 9": "unlock_ganons_first_boss_door or (shuffle_ganon_bosskey != 'triforce')",
+            "Ganons Tower Pot 10": "unlock_ganons_first_boss_door or (shuffle_ganon_bosskey != 'triforce')",
+            "Ganons Tower Pot 11": "unlock_ganons_first_boss_door or (shuffle_ganon_bosskey != 'triforce')",
+            "Ganons Tower Pot 12": "unlock_ganons_first_boss_door or (shuffle_ganon_bosskey != 'triforce')",
+            "Ganons Tower Pot 13": "unlock_ganons_first_boss_door or (shuffle_ganon_bosskey != 'triforce')",
+            "Ganons Tower Pot 14": "unlock_ganons_first_boss_door or (shuffle_ganon_bosskey != 'triforce')",
+            "Ganon": "Boss_Key_Ganons_Castle and ((shuffle_ganon_arrows == 'Ice Arrows' and can_use(Ice_Arrows)) or (shuffle_ganon_arrows == 'Fire Arrows' and can_use(Fire_Arrows)) or (shuffle_ganon_arrows == 'Light Arrows' and can_use(Light_Arrows)))"
         }
     }
 ]

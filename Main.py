@@ -26,6 +26,7 @@ from ItemPool import generate_itempool
 from Hints import buildGossipHints
 from HintList import clearHintExclusionCache
 from Utils import default_output_path, is_bundled, run_process, data_path
+from Models import patch_model_adult, patch_model_child
 from N64Patch import create_patch_file, apply_patch_file
 from MBSDIFFPatch import apply_ootr_3_web_patch
 from SettingsList import setting_infos, logic_tricks
@@ -147,13 +148,17 @@ def build_world_graphs(settings, window=dummy_window()):
         window.update_progress(0 + 1*(id + 1)/settings.world_count)
         logger.info('Creating Overworld')
 
+        # Load common json rule files (those used regardless of MQ status)
         if settings.logic_rules == 'glitched':
-            overworld_data = os.path.join(data_path('Glitched World'), 'Overworld.json')
+            path = 'Glitched World'
         else:
-            overworld_data = os.path.join(data_path('World'), 'Overworld.json')
+            path = 'World'
+        path = data_path(path)
+
+        for filename in ('Overworld.json', 'Bosses.json'):
+            world.load_regions_from_json(os.path.join(path, filename))
 
         # Compile the json rules based on settings
-        world.load_regions_from_json(overworld_data)
         create_dungeons(world)
         world.create_internal_locations()
 
@@ -202,7 +207,7 @@ def make_spoiler(settings, worlds, window=dummy_window()):
         update_goal_items(spoiler)
         buildGossipHints(spoiler, worlds)
         window.update_progress(55)
-    elif settings.misc_hints:
+    elif 'ganondorf' in settings.misc_hints:
         # Ganon may still provide the Light Arrows hint
         find_light_arrows(spoiler)
     spoiler.build_file_hash()
@@ -216,6 +221,10 @@ def prepare_rom(spoiler, world, rom, settings, rng_state=None, restore=True):
         random.setstate(rng_state)
     patch_rom(spoiler, world, rom)
     cosmetics_log = patch_cosmetics(settings, rom)
+    if settings.model_adult != "Default" or len(settings.model_adult_filepicker) > 0:
+        patch_model_adult(rom, settings, cosmetics_log)
+    if settings.model_child != "Default" or len(settings.model_child_filepicker) > 0:
+        patch_model_child(rom, settings, cosmetics_log)
     rom.update_header()
     return cosmetics_log
 
@@ -406,6 +415,7 @@ def patch_and_output(settings, window, spoiler, rom):
 
     window.update_progress(95)
 
+    
     if not settings.create_spoiler or settings.output_settings:
         settings.distribution.update_spoiler(spoiler, False)
         window.update_status('Creating Settings Log')
@@ -483,10 +493,14 @@ def from_patch_file(settings, window=dummy_window()):
             subfile = f"P{settings.player_num}.zpf"
             if not settings.output_file:
                 output_path += f"P{settings.player_num}"
-        apply_patch_file(rom, settings.patch_file, subfile)
+        apply_patch_file(rom, settings, subfile)
     cosmetics_log = None
     if settings.repatch_cosmetics:
         cosmetics_log = patch_cosmetics(settings, rom)
+        if settings.model_adult != "Default" or len(settings.model_adult_filepicker) > 0:
+            patch_model_adult(rom, settings, cosmetics_log)
+        if settings.model_child != "Default" or len(settings.model_child_filepicker) > 0:
+            patch_model_child(rom, settings, cosmetics_log)
     window.update_progress(65)
 
     log_and_update_window(window, 'Saving Uncompressed ROM')
@@ -562,7 +576,7 @@ def cosmetic_patch(settings, window=dummy_window()):
         subfile = None
     else:
         subfile = 'P%d.zpf' % (settings.player_num)
-    apply_patch_file(rom, settings.patch_file, subfile)
+    apply_patch_file(rom, settings, subfile)
     window.update_progress(65)
 
     # clear changes from the base patch file
@@ -574,6 +588,10 @@ def cosmetic_patch(settings, window=dummy_window()):
     window.update_status('Patching ROM')
     patchfilename = '%s_Cosmetic.zpf' % output_path
     cosmetics_log = patch_cosmetics(settings, rom)
+    if settings.model_adult != "Default" or len(settings.model_adult_filepicker) > 0:
+        patch_model_adult(rom, settings, cosmetics_log)
+    if settings.model_child != "Default" or len(settings.model_child_filepicker) > 0:
+        patch_model_child(rom, settings, cosmetics_log)
     window.update_progress(80)
 
     window.update_status('Creating Patch File')
@@ -678,6 +696,9 @@ def create_playthrough(spoiler):
     entrance_spheres = []
     remaining_entrances = set(entrance for world in worlds for entrance in world.get_shuffled_entrances())
 
+    search.checkpoint()
+    search.collect_pseudo_starting_items()
+    
     while True:
         search.checkpoint()
         # Not collecting while the generator runs means we only get one sphere at a time
@@ -748,6 +769,7 @@ def create_playthrough(spoiler):
     # Regenerate the spheres as we might not reach places the same way anymore.
     search.reset() # search state has no items, okay to reuse sphere 0 cache
     collection_spheres = []
+    collection_spheres.append(list(search.iter_pseudo_starting_locations()))
     entrance_spheres = []
     remaining_entrances = set(required_entrances)
     collected = set()
@@ -776,7 +798,7 @@ def create_playthrough(spoiler):
     logger.info('Collected %d final spheres', len(collection_spheres))
 
     # Then we can finally output our playthrough
-    spoiler.playthrough = OrderedDict((str(i + 1), {location: location.item for location in sphere}) for i, sphere in enumerate(collection_spheres))
+    spoiler.playthrough = OrderedDict((str(i), {location: location.item for location in sphere}) for i, sphere in enumerate(collection_spheres))
     # Copy our light arrows, since we set them in the world copy
     for w, sw in zip(worlds, spoiler.worlds):
         if w.light_arrow_location:

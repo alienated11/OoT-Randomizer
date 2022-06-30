@@ -60,6 +60,7 @@ def distribute_items_restrictive(window, worlds, fill_locations=None):
                 and not location.type.startswith('Hint')]
     world_states = [world.state for world in worlds]
 
+    logger.info('Fill:%d, Song:%d, Shop:%d' % (len(fill_locations), len(song_locations), len(shop_locations)))
     window.locationcount = len(fill_locations) + len(song_locations) + len(shop_locations)
     window.fillcount = 0
 
@@ -149,6 +150,35 @@ def distribute_items_restrictive(window, worlds, fill_locations=None):
         fill_dungeons_restrictive(window, worlds, search, fill_locations, dungeon_items, itempool + songitempool)
         search.collect_locations()
 
+
+    # If some dungeons are supposed to be empty, fill them with useless items.
+    if worlds[0].settings.empty_dungeons_mode != 'none':
+        empty_locations = [location for world in worlds \
+            for dungeon in world.dungeons if world.empty_dungeons[dungeon.name].empty \
+            for region in dungeon.regions \
+            for location in region.locations if location in fill_locations]
+        for location in empty_locations:
+            fill_locations.remove(location)
+            location.world.hint_exclusions.add(location.name)
+            location.world.hint_type_overrides['sometimes'].append(location.name)
+            location.world.hint_type_overrides['random'].append(location.name)
+        
+        if worlds[0].settings.shuffle_mapcompass in ['any_dungeon', 'overworld', 'keysanity']:
+            # Non-empty dungeon items are present in restitempool but yet we 
+            # don't want to place them in an empty dungeon
+            restdungeon, restother = [], []
+            for item in restitempool:
+                if item.dungeonitem:
+                    restdungeon.append(item)
+                else:
+                    restother.append(item)
+            fast_fill(window, empty_locations, restother)
+            restitempool = restdungeon + restother
+            random.shuffle(restitempool)
+        else:
+            # We don't have to worry about this if dungeon items stay in their own dungeons
+            fast_fill(window, empty_locations, restitempool)
+
     # places the songs into the world
     # Currently places songs only at song locations. if there's an option
     # to allow at other locations then they should be in the main pool.
@@ -189,12 +219,12 @@ def distribute_items_restrictive(window, worlds, fill_locations=None):
     fast_fill(window, fill_locations, restitempool)
 
     # Log unplaced item/location warnings
-    for item in progitempool + prioitempool + restitempool:
+    for item in progitempool + prioitempool:
         logger.error('Unplaced Items: %s [World %d]' % (item.name, item.world.id))
     for location in fill_locations:
         logger.error('Unfilled Locations: %s [World %d]' % (location.name, location.world.id))
 
-    if progitempool + prioitempool + restitempool:
+    if progitempool + prioitempool:
         raise FillError('Not all items are placed.')
 
     if fill_locations:
@@ -248,8 +278,12 @@ def fill_dungeon_unique_item(window, worlds, search, fill_locations, itempool):
     # since the rest are already placed.
     major_items = [item for item in itempool if item.majoritem]
     minor_items = [item for item in itempool if not item.majoritem]
+  
+    if worlds[0].settings.empty_dungeons_mode != 'none':
+        dungeons = [dungeon for world in worlds for dungeon in world.dungeons if not world.empty_dungeons[dungeon.name].empty]
+    else:
+        dungeons = [dungeon for world in worlds for dungeon in world.dungeons]
 
-    dungeons = [dungeon for world in worlds for dungeon in world.dungeons]
     double_dungeons = []
     for dungeon in dungeons:
         # we will count spirit temple twice so that it gets 2 items to match vanilla
@@ -337,6 +371,7 @@ def fill_ownworld_restrictive(window, worlds, search, locations, ownpool, itempo
                 logger.info("Failed to place %s items for world %s. Will retry %s more times.", description, (world.id+1), world_attempts)
                 for location in prize_locs_dict[world.id]:
                     location.item = None
+                    location.price = None
                     if location.disabled == DisableType.DISABLED:
                         location.disabled = DisableType.PENDING
                 logger.info('\t%s' % str(e))

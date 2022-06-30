@@ -28,6 +28,8 @@
             "wad_file",
             "wad_channel_id",
             "wad_channel_title",
+            "show_seed_info",
+            "user_message",
             "open_output_dir",
             "open_python_dir"
           ]
@@ -76,7 +78,10 @@
             "web_common_key_file",
             "web_common_key_string",
             "web_wad_channel_id",
-            "web_wad_channel_title"
+            "web_wad_channel_title",
+            "web_wad_legacy_mode",
+            "show_seed_info",
+            "user_message"
           ]
         },
         {
@@ -120,7 +125,8 @@
             "web_common_key_file",
             "web_common_key_string",
             "web_wad_channel_id",
-            "web_wad_channel_title"
+            "web_wad_channel_title",
+            "web_wad_legacy_mode"
           ]
         },
         {
@@ -166,13 +172,15 @@
             "bridge_stones",
             "bridge_rewards",
             "bridge_tokens",
+            "bridge_hearts",
             "triforce_hunt",
             "triforce_count_per_world",
             "triforce_goal_per_world",
             "bombchus_in_logic",
             "one_item_per_dungeon",
             "trials_random",
-            "trials"
+            "trials",
+            "unlock_ganons_first_boss_door"
           ]
         },
         {
@@ -184,6 +192,9 @@
             "mq_dungeons_mode",
             "mq_dungeons_specific",
             "mq_dungeons_count",
+            "empty_dungeons_mode",
+            "empty_dungeons_specific",
+            "empty_dungeons_count",
             "shuffle_interior_entrances",
             "shuffle_grotto_entrances",
             "shuffle_grotto_location",
@@ -213,13 +224,17 @@
             "shopsanity_prices",
             "tokensanity",
             "shuffle_scrubs",
+            "shuffle_freestanding_items",
+            "shuffle_pots_crates",
             "shuffle_cows",
+            "shuffle_beehives",
             "shuffle_kokiri_sword",
             "shuffle_ocarinas",
             "shuffle_weird_egg",
             "shuffle_gerudo_card",
             "shuffle_beans",
-            "shuffle_medigoron_carpet_salesman"
+            "shuffle_medigoron_carpet_salesman",
+            "shuffle_frog_song_rupees"
           ]
         },
         {
@@ -237,6 +252,8 @@
             "ganon_bosskey_stones",
             "ganon_bosskey_rewards",
             "ganon_bosskey_tokens",
+            "ganon_bosskey_hearts",
+            "shuffle_silver_rupees",
             "enhance_map_compass"
           ]
         }
@@ -337,9 +354,13 @@
             "complete_mask_quest",
             "useful_cutscenes",
             "fast_chests",
+            "fast_tokens",
             "free_scarecrow",
             "fast_bunny_hood",
-            "plant_beans"
+            "plant_beans",
+            "easier_fire_arrow_entry",
+            "fae_torch_count"
+
           ]
         },
         {
@@ -378,17 +399,23 @@
           "settings": [
             "ocarina_songs",
             "correct_chest_appearances",
+            "invisible_chests",
+            "correct_potcrate_appearances",
             "clearer_hints",
             "hints",
             "hint_dist",
             "bingosync_url",
             "misc_hints",
             "text_shuffle",
+            "credits_autoscroll",
             "damage_multiplier",
-			"no_collectible_hearts",
+            "deadly_bonks",
+            "no_collectible_hearts",
             "negative_health_cap",
             "gs_rewards",
-            "starting_tod"
+            "starting_tod",
+            "no_age_limits",
+            "blue_fire_arrows"
           ]
         },
         {
@@ -401,7 +428,9 @@
             "junk_item",
             "ice_trap_appearance",
             "logic_earliest_adult_trade",
-            "logic_latest_adult_trade"
+            "logic_latest_adult_trade",
+            "shuffle_magic_jars",
+            "fix_broken_drops"
           ]
         }
       ]
@@ -414,13 +443,26 @@
       "sections": [
         {
           "name": "generalcosmetics_section",
-          "col_span": 4,
+          "text": "General Cosmetics",
+          "col_span": 2,
           "row_span": [2,2,2],
           "settings": [
             "default_targeting",
             "display_dpad",
             "correct_model_colors",
             "randomize_all_cosmetics"
+          ]
+        },
+        {
+          "name": "playermodels_section",
+          "text": "Player Models",
+          "col_span": 2,
+          "row_span": [2,2,2],
+          "settings": [
+            "model_adult",
+            "model_adult_filepicker",
+            "model_child",
+            "model_child_filepicker"
           ]
         },
         {

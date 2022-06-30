@@ -5,11 +5,20 @@
         "exits": {
             "Castle Grounds": "True",
             "Ganons Castle Grounds": "True",
+            "Ganons Castle Main": "here(is_adult or
+                (Kokiri_Sword and (Sticks or has_explosives or Nuts or Boomerang)) or
+                (has_explosives and (Sticks or ((Nuts or Boomerang) and Slingshot))))"
+        }
+    },
+    {
+        "region_name": "Ganons Castle Main",
+        "dungeon": "Ganons Castle",
+        "exits": {
             "Ganons Castle Forest Trial": "True",
             "Ganons Castle Fire Trial": "True",
             "Ganons Castle Water Trial": "True",
-            "Ganons Castle Shadow Trial": "True",
-            "Ganons Castle Spirit Trial": "True",
+            "Ganons Castle Shadow Trial": "is_adult",
+            "Ganons Castle Spirit Trial": "is_adult",
             "Ganons Castle Light Trial": "can_use(Golden_Gauntlets)",
             "Ganons Castle Tower": "
                 (skipped_trials[Forest] or 'Forest Trial Clear') and 
@@ -25,11 +34,11 @@
         "region_name": "Ganons Castle Deku Scrubs",
         "dungeon": "Ganons Castle",
         "locations": {
-            "Ganons Castle MQ Deku Scrub Center-Left": "True",
-            "Ganons Castle MQ Deku Scrub Center": "True",
-            "Ganons Castle MQ Deku Scrub Center-Right": "True",
-            "Ganons Castle MQ Deku Scrub Left": "True",
-            "Ganons Castle MQ Deku Scrub Right": "True",
+            "Ganons Castle MQ Deku Scrub Center-Left": "can_stun_deku",
+            "Ganons Castle MQ Deku Scrub Center": "can_stun_deku",
+            "Ganons Castle MQ Deku Scrub Center-Right": "can_stun_deku",
+            "Ganons Castle MQ Deku Scrub Left": "can_stun_deku",
+            "Ganons Castle MQ Deku Scrub Right": "can_stun_deku",
             "Free Fairies": "has_bottle"
         }
     },
@@ -40,9 +49,11 @@
             "Forest Trial Clear": "can_use(Light_Arrows) and can_play(Song_of_Time)"
         },
         "locations": {
-            "Ganons Castle MQ Forest Trial Eye Switch Chest": "Bow",
-            "Ganons Castle MQ Forest Trial Frozen Eye Switch Chest": "has_fire_source",
-            "Ganons Castle MQ Forest Trial Freestanding Key": "Progressive_Hookshot"
+            "Ganons Castle MQ Forest Trial Eye Switch Chest": "here(is_adult or Kokiri_Sword) and (can_use(Bow) or can_use(Slingshot))",
+            "Ganons Castle MQ Forest Trial Frozen Eye Switch Chest": "has_fire_source and (is_adult or Kokiri_Sword)",
+            "Ganons Castle MQ Forest Trial Freestanding Key": "here(is_adult or Kokiri_Sword) and (can_use(Hookshot) or can_use(Boomerang))",
+            "Ganons Castle MQ Forest Trial Pot 1" : "can_play(Song_of_Time) and (is_adult or Kokiri_Sword)",
+            "Ganons Castle MQ Forest Trial Pot 2" : "can_play(Song_of_Time) and (is_adult or Kokiri_Sword)"
         }
     },
     {
@@ -50,8 +61,25 @@
         "dungeon": "Ganons Castle",
         "events": {
             "Fire Trial Clear": "
-                can_use(Goron_Tunic) and can_use(Golden_Gauntlets) and can_use(Light_Arrows) and
+                (Silver_Rupee_Ganons_Castle_Fire_Trial, 5) and 
+                can_use(Goron_Tunic) and 
+                can_use(Light_Arrows) and
                 (can_use(Longshot) or Hover_Boots or (logic_fire_trial_mq and can_use(Hookshot)))"
+        },
+        "locations" : {
+            "Ganons Castle MQ Fire Trial Pot 1" : "
+                (Silver_Rupee_Ganons_Castle_Fire_Trial, 5) and 
+                can_use(Goron_Tunic) and can_use(Golden_Gauntlets) and
+                (can_use(Longshot) or Hover_Boots or (logic_fire_trial_mq and can_use(Hookshot)))",
+            "Ganons Castle MQ Fire Trial Pot 2" : "
+                (Silver_Rupee_Ganons_Castle_Fire_Trial, 5) and 
+                can_use(Goron_Tunic) and can_use(Golden_Gauntlets) and
+                (can_use(Longshot) or Hover_Boots or (logic_fire_trial_mq and can_use(Hookshot)))",
+            "Ganons Castle MQ Fire Trial Silver Rupee 1": "can_use(Goron_Tunic) and can_use(Golden_Gauntlets)",
+            "Ganons Castle MQ Fire Trial Silver Rupee 2": "can_use(Goron_Tunic)",
+            "Ganons Castle MQ Fire Trial Silver Rupee 3": "can_use(Goron_Tunic) and can_use(Golden_Gauntlets)",
+            "Ganons Castle MQ Fire Trial Silver Rupee 4": "can_use(Goron_Tunic)",
+            "Ganons Castle MQ Fire Trial Silver Rupee 5": "can_use(Goron_Tunic)"
         }
     },
     {
@@ -59,11 +87,19 @@
         "dungeon": "Ganons Castle",
         "events": {
             "Water Trial Clear": "
-                Blue_Fire and can_use(Light_Arrows) and 
+                (Silver_Rupee_Ganons_Castle_Water_Trial, 5) and Blue_Fire and can_use(Light_Arrows) and 
                 (Small_Key_Ganons_Castle, 3)"
         },
         "locations": {
             "Ganons Castle MQ Water Trial Chest": "Blue_Fire",
+            "Ganons Castle MQ Water Trial Recovery Heart": "Blue_Fire",
+            "Ganons Castle MQ Water Trial Pot 1" : "(Silver_Rupee_Ganons_Castle_Water_Trial, 5) and Blue_Fire and (Small_Key_Ganons_Castle, 3)",
+            "Ganons Castle MQ Water Trial Pot 2" : "(Silver_Rupee_Ganons_Castle_Water_Trial, 5) and Blue_Fire and (Small_Key_Ganons_Castle, 3)",
+            "Ganons Castle MQ Water Trial Silver Rupee 1" : "Blue_Fire",
+            "Ganons Castle MQ Water Trial Silver Rupee 2" : "Blue_Fire",
+            "Ganons Castle MQ Water Trial Silver Rupee 3" : "Blue_Fire",
+            "Ganons Castle MQ Water Trial Silver Rupee 4" : "Blue_Fire",
+            "Ganons Castle MQ Water Trial Silver Rupee 5" : "Blue_Fire",
             "Blue Fire": "has_bottle"
         }
     },
@@ -72,7 +108,7 @@
         "dungeon": "Ganons Castle",
         "events": {
             "Shadow Trial Clear": "
-                can_use(Light_Arrows) and (logic_lens_castle_mq or can_use(Lens_of_Truth)) and 
+                (Silver_Rupee_Ganons_Castle_Shadow_Trial, 5) and can_use(Light_Arrows) and (logic_lens_castle_mq or can_use(Lens_of_Truth)) and 
                 (Hover_Boots or (Progressive_Hookshot and (has_fire_source or logic_shadow_trial_mq)))"
         },
         "locations": {
@@ -82,7 +118,26 @@
                     (has_explosives or Progressive_Strength_Upgrade or can_use(Dins_Fire)))",
             "Ganons Castle MQ Shadow Trial Eye Switch Chest": "
                 Bow and (logic_lens_castle_mq or can_use(Lens_of_Truth)) and 
-                (Hover_Boots or (Progressive_Hookshot and (has_fire_source or logic_shadow_trial_mq)))"
+                (Hover_Boots or (Progressive_Hookshot and (has_fire_source or logic_shadow_trial_mq)))",
+            "Ganons Castle MQ Shadow Trial Pot 1" : "(Silver_Rupee_Ganons_Castle_Shadow_Trial, 5) and 
+                (logic_lens_castle_mq or can_use(Lens_of_Truth)) and 
+                (Hover_Boots or (Progressive_Hookshot and (has_fire_source or logic_shadow_trial_mq)))",
+            "Ganons Castle MQ Shadow Trial Pot 2" : "(Silver_Rupee_Ganons_Castle_Shadow_Trial, 5) and
+                (logic_lens_castle_mq or can_use(Lens_of_Truth)) and 
+                (Hover_Boots or (Progressive_Hookshot and (has_fire_source or logic_shadow_trial_mq)))",
+            "Ganons Castle MQ Shadow Trial Silver Rupee 1" : "
+                (logic_lens_castle_mq or can_use(Lens_of_Truth)) and 
+                    ((Bow and can_use(Hookshot)) or can_use(Hover_Boots))",
+            "Ganons Castle MQ Shadow Trial Silver Rupee 2" : "
+                (logic_lens_castle_mq or can_use(Lens_of_Truth)) and 
+                    ((Bow and can_use(Hookshot)) or can_use(Hover_Boots))",
+            "Ganons Castle MQ Shadow Trial Silver Rupee 3" : "(logic_lens_castle_mq or can_use(Lens_of_Truth)) and 
+                (can_use(Hover_Boots) or (can_use(Hookshot) and (has_fire_source or logic_shadow_trial_mq)))",
+            "Ganons Castle MQ Shadow Trial Silver Rupee 4" : "(logic_lens_castle_mq or can_use(Lens_of_Truth)) and 
+                (can_use(Hover_Boots) or (can_use(Hookshot) and (has_fire_source or logic_shadow_trial_mq)))",
+            "Ganons Castle MQ Shadow Trial Silver Rupee 5" : "
+                (logic_lens_castle_mq or can_use(Lens_of_Truth)) and
+                    ((Bow and can_use(Hookshot)) or can_use(Hover_Boots))"
         }
     },
     {
@@ -110,8 +165,10 @@
             "Ganons Castle MQ Spirit Trial Sun Back Right Chest": "
                 Megaton_Hammer and has_bombchus and 
                 can_use(Fire_Arrows) and Mirror_Shield",
+            "Ganons Castle MQ Spirit Trial Pot 1": "Megaton_Hammer and has_bombchus and can_use(Fire_Arrows) and Mirror_Shield",
+            "Ganons Castle MQ Spirit Trial Pot 2": "Megaton_Hammer and has_bombchus and can_use(Fire_Arrows) and Mirror_Shield",
             "Nut Pot": "
-                Megaton_Hammer and has_bombchus and
+                is_adult and Megaton_Hammer and has_bombchus and
                 can_use(Fire_Arrows) and Mirror_Shield"
         }
     },
@@ -125,7 +182,15 @@
                 (Progressive_Hookshot or logic_light_trial_mq)"
         },
         "locations": {
-            "Ganons Castle MQ Light Trial Lullaby Chest": "can_play(Zeldas_Lullaby)"
+            "Ganons Castle MQ Light Trial Lullaby Chest": "can_play(Zeldas_Lullaby)",
+            "Ganons Castle MQ Light Trial Recovery Heart 1": "(Small_Key_Ganons_Castle, 2) and (Progressive_Hookshot or logic_light_trial_mq)",
+            "Ganons Castle MQ Light Trial Recovery Heart 2": "(Small_Key_Ganons_Castle, 2) and (Progressive_Hookshot or logic_light_trial_mq)",
+            "Ganons Castle MQ Light Trial Pot 1" : " (Small_Key_Ganons_Castle, 3) and
+            (logic_lens_castle_mq or can_use(Lens_of_Truth)) and
+            (Progressive_Hookshot or logic_light_trial_mq)",
+            "Ganons Castle MQ Light Trial Pot 2" : " (Small_Key_Ganons_Castle, 3) and
+            (logic_lens_castle_mq or can_use(Lens_of_Truth)) and
+            (Progressive_Hookshot or logic_light_trial_mq)"
         }
     },
     {

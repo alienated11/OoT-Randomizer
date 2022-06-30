@@ -30,6 +30,7 @@ class ItemInfo(object):
         self.stone = self.special.get('stone', False)
         self.alias = self.special.get('alias', None)
         self.junk = self.special.get('junk', None)
+        self.trade = self.special.get('trade', False)
 
 
 for item_name in item_table:
@@ -119,14 +120,15 @@ class Item(object):
 
     @property
     def dungeonitem(self):
-        return self.smallkey or self.bosskey or self.map or self.compass
+        return self.smallkey or self.bosskey or self.map or self.compass or self.type == 'SilverRupee'
 
     @property
     def unshuffled_dungeon_item(self):
         return ((self.type == 'SmallKey' and self.world.settings.shuffle_smallkeys in ['remove','vanilla','dungeon']) or
                 (self.type == 'FortressSmallKey' and self.world.settings.shuffle_fortresskeys in ['vanilla']) or
                 (self.bosskey and self.world.settings.shuffle_bosskeys in ['remove','vanilla','dungeon']) or
-                ((self.map or self.compass) and (self.world.settings.shuffle_mapcompass in ['remove','startwith','vanilla','dungeon'])))
+                ((self.map or self.compass) and (self.world.settings.shuffle_mapcompass in ['remove','startwith','vanilla','dungeon'])) or
+                (self.type == 'SilverRupee' and self.world.settings.shuffle_silver_rupees in ['remove','vanilla','dungeon']))
 
     @property
     def majoritem(self):
@@ -140,6 +142,10 @@ class Item(object):
         if self.name.startswith('Bombchus') and not self.world.settings.bombchus_in_logic:
             return False
 
+        if self.name == 'Heart Container' or self.name.startswith('Piece of Heart'):
+            return (self.world.settings.bridge == 'hearts' or self.world.settings.shuffle_ganon_bosskey == 'hearts' or
+                (self.world.settings.shuffle_ganon_bosskey == 'on_lacs' and self.world.settings.lacs_condition == 'hearts'))
+
         if self.map or self.compass:
             return False
         if self.type == 'SmallKey' and self.world.settings.shuffle_smallkeys in ['dungeon', 'vanilla']:
@@ -149,6 +155,8 @@ class Item(object):
         if self.type == 'BossKey' and self.world.settings.shuffle_bosskeys in ['dungeon', 'vanilla']:
             return False
         if self.type == 'GanonBossKey' and self.world.settings.shuffle_ganon_bosskey in ['dungeon', 'vanilla']:
+            return False
+        if self.type == 'SilverRupee' and self.world.settings.shuffle_silver_rupees in ['dungeon', 'vanilla']:
             return False
 
         return True

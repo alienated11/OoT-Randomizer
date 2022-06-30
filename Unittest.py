@@ -3,6 +3,7 @@
 # See `python -m unittest -h` or `pytest -h` for more options.
 
 from collections import Counter, defaultdict
+from fileinput import filename
 import json
 import logging
 import os
@@ -12,7 +13,7 @@ import unittest
 
 from EntranceShuffle import EntranceShuffleError
 from Item import ItemInfo
-from ItemPool import remove_junk_items, item_groups
+from ItemPool import remove_junk_items, remove_junk_ludicrous_items, ludicrous_items, trade_items, ludicrous_exclusions, item_groups
 from LocationList import location_groups, location_is_viewable
 from Main import main, resolve_settings, build_world_graphs, place_items
 from Search import Search
@@ -43,6 +44,9 @@ once = {
 progressive = {name for name, item in ItemInfo.items.items() if item.special.get('progressive', None)}
 bottles = {name for name, item in ItemInfo.items.items() if item.special.get('bottle', None) and name != 'Deliver Letter'}
 junk = set(remove_junk_items)
+shop_items = {i for i, nfo in ItemInfo.items.items() if nfo.type == 'Shop'}
+ludicrous_junk = set(remove_junk_ludicrous_items)
+ludicrous_set = set(ludicrous_items) | ludicrous_junk | {i for t, i in trade_items.items()} | set(bottles) | set(ludicrous_exclusions) | set(['Bottle with Big Poe']) | shop_items
 
 
 def make_settings_for_test(settings_dict, seed=None, outfilename=None):
@@ -214,8 +218,9 @@ class TestPlandomizer(unittest.TestCase):
             with self.subTest(filename):
                 distribution_file, spoiler = generate_with_plandomizer(filename)
                 csmc = spoiler['settings'].get('correct_chest_appearances')
+                fast_chests = spoiler['settings'].get('fast_chests')
                 for location in spoiler['locations']:
-                    if location_is_viewable(location, csmc):
+                    if location_is_viewable(location, csmc, fast_chests):
                         item = spoiler['locations'][location]
                         if isinstance(item, dict):
                             if item['item'] == "Ice Trap":
@@ -267,6 +272,11 @@ class TestPlandomizer(unittest.TestCase):
             "plando-keyrings-all-dungeon-halfmq",
             "plando-keyrings-all-dungeon-nomq",
             "plando-mirrored-ice-traps",
+            "plando-boss-shuffle-nomq",
+            "plando-boss-shuffle-allmq",
+            "plando-boss-shuffle-limited-dungeon-shuffle",
+            "dual-hints",
+            "negative-pattern-test",
         ]
         for filename in filenames:
             with self.subTest(filename):
@@ -313,6 +323,32 @@ class TestPlandomizer(unittest.TestCase):
             for item in distribution_file['settings']['starting_items']:
                 self.assertNotIn(item, actual_pool)
 
+
+    def test_ludicrous_pool_junk(self):
+        filenames = [
+            "plando-ludicrous-default",
+            "plando-ludicrous-skip-child-zelda",
+            "plando-ludicrous-max-locations",
+            "plando-ludicrous-ice-traps"
+        ]
+        for filename in filenames:
+            with self.subTest(filename + " ludicrous junk"):
+                distribution_file, spoiler = generate_with_plandomizer(filename)
+                pool_set = {i for i, c in spoiler['item_pool'].items()}
+                self.assertEqual(
+                    set(),
+                    pool_set - ludicrous_set,
+                    'Ludicrous pool has regular junk items')
+        filename = "plando-ludicrous-junk-locations"
+        with self.subTest("location plando junk permission with ludicrous item pool"):
+            distribution_file, spoiler = generate_with_plandomizer(filename)
+            pool_set = {i for i, c in spoiler['item_pool'].items()}
+            self.assertEqual(
+                set(['Rupees (5)']),
+                pool_set - ludicrous_set,
+                'Ludicrous pool missing forced location junk items')
+
+
     def test_weird_egg_in_pool(self):
         # Not shuffled, one in pool: Should remove from pool and not place anywhere
         not_shuffled_one = "plando-egg-not-shuffled-one-pool"
@@ -344,6 +380,10 @@ class TestPlandomizer(unittest.TestCase):
         distribution_file, spoiler = generate_with_plandomizer("plando-keyrings-forest-anywhere-plentiful")
         self.assertNotIn('Small Key (Forest Temple)', spoiler['locations'].values())
         self.assertEqual(get_actual_pool(spoiler)['Small Key Ring (Forest Temple)'], 2)
+        # Ludicrous pool: Should be more than two key rings
+        distribution_file, spoiler = generate_with_plandomizer("plando-keyrings-forest-anywhere-ludicrous")
+        self.assertNotIn('Small Key (Forest Temple)', spoiler['locations'].values())
+        self.assertGreater(get_actual_pool(spoiler)['Small Key Ring (Forest Temple)'], 2)
         # Keysy: Should be no small keys or key rings (regardless of item pool)
         distribution_file, spoiler = generate_with_plandomizer("plando-keyrings-forest-keysy-plentiful")
         self.assertNotIn('Small Key (Forest Temple)', spoiler['locations'].values())
@@ -384,6 +424,13 @@ class TestPlandomizer(unittest.TestCase):
         self.assertEqual(get_actual_pool(spoiler)['Small Key (Forest Temple)'], 6)
         self.assertNotIn('Small Key Ring (Forest Temple)', spoiler['locations'].values())
         self.assertEqual(get_actual_pool(spoiler)['Small Key (Thieves Hideout)'], 5)
+        self.assertNotIn('Small Key Ring (Thieves Hideout)', spoiler['locations'].values())
+
+        # No key rings: Make sure none in item pool on ludicrous
+        distribution_file, spoiler = generate_with_plandomizer("plando-keyrings-none-anywhere-ludicrous")
+        self.assertGreater(get_actual_pool(spoiler)['Small Key (Forest Temple)'], 6)
+        self.assertNotIn('Small Key Ring (Forest Temple)', spoiler['locations'].values())
+        self.assertGreater(get_actual_pool(spoiler)['Small Key (Thieves Hideout)'], 5)
         self.assertNotIn('Small Key Ring (Thieves Hideout)', spoiler['locations'].values())
 
 class TestHints(unittest.TestCase):
@@ -548,11 +595,15 @@ class TestValidSpoilers(unittest.TestCase):
         dmap = {k: {loc: v[loc] for loc in disables if loc in v}
                 for k, v in locmap.items()}
         locations, items, locitems = self.loc_item_collection(dmap)
+        if spoiler['settings'].get('item_pool_value') == 'ludicrous':
+            junk_set = ludicrous_junk
+        else:
+            junk_set = junk
 
         # Only junk at disabled locations
         self.assertEqual(
             {loc: set() for loc in locitems},
-            {loc: items - junk for loc, items in locitems.items()},
+            {loc: items - junk_set for loc, items in locitems.items()},
             'Disabled locations have non-junk')
 
     def test_testcases(self):

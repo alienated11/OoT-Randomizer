@@ -222,12 +222,13 @@ ITEM_MESSAGES = {
     0x00B4: "\x08You got a \x05\x41Gold Skulltula Token\x05\x40!\x01You've collected \x05\x41\x19\x05\x40 tokens in total.",
     0x00B5: "\x08You destroyed a \x05\x41Gold Skulltula\x05\x40.\x01You got a token proving you \x01destroyed it!", #Unused
     0x00C2: "\x08\x13\x73You got a \x05\x41Piece of Heart\x05\x40!\x01Collect four pieces total to get\x01another Heart Container.",
+    0x90C2: "\x08\x13\x73You got a \x05\x41Piece of Heart\x05\x40!\x01You are already at\x01maximum health.",
     0x00C3: "\x08\x13\x73You got a \x05\x41Piece of Heart\x05\x40!\x01So far, you've collected two \x01pieces.",
     0x00C4: "\x08\x13\x73You got a \x05\x41Piece of Heart\x05\x40!\x01Now you've collected three \x01pieces!",
     0x00C5: "\x08\x13\x73You got a \x05\x41Piece of Heart\x05\x40!\x01You've completed another Heart\x01Container!",
     0x00C6: "\x08\x13\x72You got a \x05\x41Heart Container\x05\x40!\x01Your maximum life energy is \x01increased by one heart.",
+    0x90C6: "\x08\x13\x72You got a \x05\x41Heart Container\x05\x40!\x01You are already at\x01maximum health.",
     0x00C7: "\x08\x13\x74You got the \x05\x41Boss Key\x05\x40!\x01Now you can get inside the \x01chamber where the Boss lurks.",
-    0x9002: "\x08You are a \x05\x43FOOL\x05\x40!",
     0x00CC: "\x08You got a \x05\x43Blue Rupee\x05\x40!\x01That's \x05\x43five Rupees\x05\x40!",
     0x00CD: "\x08\x13\x53You got the \x05\x43Silver Scale\x05\x40!\x01You can dive deeper than you\x01could before.",
     0x00CE: "\x08\x13\x54You got the \x05\x43Golden Scale\x05\x40!\x01Now you can dive much\x01deeper than you could before!",
@@ -248,6 +249,12 @@ ITEM_MESSAGES = {
     0x00F1: "\x08You got a \x05\x45Purple Rupee\x05\x40!\x01That's \x05\x45fifty Rupees\x05\x40!",
     0x00F2: "\x08You got a \x05\x46Huge Rupee\x05\x40!\x01This Rupee is worth a whopping\x01\x05\x46two hundred Rupees\x05\x40!",
     0x00F9: "\x08\x13\x1EYou put a \x05\x41Big Poe \x05\x40in a bottle!\x01Let's sell it at the \x05\x41Ghost Shop\x05\x40!\x01Something good might happen!",
+    0x00FA: "\x08\x06\x49\x05\x41WINNER\x05\x40!\x04\x08\x13\x73You got a \x05\x41Piece of Heart\x05\x40!\x01Collect four pieces total to get\x01another Heart Container.",
+    0x00FB: "\x08\x06\x49\x05\x41WINNER\x05\x40!\x04\x08\x13\x73You got a \x05\x41Piece of Heart\x05\x40!\x01So far, you've collected two \x01pieces.",
+    0x00FC: "\x08\x06\x49\x05\x41WINNER\x05\x40!\x04\x08\x13\x73You got a \x05\x41Piece of Heart\x05\x40!\x01Now you've collected three \x01pieces!",
+    0x00FD: "\x08\x06\x49\x05\x41WINNER\x05\x40!\x04\x08\x13\x73You got a \x05\x41Piece of Heart\x05\x40!\x01You've completed another Heart\x01Container!",
+    0x90FA: "\x08\x06\x49\x05\x41WINNER\x05\x40!\x04\x08\x13\x73You got a \x05\x41Piece of Heart\x05\x40!\x01You are already at\x01maximum health.",
+    0x9002: "\x08You are a \x05\x43FOOL\x05\x40!",
     0x9003: "\x08You found a piece of the \x05\x41Triforce\x05\x40!",
 }
 
@@ -296,7 +303,51 @@ KEYSANITY_MESSAGES = {
     0x9016: "\x13\x77\x08You found a \x05\x41Small Key Ring\x05\x40\x01for the \x05\x46Gerudo Training\x01Ground\x05\x40!\x09",
     0x9017: "\x13\x77\x08You found a \x05\x41Small Key Ring\x05\x40\x01for the \x05\x46Thieves' Hideout\x05\x40!\x09",
     0x9018: "\x13\x77\x08You found a \x05\x41Small Key Ring\x05\x40\x01for \x05\x41Ganon's Castle\x05\x40!\x09",
-}
+    #TODO for silver rupees, include how many are collected
+    0x9019: "\x08You found a \x05\x44Silver Rupee\x05\x40 for the\x01staircase room in \x05\x41Dodongo's Cavern\x05\x40!\x09",
+    0x901A: "\x08You found a \x05\x44Silver Rupee\x05\x40 for the\x01spinning scythe room in the \x05\x44Ice\x01Cavern\x05\x40!\x09",
+    0x901B: "\x08You found a \x05\x44Silver Rupee\x05\x40 for the\x01push block room in the \x05\x44Ice Cavern\x05\x40!\x09",
+    0x901C: "\x08You found a \x05\x44Silver Rupee\x05\x40 for the\x01basement in the \x05\x45Bottom of the Well\x05\x40!\x09",
+    0x901D: "\x08You found a \x05\x44Silver Rupee\x05\x40 for the\x01scythe shortcut room in the \x05\x45Shadow\x01Temple\x05\x40!\x09",
+    0x901E: "\x08You found a \x05\x44Silver Rupee\x05\x40 for the\x01invisible blade room in the \x05\x45Shadow\x01Temple\x05\x40!\x09",
+    0x901F: "\x08You found a \x05\x44Silver Rupee\x05\x40 for the\x01huge pit in the \x05\x45Shadow Temple\x05\x40!\x09",
+    0x9020: "\x08You found a \x05\x44Silver Rupee\x05\x40 for the\x01room with invisible spikes in the\x01\x05\x45Shadow Temple\x05\x40!\x09",
+    0x9021: "\x08You found a \x05\x44Silver Rupee\x05\x40 for the\x01sloped room in the \x05\x46Gerudo Training\x01Ground\x05\x40!\x09",
+    0x9022: "\x08You found a \x05\x44Silver Rupee\x05\x40 for the lava\x01room in the \x05\x46Gerudo Training Ground\x05\x40!\x09",
+    0x9023: "\x08You found a \x05\x44Silver Rupee\x05\x40 for the\x01water room in the \x05\x46Gerudo Training\x01Ground\x05\x40!\x09",
+    0x9024: "\x08You found a \x05\x44Silver Rupee\x05\x40 for the\x01torch room in the child side of the\x01\x05\x46Spirit Temple\x05\x40!\x09",
+    0x9025: "\x08You found a \x05\x44Silver Rupee\x05\x40 for the\x01boulder room in the adult side of the\x01\x05\x46Spirit Temple\x05\x40!\x09",
+    0x9026: "\x08You found a \x05\x44Silver Rupee\x05\x40 for the\x01lobby and adult side of the \x05\x46Spirit\x01Temple\x05\x40!\x09",
+    0x9027: "\x08You found a \x05\x44Silver Rupee\x05\x40 for the sun\x01block room in the \x05\x46Spirit Temple\x05\x40!\x09",
+    0x9028: "\x08You found a \x05\x44Silver Rupee\x05\x40 for the\x01climbable wall in the \x05\x46Spirit Temple\x05\x40!\x09",
+    0x9029: "\x08You found a \x05\x44Silver Rupee\x05\x40 for the\x01\x05\x46Spirit Trial\x05\x40 in \x05\x41Ganon's Castle\x05\x40!\x09",
+    0x902A: "\x08You found a \x05\x44Silver Rupee\x05\x40 for the\x01\x05\x44Light Trial\x05\x40 in \x05\x41Ganon's Castle\x05\x40!\x09",
+    0x902B: "\x08You found a \x05\x44Silver Rupee\x05\x40 for the \x05\x41Fire\x01Trial\x05\x40 in \x05\x41Ganon's Castle\x05\x40!\x09",
+    0x902C: "\x08You found a \x05\x44Silver Rupee\x05\x40 for the\x01\x05\x45Shadow Trial\x05\x40 in \x05\x41Ganon's Castle\x05\x40!\x09",
+    0x902D: "\x08You found a \x05\x44Silver Rupee\x05\x40 for the\x01\x05\x43Water Trial\x05\x40 in \x05\x41Ganon's Castle\x05\x40!\x09",
+    0x902E: "\x08You found a \x05\x44Silver Rupee\x05\x40 for the\x01\x05\x42Forest Trial\x05\x40 in \x05\x41Ganon's Castle\x05\x40!\x09",}
+    #0x902F: "\x08You found a \x05\x44Silver Rupee Pouch\x05\x40 for\x01the staircase room in \x05\x41Dodongo's\x01Cavern\x05\x40!\x09",
+    #0x9030: "\x08You found a \x05\x44Silver Rupee Pouch\x05\x40 for\x01the spinning scythe room in the \x05\x44Ice\x01Cavern\x05\x40!\x09",
+    #0x9031: "\x08You found a \x05\x44Silver Rupee Pouch\x05\x40 for\x01the push block room in the \x05\x44Ice\x01Cavern\x05\x40!\x09",
+    #0x9032: "\x08You found a \x05\x44Silver Rupee Pouch\x05\x40 for\x01the basement in the \x05\x45Bottom of the\x01Well\x05\x40!\x09",
+    #0x9033: "\x08You found a \x05\x44Silver Rupee Pouch\x05\x40 for\x01the scythe shortcut room in the\x01\x05\x45Shadow Temple\x05\x40!\x09",
+    #0x9034: "\x08You found a \x05\x44Silver Rupee Pouch\x05\x40 for\x01the invisible blade room in the\x01\x05\x45Shadow Temple\x05\x40!\x09",
+    #0x9035: "\x08You found a \x05\x44Silver Rupee Pouch\x05\x40 for\x01the huge pit in the \x05\x45Shadow Temple\x05\x40!\x09",
+    #0x9036: "\x08You found a \x05\x44Silver Rupee Pouch\x05\x40 for\x01the room with invisible spikes in the\x01\x05\x45Shadow Temple\x05\x40!\x09",
+    #0x9037: "\x08You found a \x05\x44Silver Rupee Pouch\x05\x40 for\x01the sloped room in the \x05\x46Gerudo\x01Training Ground\x05\x40!\x09",
+    #0x9038: "\x08You found a \x05\x44Silver Rupee Pouch\x05\x40 for\x01the lava room in the \x05\x46Gerudo Training\x01Ground\x05\x40!\x09",
+    #0x9039: "\x08You found a \x05\x44Silver Rupee Pouch\x05\x40 for\x01the water room in the \x05\x46Gerudo\x01Training Ground\x05\x40!\x09",
+    #0x903A: "\x08You found a \x05\x44Silver Rupee Pouch\x05\x40 for\x01the torch room in the child side of\x01the \x05\x46Spirit Temple\x05\x40!\x09",
+    #0x903B: "\x08You found a \x05\x44Silver Rupee Pouch\x05\x40 for\x01the boulder room in the adult side of\x01the \x05\x46Spirit Temple\x05\x40!\x09",
+    #0x903C: "\x08You found a \x05\x44Silver Rupee Pouch\x05\x40 for\x01the lobby and adult side of the \x05\x46Spirit\x01Temple\x05\x40!\x09",
+    #0x903D: "\x08You found a \x05\x44Silver Rupee Pouch\x05\x40 for\x01the sun block room in the \x05\x46Spirit\x01Temple\x05\x40!\x09",
+    #0x903E: "\x08You found a \x05\x44Silver Rupee Pouch\x05\x40 for\x01the climbable wall in the \x05\x46Spirit\x01Temple\x05\x40!\x09",
+    #0x903F: "\x08You found a \x05\x44Silver Rupee Pouch\x05\x40 for\x01the \x05\x46Spirit Trial\x05\x40 in \x05\x41Ganon's Castle\x05\x40!\x09",
+    #0x9040: "\x08You found a \x05\x44Silver Rupee Pouch\x05\x40 for\x01the \x05\x44Light Trial\x05\x40 in \x05\x41Ganon's Castle\x05\x40!\x09",
+    #0x9041: "\x08You found a \x05\x44Silver Rupee Pouch\x05\x40 for\x01the \x05\x41Fire Trial\x05\x40 in \x05\x41Ganon's Castle\x05\x40!\x09",
+    #0x9042: "\x08You found a \x05\x44Silver Rupee Pouch\x05\x40 for\x01the \x05\x45Shadow Trial\x05\x40 in \x05\x41Ganon's Castle\x05\x40!\x09",
+    #0x9043: "\x08You found a \x05\x44Silver Rupee Pouch\x05\x40 for\x01the \x05\x43Water Trial\x05\x40 in \x05\x41Ganon's Castle\x05\x40!\x09",
+    #0x9044: "\x08You found a \x05\x44Silver Rupee Pouch\x05\x40 for\x01the \x05\x42Forest Trial\x05\x40 in \x05\x41Ganon's Castle\x05\x40!\x09",}
 
 COLOR_MAP = {
     'White':      '\x40',
@@ -564,10 +615,10 @@ class Message:
             elif speed_up_text and code.code in box_breaks:
                 # some special cases for text that needs to be on a timer
                 if (self.id == 0x605A or  # twinrova transformation
-                    self.id == 0x706C or  # raru ending text
+                    self.id == 0x706C or  # rauru ending text
                     self.id == 0x70DD or  # ganondorf ending text
-                    self.id == 0x7070
-                ):   # zelda ending text
+                    self.id in (0x706F, 0x7091, 0x7092, 0x7093, 0x7094, 0x7095, 0x7070)  # zelda ending text
+                ):
                     text_codes.append(code)
                     text_codes.append(instant_text_code)  # allow instant
                 else:
@@ -772,7 +823,10 @@ def read_shop_items(rom, shop_table_address):
 
 # writes each of the shop item back into rom
 def write_shop_items(rom, shop_table_address, shop_items):
+    logger = logging.getLogger('')
+    logger.debug("Shop items***")
     for s in shop_items:
+        logger.debug(s)
         s.write(rom, shop_table_address, s.index)
 
 # these are unused shop items, and contain text ids that are used elsewhere, and should not be moved
@@ -1009,9 +1063,13 @@ def update_warp_song_text(messages, world):
     }
 
     for id, entr in msg_list.items():
-        destination = world.get_entrance(entr).connected_region
-        destination_name, color = get_hint_area(destination)
-        color = COLOR_MAP[color]
+        if 'warp_songs' in world.settings.misc_hints:
+            destination = world.get_entrance(entr).connected_region
+            destination_name, color = get_hint_area(destination)
+            color = COLOR_MAP[color]
+        else:
+            destination_name = 'a mysterious place'
+            color = COLOR_MAP['White']
 
         new_msg = f"\x08\x05{color}Warp to {destination_name}?\x05\40\x09\x01\x01\x1b\x05\x42OK\x01No\x05\40"
         update_message_by_id(messages, id, new_msg)

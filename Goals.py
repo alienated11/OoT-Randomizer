@@ -2,6 +2,7 @@ from collections import OrderedDict, defaultdict
 import logging
 
 from HintList import goalTable, getHintGroup, hintExclusions
+from ItemList import item_table
 from Search import Search
 
 
@@ -55,7 +56,10 @@ class Goal(object):
 
     def requires(self, item):
         # Prevent direct hints for certain items that can have many duplicates, such as tokens and Triforce Pieces
-        return any(i['name'] == item and not i['hintable'] for i in self.items)
+        names = [item]
+        if item_table[item][3] is not None and 'alias' in item_table[item][3]:
+            names.append(item_table[item][3]['alias'][0])
+        return any(i['name'] in names and not i['hintable'] for i in self.items)
 
 
 class GoalCategory(object):
@@ -147,7 +151,7 @@ def update_goal_items(spoiler):
     # item_locations: only the ones that should appear as "required"/WotH
     all_locations = [location for world in worlds for location in world.get_filled_locations()]
     # Set to test inclusion against
-    item_locations = {location for location in all_locations if location.item.majoritem and not location.locked and location.item.name != 'Triforce Piece'}
+    item_locations = {location for location in all_locations if location.item.majoritem and not location.locked}
 
     # required_locations[category.name][goal.name][world_id] = [...]
     required_locations = defaultdict(lambda: defaultdict(lambda: defaultdict(list)))
@@ -339,6 +343,6 @@ def search_goals(categories, reachable_goals, search, priority_locations, all_lo
 
 
 def maybe_set_light_arrows(location):
-    if not location.item.world.light_arrow_location and location.item and location.item.name == location.item.world.ganon_arrows:
+    if not location.item.world.light_arrow_location and location.item and location.item.name == location.item.world.settings.shuffle_ganon_arrows:
         location.item.world.light_arrow_location = location
         logging.getLogger('').debug(f'Light Arrows [{location.item.world.id}] set to [{location.name}]')

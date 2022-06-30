@@ -1,0 +1,17 @@
+{
+    "entrances": {
+        "Child Spawn -> KF Links House" : {"region":"Market Guard House", "from":"Market Entrance"},
+        "Adult Spawn -> Temple of Time" : {"region":"Gerudo Fortress", "from":"GV Fortress Side"}
+        
+    },
+    "locations": {
+        "Spirit Temple Lobby Pot 1" : "Silver Rupee (Spirit Temple Child Early Torches)",
+        "Spirit Temple Lobby Pot 2" : "Silver Rupee (Spirit Temple Child Early Torches)",
+        "Spirit Temple Lobby Flying Pot 1" : "Silver Rupee (Spirit Temple Child Early Torches)",
+        "Spirit Temple Lobby Flying Pot 2" : "Silver Rupee (Spirit Temple Child Early Torches)",
+        "Spirit Temple Child Anubis Pot" : "Silver Rupee (Spirit Temple Child Early Torches)"
+        
+
+
+    }
+}

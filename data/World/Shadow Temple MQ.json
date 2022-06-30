@@ -12,6 +12,12 @@
     {
         "region_name": "Shadow Temple Beginning",
         "dungeon": "Shadow Temple",
+        "locations": {
+            "Shadow Temple MQ Truth Spinner Small Wooden Crate 1" : "True",
+            "Shadow Temple MQ Truth Spinner Small Wooden Crate 2" : "True",
+            "Shadow Temple MQ Truth Spinner Small Wooden Crate 3" : "True",
+            "Shadow Temple MQ Truth Spinner Small Wooden Crate 4" : "True"
+        },
         "exits": {
             "Shadow Temple First Beamos": "
                 shadow_temple_shortcuts or can_use(Fire_Arrows) or Hover_Boots or
@@ -24,16 +30,29 @@
         "dungeon": "Shadow Temple",
         "locations": {
             "Shadow Temple MQ Compass Chest": "True",
-            "Shadow Temple MQ Hover Boots Chest": "can_play(Song_of_Time) and Bow"
+            "Shadow Temple MQ Hover Boots Chest": "can_play(Song_of_Time) and Bow",
+            "Shadow Temple MQ Whispering Walls Pot 1": "True",
+            "Shadow Temple MQ Whispering Walls Pot 2": "True",
+            "Shadow Temple MQ Compass Room Pot 1": "True",
+            "Shadow Temple MQ Compass Room Pot 2": "True",
+            "Shadow Temple MQ Whispering Walls After Time Block Flying Pot 1": "can_play(Song_of_Time)",
+            "Shadow Temple MQ Whispering Walls After Time Block Flying Pot 2": "can_play(Song_of_Time)",
+            "Shadow Temple MQ Whispering Walls Before Time Block Flying Pot 1": "True",
+            "Shadow Temple MQ Whispering Walls Before Time Block Flying Pot 2": "True"
         }
     },
     {
         "region_name": "Shadow Temple First Beamos",
         "dungeon": "Shadow Temple",
         "locations": {
-            "Shadow Temple MQ Map Chest": "True",
+            "Shadow Temple MQ Map Chest": "(Silver_Rupee_Shadow_Temple_Scythe_Shortcut, 5)",
             "Shadow Temple MQ Early Gibdos Chest": "True",
-            "Shadow Temple MQ Near Ship Invisible Chest": "True"
+            "Shadow Temple MQ Near Ship Invisible Chest": "True",
+            "Shadow Temple MQ Scythe Shortcut Silver Rupee 1": "True",
+            "Shadow Temple MQ Scythe Shortcut Silver Rupee 2": "True",
+            "Shadow Temple MQ Scythe Shortcut Silver Rupee 3": "True",
+            "Shadow Temple MQ Scythe Shortcut Silver Rupee 4": "True",
+            "Shadow Temple MQ Scythe Shortcut Silver Rupee 5": "True"
         },
         # When shadow shortcuts are on, the central areas of the dungeon will require all 6 keys to
         # access. However, the final locked door does not actually prevent you from reaching any area
@@ -59,9 +78,7 @@
                 (not shadow_temple_shortcuts or (Small_Key_Shadow_Temple, 6) or
                     ((logic_lens_shadow_mq_platform or can_use(Lens_of_Truth)) and Hover_Boots)) and
                 (can_play(Song_of_Time) or
-                    (logic_shadow_mq_invisible_blades and damage_multiplier != 'ohko')) and
-                (logic_lens_shadow_mq_invisible_blades or can_use(Lens_of_Truth) or
-                    can_use(Nayrus_Love))",
+                    (logic_shadow_mq_invisible_blades and damage_multiplier != 'ohko'))",
             "Shadow Temple Lower Huge Pit": "has_fire_source or logic_shadow_mq_huge_pit"
         }
     },
@@ -69,8 +86,28 @@
         "region_name": "Shadow Temple Invisible Blades",
         "dungeon": "Shadow Temple",
         "locations": {
-            "Shadow Temple MQ Invisible Blades Visible Chest": "True",
-            "Shadow Temple MQ Invisible Blades Invisible Chest": "True"
+            "Shadow Temple MQ Invisible Blades Visible Chest": "
+                (Silver_Rupee_Shadow_Temple_Invisible_Blades, 10) and 
+                    (logic_lens_shadow_mq_invisible_blades or 
+                    can_use(Lens_of_Truth) or
+                    can_use(Nayrus_Love))",
+            "Shadow Temple MQ Invisible Blades Invisible Chest": "
+                (Silver_Rupee_Shadow_Temple_Invisible_Blades, 10) and 
+                    (logic_lens_shadow_mq_invisible_blades or 
+                    can_use(Lens_of_Truth) or
+                    can_use(Nayrus_Love))",
+            "Shadow Temple MQ Invisible Blades Recovery Heart 1": "True",
+            "Shadow Temple MQ Invisible Blades Recovery Heart 2": "True",
+            "Shadow Temple MQ Invisible Blades Silver Rupee 1" : "True",
+            "Shadow Temple MQ Invisible Blades Silver Rupee 2" : "True",
+            "Shadow Temple MQ Invisible Blades Silver Rupee 3" : "True",
+            "Shadow Temple MQ Invisible Blades Silver Rupee 4" : "True",
+            "Shadow Temple MQ Invisible Blades Silver Rupee 5" : "True",
+            "Shadow Temple MQ Invisible Blades Silver Rupee 6" : "True",
+            "Shadow Temple MQ Invisible Blades Silver Rupee 7" : "True",
+            "Shadow Temple MQ Invisible Blades Silver Rupee 8" : "True",
+            "Shadow Temple MQ Invisible Blades Silver Rupee 9" : "True",
+            "Shadow Temple MQ Invisible Blades Silver Rupee 10" : "can_play(Song_of_Time)"
         }
     },
     {
@@ -82,7 +119,7 @@
                 ((logic_lens_shadow_mq_platform or can_use(Lens_of_Truth)) and Hover_Boots and
                     (has_fire_source or logic_shadow_mq_huge_pit))",
             "Shadow Temple Invisible Spikes": "
-                (logic_lens_shadow_mq_platform or can_use(Lens_of_Truth)) and 
+                (logic_lens_shadow_mq_platform or can_use(Lens_of_Truth)) and
                 Hover_Boots and (Small_Key_Shadow_Temple, 3)",
             "Shadow Temple Upper Huge Pit": "Longshot"
         }
@@ -91,22 +128,43 @@
         "region_name": "Shadow Temple Falling Spikes",
         "dungeon": "Shadow Temple",
         "locations": {
-            "Shadow Temple MQ Beamos Silver Rupees Chest": "Longshot",
+            "Shadow Temple MQ Beamos Silver Rupees Chest": "(Silver_Rupee_Shadow_Temple_Huge_Pit, 5)",
+            "Shadow Temple MQ Huge Pit Silver Rupee 1" : "True",
+            "Shadow Temple MQ Huge Pit Silver Rupee 2" : "Longshot",
+            "Shadow Temple MQ Huge Pit Silver Rupee 3" : "Longshot",
+            "Shadow Temple MQ Huge Pit Silver Rupee 4" : "True",
+            "Shadow Temple MQ Huge Pit Silver Rupee 5" : "True",
             "Shadow Temple MQ Falling Spikes Lower Chest": "True",
             "Shadow Temple MQ Falling Spikes Upper Chest": "
                 (logic_shadow_umbrella and Hover_Boots) or Progressive_Strength_Upgrade",
             "Shadow Temple MQ Falling Spikes Switch Chest": "
                 (logic_shadow_umbrella and Hover_Boots) or Progressive_Strength_Upgrade",
             "Shadow Temple MQ GS Falling Spikes Room": "
-                (logic_shadow_umbrella_gs and Hover_Boots) or Hookshot"
+                (logic_shadow_umbrella_gs and Hover_Boots) or Hookshot",
+            "Shadow Temple MQ Falling Spikes Lower Pot 1": "True",
+            "Shadow Temple MQ Falling Spikes Lower Pot 2": "True",
+            "Shadow Temple MQ Falling Spikes Upper Pot 1": "
+                (logic_shadow_umbrella and Hover_Boots) or Progressive_Strength_Upgrade",
+            "Shadow Temple MQ Falling Spikes Upper Pot 2": "
+                (logic_shadow_umbrella and Hover_Boots) or Progressive_Strength_Upgrade"
         }
     },
     {
         "region_name": "Shadow Temple Invisible Spikes",
         "dungeon": "Shadow Temple",
         "locations": {
-            "Shadow Temple MQ Invisible Spikes Chest": "True",
-            "Shadow Temple MQ Stalfos Room Chest": "Hookshot"
+            "Shadow Temple MQ Invisible Spikes Chest": "(Silver_Rupee_Shadow_Temple_Invisible_Spikes, 10)",
+            "Shadow Temple MQ Stalfos Room Chest": "Hookshot",
+            "Shadow Temple MQ Invisible Spikes Silver Rupee 1": "True",
+            "Shadow Temple MQ Invisible Spikes Silver Rupee 2": "True",
+            "Shadow Temple MQ Invisible Spikes Silver Rupee 3": "True",
+            "Shadow Temple MQ Invisible Spikes Silver Rupee 4": "True",
+            "Shadow Temple MQ Invisible Spikes Silver Rupee 5": "True",
+            "Shadow Temple MQ Invisible Spikes Silver Rupee 6": "True",
+            "Shadow Temple MQ Invisible Spikes Silver Rupee 7": "True",
+            "Shadow Temple MQ Invisible Spikes Silver Rupee 8": "True",
+            "Shadow Temple MQ Invisible Spikes Silver Rupee 9": "True",
+            "Shadow Temple MQ Invisible Spikes Silver Rupee 10": "True"
         },
         "exits": {
             "Shadow Temple Wind Tunnel": "Hookshot and (Small_Key_Shadow_Temple, 4)",
@@ -134,6 +192,10 @@
             "Shadow Temple MQ After Wind Hidden Chest": "has_explosives",
             "Shadow Temple MQ GS After Wind": "
                 has_explosives or logic_shadow_mq_after_wind_gs",
+            "Shadow Temple MQ After Wind Pot 1": "True",
+            "Shadow Temple MQ After Wind Pot 2": "True",
+            "Shadow Temple MQ After Wind Flying Pot 1": "True",
+            "Shadow Temple MQ After Wind Flying Pot 2": "True",
             "Nut Pot": "True"
         },
         "exits": {
@@ -144,6 +206,10 @@
     {
         "region_name": "Shadow Temple Boat",
         "dungeon": "Shadow Temple",
+        "locations": {
+            "Shadow Temple MQ Before Boat Recovery Heart 1": "can_use(Distant_Scarecrow)",
+            "Shadow Temple MQ Before Boat Recovery Heart 2": "can_use(Distant_Scarecrow)"
+        },
         "exits": {
             "Shadow Temple After Wind": "(Small_Key_Shadow_Temple, 5)",
             "Shadow Temple Beyond Boat": "can_play(Zeldas_Lullaby)"
@@ -153,15 +219,22 @@
         "region_name": "Shadow Temple Beyond Boat",
         "dungeon": "Shadow Temple",
         "locations": {
-            "Shadow Temple MQ GS After Ship": "Hookshot"
+            "Shadow Temple MQ GS After Ship": "Hookshot",
+            "Shadow Temple MQ After Boat Pot 1": "True",
+            "Shadow Temple MQ After Boat Pot 2": "True",
+            "Shadow Temple MQ After Boat Upper Recovery Heart 1" : "Bow and can_play(Song_of_Time) and Longshot",
+            "Shadow Temple MQ After Boat Upper Recovery Heart 2" : "Bow and can_play(Song_of_Time) and Longshot",
+            "Shadow Temple MQ After Boat Lower Recovery Heart" : "
+                (Bow or (logic_shadow_statue and has_bombchus) or shadow_temple_shortcuts)",
+            "Shadow Temple MQ Near Boss Pot 1": "
+                (Bow or (logic_shadow_statue and has_bombchus) or shadow_temple_shortcuts)",
+            "Shadow Temple MQ Near Boss Pot 2": "
+                (Bow or (logic_shadow_statue and has_bombchus) or shadow_temple_shortcuts)"
         },
         "exits": {
             "Shadow Temple Invisible Maze": "Bow and can_play(Song_of_Time) and Longshot",
-            "Shadow Temple Near Boss": "
-                (Bow or (logic_shadow_statue and has_bombchus) or shadow_temple_shortcuts) and Hover_Boots",
-            "Shadow Temple Boss": "
-                (Small_Key_Shadow_Temple, 5) and Boss_Key_Shadow_Temple and
-                (Bow or can_use(Distant_Scarecrow) or (logic_shadow_statue and has_bombchus) or shadow_temple_shortcuts)"
+            "Shadow Temple Before Boss": "
+                (Bow or (logic_shadow_statue and has_bombchus) or shadow_temple_shortcuts) and Hover_Boots"
         }
     },
     {
@@ -174,25 +247,29 @@
                 can_use(Dins_Fire) and (Small_Key_Shadow_Temple, 6)",
             "Shadow Temple MQ Bomb Flower Chest": "
                 logic_lens_shadow_mq_dead_hand or can_use(Lens_of_Truth)",
-            "Shadow Temple MQ Freestanding Key": "True"
+            "Shadow Temple MQ Freestanding Key": "True",
+            "Shadow Temple MQ Dead Hand II Pot 1": "True",
+            "Shadow Temple MQ Dead Hand II Pot 2": "True",
+            "Shadow Temple MQ Spike Walls Pot": "(Small_Key_Shadow_Temple, 6)",
+            "Shadow Temple MQ 3 Spinning Pots Rupee 1": "Bomb_Bag or Progressive_Strength_Upgrade",
+            "Shadow Temple MQ 3 Spinning Pots Rupee 2": "Bomb_Bag or Progressive_Strength_Upgrade",
+            "Shadow Temple MQ 3 Spinning Pots Rupee 3": "Bomb_Bag or Progressive_Strength_Upgrade",
+            "Shadow Temple MQ 3 Spinning Pots Rupee 4": "Bomb_Bag or Progressive_Strength_Upgrade",
+            "Shadow Temple MQ 3 Spinning Pots Rupee 5": "Bomb_Bag or Progressive_Strength_Upgrade",
+            "Shadow Temple MQ 3 Spinning Pots Rupee 6": "Bomb_Bag or Progressive_Strength_Upgrade",
+            "Shadow Temple MQ 3 Spinning Pots Rupee 7": "Bomb_Bag or Progressive_Strength_Upgrade",
+            "Shadow Temple MQ 3 Spinning Pots Rupee 8": "Bomb_Bag or Progressive_Strength_Upgrade",
+            "Shadow Temple MQ 3 Spinning Pots Rupee 9": "Bomb_Bag or Progressive_Strength_Upgrade"
         }
     },
     {
-        "region_name": "Shadow Temple Near Boss",
+        "region_name": "Shadow Temple Before Boss",
         "dungeon": "Shadow Temple",
         "locations": {
             "Shadow Temple MQ GS Near Boss": "has_projectile(adult) or can_use(Dins_Fire)"
-        }
-    },
-    {
-        "region_name": "Shadow Temple Boss",
-        "dungeon": "Shadow Temple",
-        "locations": {
-            "Shadow Temple Bongo Bongo Heart": "logic_shadow_bongo or Bow or Hookshot",
-            "Bongo Bongo": "logic_shadow_bongo or Bow or Hookshot"
         },
         "exits": {
-            "Shadow Temple Beyond Boat": "True"
+            "Shadow Temple Boss Door": "True"
         }
     }
 ]

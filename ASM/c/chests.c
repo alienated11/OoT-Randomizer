@@ -12,6 +12,7 @@
 
 uint32_t CHEST_TEXTURE_MATCH_CONTENTS = 0;
 uint32_t CHEST_SIZE_MATCH_CONTENTS = 0;
+uint32_t CHEST_SIZE_TEXTURE = 0;
 
 extern void* GILDED_CHEST_FRONT_TEXTURE;
 extern void* GILDED_CHEST_BASE_TEXTURE;
@@ -27,7 +28,7 @@ void get_chest_override(z64_actor_t *actor) {
     uint8_t size  = ((uint8_t*)actor)[0x01E9];
     uint8_t color = size;
 
-    if (CHEST_SIZE_MATCH_CONTENTS || CHEST_TEXTURE_MATCH_CONTENTS) {
+    if (CHEST_SIZE_MATCH_CONTENTS || CHEST_SIZE_TEXTURE || CHEST_TEXTURE_MATCH_CONTENTS) {
         uint8_t scene = z64_game.scene_index;
         uint8_t item_id = (actor->variable & 0x0FE0) >> 5;
 
@@ -37,7 +38,7 @@ void get_chest_override(z64_actor_t *actor) {
             if (item_row == NULL) {
                 item_row = get_item_row(override.value.item_id);
             }
-            if (CHEST_SIZE_MATCH_CONTENTS) {
+            if (CHEST_SIZE_MATCH_CONTENTS || CHEST_SIZE_TEXTURE) {
                 if (item_row->chest_type == BROWN_CHEST || item_row->chest_type == SILVER_CHEST || item_row->chest_type == SKULL_CHEST_SMALL) {
                     // Small chest
                     size = 5;
@@ -54,6 +55,11 @@ void get_chest_override(z64_actor_t *actor) {
 
     ((uint8_t*)actor)[0x01EC] = size;
     ((uint8_t*)actor)[0x01ED] = color;
+    if (CHEST_LENS_ONLY) {
+        // Actor flag 7 makes actors invisible
+        // Usually only applies to chest types 4 and 6
+        actor->flags |= 0x80;
+    }
 }
 
 void draw_chest(z64_game_t* game, int part, void* unk, void* unk2,
@@ -63,6 +69,9 @@ void draw_chest(z64_game_t* game, int part, void* unk, void* unk2,
 
     z64_gfx_t *gfx = game->common.gfx;
     int chest_type = ((uint8_t*)actor)[0x01ED];
+    if (CHEST_SIZE_MATCH_CONTENTS && chest_type == SILVER_CHEST) {
+        chest_type = GOLD_CHEST;
+    }
 
     //write matrix
     Mtx_t *mtx = write_matrix_stack_top(gfx);
@@ -89,7 +98,7 @@ void draw_chest(z64_game_t* game, int part, void* unk, void* unk2,
         void* frontTexture = (void*)BROWN_FRONT_TEXTURE;
         void* baseTexture = (void*)BROWN_BASE_TEXTURE;
 
-        if (CHEST_SIZE_MATCH_CONTENTS || CHEST_TEXTURE_MATCH_CONTENTS) {
+        if (CHEST_SIZE_TEXTURE || CHEST_TEXTURE_MATCH_CONTENTS) {
             if (chest_type == GILDED_CHEST) {
                 frontTexture = &GILDED_CHEST_FRONT_TEXTURE;
                 baseTexture = &GILDED_CHEST_BASE_TEXTURE;

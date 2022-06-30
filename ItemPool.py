@@ -1,7 +1,13 @@
 import logging
 import random
 from collections import OrderedDict
-from decimal import Decimal, ROUND_HALF_UP
+from itertools import chain
+from Location import DisableType, Location
+from Utils import random_choices
+from Item import ItemFactory
+from ItemList import item_table
+from LocationList import location_groups
+from decimal import Decimal, ROUND_HALF_UP, ROUND_UP
 
 from Item import ItemFactory, ItemInfo
 from Utils import random_choices
@@ -36,7 +42,106 @@ plentiful_items = ([
     ['Heart Container'] * 8
 )
 
+# Ludicrous replaces all health upgrades with heart containers
+# as done in plentiful. The item list is used separately to
+# dynamically replace all junk with even levels of each item.
+ludicrous_health = ['Heart Container'] * 8
+
+# List of items that can be multiplied in ludicrous mode.
+# Used to filter the pre-plando pool for candidates instead
+# of appending directly, making this list settings-independent.
+# Excludes Gold Skulltula Tokens, Triforce Pieces, and health
+# upgrades as they are directly tied to win conditions and
+# already have a large count relative to available locations
+# in the game.
+#
+# Item order is arranged to maximize subjectively useful item
+# duplicates when remaining available locations is less than
+# a full duplicate set.
+ludicrous_items = [
+    'Zeldas Lullaby',
+    'Eponas Song',
+    'Suns Song',
+    'Sarias Song',
+    'Song of Time',
+    'Song of Storms',
+    'Minuet of Forest',
+    'Prelude of Light',
+    'Bolero of Fire',
+    'Serenade of Water',
+    'Nocturne of Shadow',
+    'Requiem of Spirit',
+    'Ocarina',
+    'Light Arrows',
+    'Megaton Hammer',
+    'Progressive Hookshot',
+    'Progressive Strength Upgrade',
+    'Dins Fire',
+    'Hover Boots',
+    'Mirror Shield',
+    'Boomerang',
+    'Iron Boots',
+    'Kokiri Sword',
+    'Fire Arrows',
+    'Boss Key (Ganons Castle)',
+    'Boss Key (Forest Temple)',
+    'Boss Key (Fire Temple)',
+    'Boss Key (Water Temple)',
+    'Boss Key (Shadow Temple)',
+    'Boss Key (Spirit Temple)',
+    'Gerudo Membership Card',
+    'Small Key (Thieves Hideout)',
+    'Small Key (Shadow Temple)',
+    'Small Key (Ganons Castle)',
+    'Small Key (Forest Temple)',
+    'Small Key (Spirit Temple)',
+    'Small Key (Fire Temple)',
+    'Small Key (Water Temple)',
+    'Small Key (Bottom of the Well)',
+    'Small Key (Gerudo Training Ground)',
+    'Small Key Ring (Thieves Hideout)',
+    'Small Key Ring (Shadow Temple)',
+    'Small Key Ring (Ganons Castle)',
+    'Small Key Ring (Forest Temple)',
+    'Small Key Ring (Spirit Temple)',
+    'Small Key Ring (Fire Temple)',
+    'Small Key Ring (Water Temple)',
+    'Small Key Ring (Bottom of the Well)',
+    'Small Key Ring (Gerudo Training Ground)',
+    'Progressive Scale',
+    'Progressive Wallet',
+    'Magic Meter',
+    'Bow',
+    'Slingshot',
+    'Bomb Bag',
+    'Bombchus',
+    'Lens of Truth',
+    'Goron Tunic',
+    'Zora Tunic',
+    'Biggoron Sword',
+    'Double Defense',
+    'Farores Wind',
+    'Nayrus Love',
+    'Stone of Agony',
+    'Ice Arrows',
+    'Magic Bean Pack',
+    'Deku Stick Capacity',
+    'Deku Nut Capacity'
+]
+
+ludicrous_exclusions = [
+    'Triforce Piece',
+    'Gold Skulltula Token',
+    'Rutos Letter',
+    'Heart Container',
+    'Piece of Heart',
+    'Piece of Heart (Treasure Chest Game)'
+]
+
 item_difficulty_max = {
+    'ludicrous': {
+        'Piece of Heart': 3,
+    },
     'plentiful': {
         'Piece of Heart': 3,
     },
@@ -89,9 +194,9 @@ min_shop_items = (
     ['Buy Deku Seeds (30)'] +
     ['Buy Arrows (10)'] * 2 + ['Buy Arrows (30)'] + ['Buy Arrows (50)'] +
     ['Buy Bombchu (5)'] + ['Buy Bombchu (10)'] * 2 + ['Buy Bombchu (20)'] +
-    ['Buy Bombs (5) [25]'] + ['Buy Bombs (5) [35]'] + ['Buy Bombs (10)'] + ['Buy Bombs (20)'] +
+    ['Buy Bombs (5) for 25 Rupees'] + ['Buy Bombs (5) for 35 Rupees'] + ['Buy Bombs (10)'] + ['Buy Bombs (20)'] +
     ['Buy Green Potion'] +
-    ['Buy Red Potion [30]'] +
+    ['Buy Red Potion for 30 Rupees'] +
     ['Buy Blue Fire'] +
     ["Buy Fairy's Spirit"] +
     ['Buy Bottle Bug'] +
@@ -102,8 +207,8 @@ deku_scrubs_items = {
     'Buy Deku Shield':     'Deku Shield',
     'Buy Deku Nut (5)':    'Deku Nuts (5)',
     'Buy Deku Stick (1)':  'Deku Stick (1)',
-    'Buy Bombs (5) [35]':  'Bombs (5)',
-    'Buy Red Potion [30]': 'Recovery Heart',
+    'Buy Bombs (5) for 35 Rupees':  'Bombs (5)',
+    'Buy Red Potion for 30 Rupees': 'Recovery Heart',
     'Buy Green Potion':    'Rupees (5)',
     'Buy Arrows (30)':     [('Arrows (30)', 3), ('Deku Seeds (30)', 1)],
     'Buy Deku Seeds (30)': [('Arrows (30)', 3), ('Deku Seeds (30)', 1)],
@@ -127,12 +232,19 @@ song_list = [item.name for item in sorted([i for n, i in ItemInfo.items.items() 
 junk_pool_base = [(item, weight) for (item, weight) in sorted(ItemInfo.junk.items()) if weight > 0]
 remove_junk_items = [item for (item, weight) in sorted(ItemInfo.junk.items()) if weight >= 0]
 
+remove_junk_ludicrous_items = [
+    'Ice Arrows',
+    'Deku Nut Capacity',
+    'Deku Stick Capacity',
+    'Double Defense',
+    'Biggoron Sword'
+]
+
 # a useless placeholder item placed at some skipped and inaccessible locations
 # (e.g. HC Malon Egg with Skip Child Zelda, or the carpenters with Open Gerudo Fortress)
 IGNORE_LOCATION = 'Recovery Heart'
 
 junk_pool_extended = [
-    ('Chicken',         1),
     ('Ice Arrows',      1),
     ('Hylian Shield',   1),
     ('Deku Shield',     1),
@@ -165,7 +277,7 @@ item_groups = {
     'Song': song_list,
     'NonWarpSong': song_list[6:],
     'WarpSong': song_list[0:6],
-    'HealthUpgrade': ('Heart Container', 'Piece of Heart'),
+    'HealthUpgrade': ('Heart Container', 'Piece of Heart', 'Piece of Heart (Treasure Chest Game)'),
     'ProgressItem': sorted([name for name, item in ItemInfo.items.items() if item.type == 'Item' and item.advancement]),
     'MajorItem': sorted([name for name, item in ItemInfo.items.items() if item.type in ['Item', 'Song'] and item.advancement and name not in exclude_from_major]),
     'DungeonReward': [item.name for item in sorted([i for n, i in ItemInfo.items.items() if i.type == 'DungeonReward'], key=lambda x: x.special['item_id'])],
@@ -174,6 +286,10 @@ item_groups = {
     'FireWater': ('Fire Medallion', 'Water Medallion'),
 }
 
+def get_new_junk():
+    junk = list(junk_pool_base) + list(junk_pool_extended)
+    junk_items, junk_weights = zip(*junk)
+    return random_choices(junk_items, weights=junk_weights, k=1)[0]
 
 def get_junk_item(count=1, pool=None, plando_pool=None):
     if count < 1:
@@ -199,11 +315,11 @@ def get_junk_item(count=1, pool=None, plando_pool=None):
     return return_pool
 
 
-def replace_max_item(items, item, max):
+def replace_max_item(items, item, max_count):
     count = 0
     for i,val in enumerate(items):
         if val == item:
-            if count >= max:
+            if count >= max_count:
                 items[i] = get_junk_item()[0]
             count += 1
 
@@ -238,7 +354,7 @@ def generate_itempool(world):
     # make sure that there are enough gold skulltulas for bridge/ganon boss key/lacs
     world.available_tokens = placed_items_count.get("Gold Skulltula Token", 0) \
                            + pool.count("Gold Skulltula Token") \
-                           + world.distribution.starting_items.get("Gold Skulltula Token", 0)
+                           + world.distribution.get_starting_item("Gold Skulltula Token")
     if world.max_progressions["Gold Skulltula Token"] > world.available_tokens:
         raise ValueError(f"Not enough available Gold Skulltula Tokens to meet requirements. Available: {world.available_tokens}, Required: {world.max_progressions['Gold Skulltula Token']}.")
 
@@ -284,8 +400,13 @@ def get_pool_core(world):
                 pending_junk_pool.append(f"Boss Key ({dungeon})")
         if world.settings.shuffle_ganon_bosskey in ['any_dungeon', 'overworld', 'keysanity']:
             pending_junk_pool.append('Boss Key (Ganons Castle)')
+        if world.settings.shuffle_silver_rupees in ['any_dungeon', 'overworld', 'anywhere']:
+            pending_junk_pool.extend([f"Silver Rupee ({puzzle})" for puzzle in world.silver_rupee_puzzles()])
         if world.settings.shuffle_song_items == 'any':
             pending_junk_pool.extend(song_list)
+
+    if world.settings.item_pool_value == 'ludicrous':
+        pending_junk_pool.extend(ludicrous_health)
 
     if world.settings.triforce_hunt:
         pending_junk_pool.extend(['Triforce Piece'] * world.settings.triforce_count_per_world)
@@ -385,6 +506,10 @@ def get_pool_core(world):
                 item = 'Magic Bean Pack' if world.distribution.get_starting_item('Magic Bean') < 10 else get_junk_item()[0]
             shuffle_item = world.settings.shuffle_beans
 
+        # Frogs Purple Rupees
+        elif location.scene == 0x54 and location.vanilla_item == 'Rupees (50)':
+            shuffle_item = world.settings.shuffle_frog_song_rupees
+
         # Adult Trade Item
         elif location.vanilla_item == 'Pocket Egg':
             trade_item_options = list(trade_items.keys())
@@ -405,6 +530,45 @@ def get_pool_core(world):
                 shuffle_item = False
             if shuffle_item and world.settings.gerudo_fortress == 'normal' and 'Thieves Hideout' in world.settings.key_rings:
                 item = get_junk_item()[0] if location.name != 'Hideout Jail Guard (1 Torch)' else 'Small Key Ring (Thieves Hideout)'
+
+        # Freestanding Rupees and Hearts
+        elif location.type == 'ActorOverride' or (location.type == 'Collectable' and ('Freestanding' in location.filter_tags or 'RupeeTower' in location.filter_tags)):
+            if world.settings.shuffle_freestanding_items == 'all':
+                shuffle_item = True
+                item = get_new_junk()
+            elif world.settings.shuffle_freestanding_items == 'dungeons' and location.dungeon is not None:
+                shuffle_item = True
+                item = get_new_junk()
+            elif world.settings.shuffle_freestanding_items == 'overworld' and location.dungeon is None:
+                shuffle_item = True
+                item = get_new_junk()
+            else:
+                shuffle_item = False
+                location.disabled = DisableType.DISABLED
+
+        # Pots and Crates
+        elif location.type == 'Collectable' and ('Pot' in location.filter_tags or 'Crate' in location.filter_tags or 'FlyingPot' in location.filter_tags or 'SmallCrate' in location.filter_tags):
+            if world.settings.shuffle_pots_crates == 'all':
+                shuffle_item = True
+                item = get_new_junk()
+            elif world.settings.shuffle_pots_crates == 'dungeons' and location.dungeon is not None:
+                shuffle_item = True
+                item = get_new_junk()
+            elif world.settings.shuffle_pots_crates == 'overworld' and location.dungeon is None:
+                shuffle_item = True
+                item = get_new_junk()
+            else:
+                shuffle_item = False
+                location.disabled = DisableType.DISABLED
+
+        # Beehives
+        elif location.type == 'Collectable' and 'Beehive' in location.filter_tags:
+            if world.settings.shuffle_beehives:
+                shuffle_item = True
+                item = get_new_junk()
+            else:
+                shuffle_item = False
+                location.disabled = DisableType.DISABLED
 
         # Dungeon Items
         elif location.dungeon is not None:
@@ -435,14 +599,21 @@ def get_pool_core(world):
                 elif dungeon.name in world.settings.key_rings:
                     item = get_junk_item()[0]
                     shuffle_item = True
+            # Silver Rupee
+            elif location.type == 'Collectable' and 'Silver Rupee' in location.filter_tags:
+                shuffle_setting = world.settings.shuffle_silver_rupees
+                dungeon_collection = dungeon.silver_rupees
+                if shuffle_setting == 'vanilla':
+                    shuffle_item = False
+
             # Any other item in a dungeon.
-            elif location.type in ["Chest", "NPC", "Song", "Collectable", "Cutscene", "BossHeart"]:
+            elif location.type in ["Chest", "NPC", "Song", "Collectable", "Cutscene", "BossHeart"] and not is_freestanding_or_potcrate_or_beehive_location(location):
                 shuffle_item = True
 
             # Handle dungeon item.
             if shuffle_setting is not None and not shuffle_item:
                 dungeon_collection.append(ItemFactory(item))
-                if shuffle_setting in ['remove', 'startwith', 'triforce']:
+                if shuffle_setting in ['remove', 'startwith']:
                     world.state.collect(dungeon_collection[-1])
                     item = get_junk_item()[0]
                     shuffle_item = True
@@ -450,7 +621,7 @@ def get_pool_core(world):
                     dungeon_collection[-1].priority = True
 
         # The rest of the overworld items.
-        elif location.type in ["Chest", "NPC", "Song", "Collectable", "Cutscene", "BossHeart"]:
+        elif location.type in ["Chest", "NPC", "Song", "Collectable", "Cutscene", "BossHeart"] and not is_freestanding_or_potcrate_or_beehive_location(location):
             shuffle_item = True
 
         # Now, handle the item as necessary.
@@ -459,6 +630,9 @@ def get_pool_core(world):
         elif shuffle_item is not None:
             placed_items[location.name] = item
     # End of Locations loop.
+
+    # add unrestricted dungeon items to main item pool
+    pool.extend([item.name for item in world.get_unrestricted_dungeon_items()])
 
     if world.settings.shopsanity != 'off':
         pool.extend(min_shop_items)
@@ -497,18 +671,19 @@ def get_pool_core(world):
             world.state.collect(ItemFactory('Small Key (Spirit Temple)'))
             world.state.collect(ItemFactory('Small Key (Spirit Temple)'))
             world.state.collect(ItemFactory('Small Key (Spirit Temple)'))
-        if 'shadow_temple' in world.settings.dungeon_shortcuts:
+        if 'Shadow Temple' in world.settings.dungeon_shortcuts:
             # Reverse Shadow is broken with vanilla keys in both vanilla/MQ
             world.state.collect(ItemFactory('Small Key (Shadow Temple)'))
             world.state.collect(ItemFactory('Small Key (Shadow Temple)'))
 
-    if not world.keysanity and not world.dungeon_mq['Fire Temple']:
+    if (not world.keysanity or (world.empty_dungeons['Fire Temple'].empty and world.settings.shuffle_smallkeys != 'remove'))\
+        and not world.dungeon_mq['Fire Temple']:
         world.state.collect(ItemFactory('Small Key (Fire Temple)'))
 
     if world.settings.shuffle_ganon_bosskey == 'on_lacs':
         placed_items['ToT Light Arrows Cutscene'] = 'Boss Key (Ganons Castle)'
 
-    if world.settings.shuffle_ganon_bosskey in ['stones', 'medallions', 'dungeons', 'tokens']:
+    if world.settings.shuffle_ganon_bosskey in ['stones', 'medallions', 'dungeons', 'tokens', 'hearts', 'triforce']:
         placed_items['Gift from Sages'] = 'Boss Key (Ganons Castle)'
         pool.extend(get_junk_item())
     else:
@@ -555,6 +730,56 @@ def get_pool_core(world):
             pool.remove(junk_item)
             pool.append(pending_item)
 
-    world.distribution.collect_starters(world.state)
+    if world.settings.item_pool_value == 'ludicrous':
+        # Replace all junk items with major items
+        # Overrides plando'd junk items
+        # Songs are in the unrestricted pool even if their fill is restricted. Filter from candidates
+        duplicate_candidates = [item for item in ludicrous_items if item in pool and (ItemInfo.items[item].type != 'Song' or world.settings.shuffle_song_items == 'any')]
+        junk_items = [item for item in pool \
+                                    if item not in ludicrous_items
+                                    and ItemInfo.items[item].type != 'Shop'
+                                    and not ItemInfo.items[item].trade
+                                    and item not in normal_bottles
+                                    and item not in ludicrous_exclusions]
+        max_extra_copies = int(Decimal(len(junk_items) / len(duplicate_candidates)).to_integral_value(rounding=ROUND_UP))
+        duplicate_items = [item for item in duplicate_candidates for _ in range(max_extra_copies)]
+        pool = [item if item not in junk_items else duplicate_items.pop(0) for item in pool]
+        # Handle bottles separately since only 4 can be obtained
+        if world.settings.zora_fountain != 'open':
+            for item in pool:
+                if item in normal_bottles or item == 'Rutos Letter':
+                    pool.remove(item)
+            # Enforce max 2 Rutos Letters to balance out regular bottle availability
+            letter_adds = min(2, max_extra_copies)
+            for _ in range(letter_adds):
+                pool.append('Rutos Letter')
+            for _ in range(4 - letter_adds):
+                bottle = random.choice(normal_bottles)
+                pool.append(bottle)
+        # Disabled locations use the #Junk group for fill.
+        # Update pattern matcher since all normal junk is removed.
+        item_groups['Junk'] = remove_junk_ludicrous_items
+        world.distribution.distribution.search_groups['Junk'] = remove_junk_ludicrous_items
+    else:
+        # Fix for unit tests reusing globals after ludicrous pool mutates them
+        item_groups['Junk'] = remove_junk_items
+        world.distribution.distribution.search_groups['Junk'] = remove_junk_items
 
+    world.distribution.collect_starters(world.state)
+    logging.getLogger('').info('Item Pool Size:%d',len(pool))
     return pool, placed_items
+
+def is_freestanding_or_potcrate_or_beehive_location(location : Location):
+    if 'Pot' in location.filter_tags:
+        return True
+    if 'Crate' in location.filter_tags:
+        return True
+    if 'FlyingPot' in location.filter_tags:
+        return True
+    if 'SmallCrate' in location.filter_tags:
+        return True
+    if 'Freestanding' in location.filter_tags:
+        return True
+    if 'Beehive' in location.filter_tags:
+        return True
+    return False

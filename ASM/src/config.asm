@@ -36,6 +36,8 @@ CFG_BOMBCHU_TRAIL_OUTER_COLOR:
 .byte 0xFA, 0x00, 0x00
 CFG_DISPLAY_DPAD:
 .byte 0x01
+CFG_AGELESS_BOOTS:
+.byte 0x00
 CFG_RAINBOW_SWORD_INNER_ENABLED:
 .byte 0x00
 CFG_RAINBOW_SWORD_OUTER_ENABLED:
@@ -64,6 +66,15 @@ CFG_RAINBOW_NAVI_PROP_INNER_ENABLED:
 .byte 0x00
 CFG_RAINBOW_NAVI_PROP_OUTER_ENABLED:
 .byte 0x00
+CFG_SHOW_SETTING_INFO:
+.byte 0x00
+
+.area 0x20, 0
+CFG_CUSTOM_MESSAGE_1:
+.endarea
+.area 0x20, 0
+CFG_CUSTOM_MESSAGE_2:
+.endarea
 CFG_SONG_NAME_ENABLED:
 .byte 0x00
 CFG_SONG_ALWAYS_ON_SCREEN:
@@ -75,6 +86,20 @@ SONGS_NAMES:
 .endarea
 .align 4
 
+; Version string
+.area 0x24, 0
+VERSION_STRING_TXT:
+.endarea
+
+; World string (max length "255 of 255" = 10 chars)
+.area 0x10, 0
+WORLD_STRING_TXT:
+.endarea
+
+; Time string
+.area 0x24, 0
+TIME_STRING_TXT:
+.endarea
 
 ; Initial Save Data table:
 ;
@@ -91,28 +116,16 @@ SONGS_NAMES:
 INITIAL_SAVE_DATA:
 .endarea
 
-.area 0x20, 0
+.area 0x100, 0
+EXTENDED_INITIAL_SAVE_DATA:
+.endarea
+
+.area 0x40, 0
 EXTENDED_OBJECT_TABLE:
 .endarea
 
 BOMBCHUS_IN_LOGIC:
 .word 0x00
-
-RAINBOW_BRIDGE_CONDITION:
-.word 0x00
-; 0 = Open
-; 1 = Medallions
-; 2 = Dungeons
-; 3 = Stones
-; 4 = Vanilla
-; 5 = Tokens
-
-LACS_CONDITION:
-.word 0x00
-; 0 = Vanilla
-; 1 = Medallions
-; 2 = Dungeons
-; 3 = Stones
 
 GOSSIP_HINT_CONDITION:
 .word 0x00
@@ -123,15 +136,11 @@ GOSSIP_HINT_CONDITION:
 FREE_SCARECROW_ENABLED:
 .word 0x00
 
-RAINBOW_BRIDGE_COUNT:
-.halfword 0x64
-
-LACS_CONDITION_COUNT:
-.halfword 0x00
-
 JABU_ELEVATOR_ENABLE:
 .byte 0x00
 OCARINAS_SHUFFLED:
+.byte 0x00
+NO_COLLECTIBLE_HEARTS:
 .byte 0x00
 FAST_CHESTS:
 .byte 0x01
@@ -153,15 +162,26 @@ OVERWORLD_SHUFFLED:
 .byte 0x00
 FAST_BUNNY_HOOD_ENABLED:
 .byte 0x00
+SHUFFLE_MAGIC_JARS:
+.byte 0x00
+FIX_BROKEN_DROPS:
+.byte 0x00
+SPOILER_AVAILABLE:
+.byte 0x00
+PLANDOMIZER_USED:
+.byte 0x00
+POTCRATE_TEXTURES_MATCH_CONTENTS:
+.byte 0x00
 .align 4
 
 ; These configuration values are given fixed addresses to aid auto-trackers.
+; Any changes made here should be documented in Notes/auto-tracker-ctx.md
 AUTO_TRACKER_CONTEXT:
 AUTO_TRACKER_VERSION:
-.word 1 ; Increment this if the auto-tracker context layout changes
+.word 2 ; Increment this if the auto-tracker context layout changes
 
 CFG_DUNGEON_INFO_ENABLE:
-.word 1
+.word 0
 CFG_DUNGEON_INFO_MQ_ENABLE:
 .word 0
 CFG_DUNGEON_INFO_MQ_NEED_MAP:
@@ -177,6 +197,41 @@ CFG_DUNGEON_REWARDS:
 .endarea
 .area 14, 0x00
 CFG_DUNGEON_IS_MQ:
+.endarea
+
+RAINBOW_BRIDGE_CONDITION:
+.word 0x00
+; 0 = Open
+; 1 = Medallions
+; 2 = Dungeons
+; 3 = Stones
+; 4 = Vanilla
+; 5 = Tokens
+; 6 = Hearts
+
+LACS_CONDITION:
+.word 0x00
+; 0 = Vanilla
+; 1 = Medallions
+; 2 = Dungeons
+; 3 = Stones
+; 4 = Tokens
+; 5 = Hearts
+
+RAINBOW_BRIDGE_COUNT:
+.halfword 0x0064
+
+LACS_CONDITION_COUNT:
+.halfword 0x0000
+
+TRIFORCE_HUNT_ENABLED:
+.halfword 0x0000
+
+TRIFORCE_PIECES_REQUIRED:
+.halfword 0xffff
+
+.area 8, 0x00
+SPECIAL_DEAL_COUNTS:
 .endarea
 
 .align 4
