@@ -225,6 +225,7 @@
             "tokensanity",
             "shuffle_scrubs",
             "shuffle_freestanding_items",
+            "shuffle_pots_or_crates",
             "shuffle_pots_crates",
             "shuffle_cows",
             "shuffle_beehives",
@@ -389,7 +390,8 @@
             "dampe_race_level",
             "easy_treasure_game",
             "diving_rupees",
-            "diving_cost"
+            "diving_cost",
+            "shuffle_richard"
           ]
         },
         {

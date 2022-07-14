@@ -21,12 +21,7 @@ void handle_dpad() {
     z64_input_t input = z64_game.common.input[0];
 
     if (CAN_USE_DPAD && DISPLAY_DPAD) {
-        if (z64_file.link_age == 0 || CFG_AGELESS_BOOTS) {
-            if (input.raw.pad.r && pad_pressed.du && z64_file.deku_shield) {
-                if (z64_file.equip_shield == 1) z64_file.equip_shield = 0;
-                else z64_file.equip_shield = 1;
-                z64_UpdateEquipment(&z64_game, &z64_link);
-            }
+        if (z64_file.link_age == 0) {
             if (input.raw.pad.r && pad_pressed.dl && z64_file.hylian_shield) {
                 if (z64_file.equip_shield == 2) z64_file.equip_shield = 0;
                 else z64_file.equip_shield = 2;
@@ -37,30 +32,30 @@ void handle_dpad() {
                 else z64_file.equip_shield = 3;
                 z64_UpdateEquipment(&z64_game, &z64_link);
             }
-            if (input.raw.pad.z && pad_pressed.dl && z64_file.goron_tunic) {
+            if (input.raw.pad.r && pad_pressed.du && z64_file.goron_tunic) {
                 if (z64_file.equip_tunic == 2) z64_file.equip_tunic = 1;
                 else z64_file.equip_tunic = 2;
                 z64_UpdateEquipment(&z64_game, &z64_link);
             }
-            if (input.raw.pad.z && pad_pressed.dr && z64_file.zora_tunic) {
+            if (input.raw.pad.r && pad_pressed.dd && z64_file.zora_tunic) {
                 if (z64_file.equip_tunic == 3) z64_file.equip_tunic = 1;
                 else z64_file.equip_tunic = 3;
                 z64_UpdateEquipment(&z64_game, &z64_link);
             }
-            if(!input.raw.pad.r && !input.raw.pad.z && pad_pressed.dl && z64_file.iron_boots) {
+            if(!input.raw.pad.r && pad_pressed.dl && z64_file.iron_boots) {
                 if (z64_file.equip_boots == 2) z64_file.equip_boots = 1;
                 else z64_file.equip_boots = 2;
                 z64_UpdateEquipment(&z64_game, &z64_link);
                 z64_playsfx(0x835, (z64_xyzf_t*)0x80104394, 0x04, (float*)0x801043A0, (float*)0x801043A0, (float*)0x801043A8);
             }
-            if (!input.raw.pad.r && !input.raw.pad.z && pad_pressed.dr && z64_file.hover_boots) {
+            if (!input.raw.pad.r && pad_pressed.dr && z64_file.hover_boots) {
                 if (z64_file.equip_boots == 3) z64_file.equip_boots = 1;
                 else z64_file.equip_boots = 3;
                 z64_UpdateEquipment(&z64_game, &z64_link);
                 z64_playsfx(0x835, (z64_xyzf_t*)0x80104394, 0x04, (float*)0x801043A0, (float*)0x801043A0, (float*)0x801043A8);
             }
         }
-        if (z64_file.link_age == 1 && !CFG_AGELESS_BOOTS) {
+        if (z64_file.link_age == 1) {
             if (input.raw.pad.r && pad_pressed.dl && z64_file.deku_shield ) {
                 if (z64_file.equip_shield == 1) z64_file.equip_shield = 0;
                 else z64_file.equip_shield = 1;
@@ -76,11 +71,12 @@ void handle_dpad() {
             }
         }
 
-        if (pad_pressed.dd && CAN_USE_OCARINA) {
+        if (!input.raw.pad.r && pad_pressed.dd && CAN_USE_OCARINA) {
             z64_usebutton(&z64_game,&z64_link,z64_file.items[Z64_SLOT_OCARINA], 2);
         }
     }
 }
+
 void draw_dpad() {
     z64_disp_buf_t *db = &(z64_ctxt.gfx->overlay);
     z64_input_t input = z64_game.common.input[0];
@@ -148,28 +144,25 @@ void draw_dpad() {
                     }
                 }
 
-            }
-            else if (input.raw.pad.z) {
                 if (z64_file.goron_tunic && z64_file.link_age == 0) {
                     sprite_load(db, &items_sprite, 66, 1);
                     if (z64_file.equip_tunic == 2) {
-                        sprite_draw(db, &items_sprite, 0, 258, 64, 16, 16);
+                        sprite_draw(db, &items_sprite, 0, 271, 53, 16, 16);
                     }
                     else {
-                        sprite_draw(db, &items_sprite, 0, 260, 66, 12, 12);
+                        sprite_draw(db, &items_sprite, 0, 273, 55, 12, 12);
                     }
                 }
 
                 if (z64_file.zora_tunic && z64_file.link_age == 0) {
                     sprite_load(db, &items_sprite, 67, 1);
                     if (z64_file.equip_tunic == 3) {
-                        sprite_draw(db, &items_sprite, 0, 283, 64, 16, 16);
+                        sprite_draw(db, &items_sprite, 0, 271, 75, 16, 16);
                     }
                     else {
-                        sprite_draw(db, &items_sprite, 0, 285, 66, 12, 12);
+                        sprite_draw(db, &items_sprite, 0, 273, 77, 12, 12);
                     }
                 }
-
             }
             else {
                 if (z64_file.iron_boots && z64_file.link_age == 0) {
@@ -198,14 +191,14 @@ void draw_dpad() {
                     sprite_load(db, &items_sprite, z64_file.items[Z64_SLOT_CHILD_TRADE], 1);
                     sprite_draw(db, &items_sprite, 0, 285, 66, 12, 12);
                 }
+                if (z64_file.items[Z64_SLOT_OCARINA] == Z64_ITEM_FAIRY_OCARINA || z64_file.items[Z64_SLOT_OCARINA] == Z64_ITEM_OCARINA_OF_TIME) {
+                    if(!CAN_USE_DPAD || !CAN_USE_OCARINA) gDPSetPrimColor(db->p++, 0, 0, 0xFF, 0xFF, 0xFF, alpha * 0x46 / 0xFF);
+                    else gDPSetPrimColor(db->p++, 0, 0, 0xFF, 0xFF, 0xFF, alpha);
+                    sprite_load(db, &items_sprite, z64_file.items[Z64_SLOT_OCARINA], 1);
+                    sprite_draw(db, &items_sprite, 0, 273, 77, 12,12);
+                }
             }
 
-            if (z64_file.items[Z64_SLOT_OCARINA] == Z64_ITEM_FAIRY_OCARINA || z64_file.items[Z64_SLOT_OCARINA] == Z64_ITEM_OCARINA_OF_TIME) {
-                if(!CAN_USE_DPAD || !CAN_USE_OCARINA) gDPSetPrimColor(db->p++, 0, 0, 0xFF, 0xFF, 0xFF, alpha * 0x46 / 0xFF);
-                else gDPSetPrimColor(db->p++, 0, 0, 0xFF, 0xFF, 0xFF, alpha);
-                sprite_load(db, &items_sprite, z64_file.items[Z64_SLOT_OCARINA], 1);
-                sprite_draw(db, &items_sprite, 0, 273, 77, 12,12);
-            }
         }
         gDPPipeSync(db->p++);
     }

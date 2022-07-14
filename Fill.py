@@ -59,8 +59,6 @@ def distribute_items_restrictive(window, worlds, fill_locations=None):
                 and location not in shop_locations
                 and not location.type.startswith('Hint')]
     world_states = [world.state for world in worlds]
-
-    logger.info('Fill:%d, Song:%d, Shop:%d' % (len(fill_locations), len(song_locations), len(shop_locations)))
     window.locationcount = len(fill_locations) + len(song_locations) + len(shop_locations)
     window.fillcount = 0
 
@@ -73,8 +71,7 @@ def distribute_items_restrictive(window, worlds, fill_locations=None):
         itempool.extend(songitempool)
         songitempool = []
 
-    # add unrestricted dungeon items to main item pool
-    itempool.extend([item for world in worlds for item in world.get_unrestricted_dungeon_items()])
+    # Unrestricted dungeon items are already in main item pool
     dungeon_items = [item for world in worlds for item in world.get_restricted_dungeon_items()]
 
     random.shuffle(itempool) # randomize item placement order. this ordering can greatly affect the location accessibility bias
@@ -98,7 +95,6 @@ def distribute_items_restrictive(window, worlds, fill_locations=None):
             and location.item.looks_like_item is None))
     junk_items = remove_junk_items.copy()
     junk_items.remove('Ice Trap')
-    all_items = [item for name, item in ItemInfo.items.items() if item.type == 'Item' and item.index is not None]
     major_items = [name for name, item in ItemInfo.items.items() if item.type == 'Item' and item.advancement and item.index is not None]
     fake_items = []
     if worlds[0].settings.ice_trap_appearance == 'major_only':
@@ -109,10 +105,6 @@ def distribute_items_restrictive(window, worlds, fill_locations=None):
         model_items = [item for item in itempool if item.name in junk_items]
         if len(model_items) == 0:  # All junk was removed
             model_items = ItemFactory(junk_items)
-    elif world.settings.junk_item in [item.name for item in all_items]:
-        model_items = [item for item in all_items if item.name == world.settings.ice_trap_appearance]
-        if len(model_items) == 0:  # All junk was removed
-            model_items = ItemFactory(major_items) + ItemFactory(junk_items)
     else:  # world[0].settings.ice_trap_appearance == 'anything':
         model_items = [item for item in itempool if item.name != 'Ice Trap']
         if len(model_items) == 0:  # All major items and junk were somehow removed from the pool (can happen in plando)
@@ -219,12 +211,12 @@ def distribute_items_restrictive(window, worlds, fill_locations=None):
     fast_fill(window, fill_locations, restitempool)
 
     # Log unplaced item/location warnings
-    for item in progitempool + prioitempool:
+    for item in progitempool + prioitempool + restitempool:
         logger.error('Unplaced Items: %s [World %d]' % (item.name, item.world.id))
     for location in fill_locations:
         logger.error('Unfilled Locations: %s [World %d]' % (location.name, location.world.id))
 
-    if progitempool + prioitempool:
+    if progitempool + prioitempool + restitempool:
         raise FillError('Not all items are placed.')
 
     if fill_locations:

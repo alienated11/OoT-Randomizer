@@ -143,7 +143,7 @@ item_table = {
     'Zeldas Letter':                                   ('Item',     True,  0x0B, {'trade': True}),
     'Time Travel':                                     ('Event',    True,  None, None),
     'Scarecrow Song':                                  ('Event',    True,  None, None),
-    'Triforce':                                        ('Event',    True,  None, None),
+    'Triforce':                                        ('Event',    True,  None, {'item_id':0x6F}),
 
     'Small Key Ring (Forest Temple)':                  ('SmallKey', True,  0xCB, {'alias': ('Small Key (Forest Temple)', 10), 'progressive': float('Inf')}),
     'Small Key Ring (Fire Temple)':                    ('SmallKey', True,  0xCC, {'alias': ('Small Key (Fire Temple)', 10), 'progressive': float('Inf')}),

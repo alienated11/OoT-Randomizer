@@ -92,11 +92,10 @@ class World(object):
             # (specifically, for randomize_settings)
             self.settings.shuffle_ganon_bosskey = 'triforce'
 
-        if isinstance(self.settings.shuffle_ganon_arrows, list):
+        if len(self.settings.shuffle_ganon_arrows) > 0:
             self.settings.shuffle_ganon_arrows = random.choice(self.settings.shuffle_ganon_arrows)
         else:
-            if self.settings.shuffle_ganon_arrows != 'Ice Arrows' and self.settings.shuffle_ganon_arrows != 'Fire Arrows':
-                self.settings.shuffle_ganon_arrows = 'Light Arrows'
+            self.settings.shuffle_ganon_arrows = 'Light Arrows'
 
         # trials that can be skipped will be decided later
         self.skipped_trials = {
@@ -796,8 +795,8 @@ class World(object):
                     # item pool value with a minimum quantity of 1 attempts to hint all items
                     # required to get all copies of Light Arrows, but will fall back to just
                     # one copy if the other is unreachable.
-                    # 
-                    # Similar criteria is used for Ganon's Boss Key in plentiful keysanity. 
+                    #
+                    # Similar criteria is used for Ganon's Boss Key in plentiful keysanity.
                     if not self.settings.shuffle_ganon_arrows in self.item_added_hint_types['always']:
                         if self.settings.item_pool_value == 'plentiful':
                             arrows = 2

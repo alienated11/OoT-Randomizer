@@ -3382,6 +3382,18 @@ setting_infos = [
         },
     ),
     Checkbutton(
+        name='shuffle_richard',
+        gui_text='Randomize Richard',
+        gui_tooltip='''\
+            Randomizes which dog in Market is required for the lady in the alley
+        ''',
+        default=False,
+        shared=True,
+        gui_params={
+            'randomize_key': 'randomize_settings',
+        },
+    ),
+    Checkbutton(
         name           = 'shuffle_kokiri_sword',
         gui_text       = 'Shuffle Kokiri Sword',
         gui_tooltip    = '''\
@@ -3512,22 +3524,20 @@ setting_infos = [
         shared         = True,
     ),
     Combobox(
-        name = 'shuffle_pots_crates',
+        name = 'shuffle_pots_or_crates',
         gui_text = 'Pot & Crate Shuffle',
-        default = 'off',
+        multiple_select = True,
+        default = [],
         choices = {
-            'off': 'Off',
-            'all': 'All',
-            'overworld' : 'Overworld Only',
-            'dungeons' : 'Dungeons Only'
+            'pots': 'Pots',
+            'crates' : 'Crates',
         },
         gui_tooltip    = '''\
-            Shuffles pots, flying pots, and large/small crates into the location pool.
+            Controls how pots and crates are shuffled, setting this to 'Off' will override both pot and crate shuffle 
 
             Off: Not shuffled.
-            All: All pots/flying pots/crates are shuffled.
-            Overworld Only: Only overworld pots/flying pots/crates are shuffled.
-            Dungeons Only: Only dungeon pots/flying pots/crates are shuffled.
+            Pots: Pots/flying pots are shuffled
+            Crates: Large/small crates are shuffled
 
             Note: Only pots/crates which normally drop an item are shuffled. Empty pots/crates are not included.
         ''',
@@ -3535,6 +3545,28 @@ setting_infos = [
             'randomize_key': 'randomize_settings',
         },
         disable = {'off':  {'settings': ['unlock_ganons_first_boss_door']}},
+        shared         = True,
+    ),
+    Combobox(
+        name = 'shuffle_pots_crates',
+        gui_text = 'Pot & Crate Shuffle Behavior',
+        default = 'all',
+        choices = {
+            'all': 'All',
+            'overworld' : 'Overworld Only',
+            'dungeons' : 'Dungeons Only'
+        },
+        gui_tooltip    = '''\
+            Controls how pots and crates are shuffled
+
+            Off: Not shuffled.
+            All: All pots/flying pots/crates are shuffled.
+            Overworld Only: Only overworld pots/flying pots/crates are shuffled.
+            Dungeons Only: Only dungeon pots/flying pots/crates are shuffled.
+        ''',
+        gui_params     = {
+            'randomize_key': 'randomize_settings',
+        },
         shared         = True,
     ),
     
@@ -3758,41 +3790,56 @@ setting_infos = [
             ],
         },
     ),
-    Checkbutton(
+    Combobox(
         name           = 'shuffle_dungeon_entrances',
         gui_text       = 'Shuffle Dungeon Entrances',
+        default        = 'off',
+        choices        = {
+            'off':       'Off',
+            'simple':    'Dungeon'
+        },
         gui_tooltip    = '''\
-            Shuffle the pool of dungeon entrances, including Bottom 
+            Shuffle the pool of dungeon entrances, including Bottom
             of the Well, Ice Cavern, and Gerudo Training Ground.
-            However, Ganon's Castle and Thieves' Hideout are not shuffled.
 
-            Additionally, the entrances of Deku Tree, Fire Temple and 
+            Additionally, the entrances of Deku Tree, Fire Temple and
             Bottom of the Well are opened for both adult and child.
+
+            Thieves' Hideout is not shuffled.
         ''',
-        default        = False,
         shared         = True,
         gui_params     = {
             'randomize_key': 'randomize_settings',
+            'distribution': [
+                ('off', 2),
+                ('simple', 1)
+            ],
         },
     ),
     Combobox(
         name='shuffle_dungeon_bosses',
         gui_text='Shuffle Dungeon Bosses',
+        gui_tooltip    = '''\
+            Shuffle the pool of dungeon boss entrances.
+            This affects the boss rooms of all stone and medallion dungeons.
+
+            'Age-Restricted':
+            Shuffle the entrances of child and adult boss rooms separately.
+
+            'Full':
+            Shuffle the entrances of all boss rooms together.
+            Child may be expected to defeat Phantom Ganon and/or Bongo Bongo.
+
+            'Full + Ganon':
+            Ganondorf/Ganon will now be in the pool
+        ''',
         default='off',
         choices={
             'off': 'Off',
-            'boss': 'Normal Bosses',
-            'ganon': 'Include Ganon',
+            'limited':   'Age-Restricted',
+            'full': 'Full',
+            'ganon': 'Full + Ganon',
         },
-        gui_tooltip='''\
-               Shuffle boss arenas inside of dungeons.
-
-               'Normal Bosses':
-               Bosses that give dungeon rewards (stones/medallions)
-
-               'Include Ganon':
-               Throw 'dorf himself into the pool
-           ''',
         shared=True,
         disable={
             'boss': {'settings': ['decouple_entrances']},
@@ -3802,7 +3849,8 @@ setting_infos = [
             'randomize_key': 'randomize_settings',
             'distribution': [
                 ('off', 2),
-                ('boss', 1),
+                ('limited', 1),
+                ('full', 1),
                 ('ganon', 1),
             ],
         },
@@ -3874,7 +3922,7 @@ setting_infos = [
         gui_tooltip    = '''\
             Shuffle the arrows required in the Ganondorf fight
         ''',
-        default        = False,
+        default        = [],
         shared         = True,
         gui_params     = {
             'randomize_key': 'randomize_settings',

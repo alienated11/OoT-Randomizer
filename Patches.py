@@ -1264,6 +1264,35 @@ def patch_rom(spoiler:Spoiler, world:World, rom:Rom):
                 current_type_address += 0x08
         scene_counter += 1
         current_scene_table_location += 0x14
+
+    # Save heal and death heal
+    rom.write_int16(0xB0635E, 0x0140)
+    rom.write_int16(0xBC6286, 0x0140)
+
+    # Dog params for night market Richard search
+
+    if world.settings.shuffle_richard:
+        dog_count = 7
+        dog_address = 0x22D214E
+        placed_richard = False
+        all_richard = False
+        for dog in range(dog_count):
+            is_richard = True if all_richard else False
+            if not placed_richard and not is_richard:
+                if dog == 6:
+                    is_richard = True
+                elif random.randint(0,6) == 6:
+                    is_richard = True
+            if is_richard:
+                dog_byte_1 = 0x00
+                placed_richard = True
+            else:
+                dog_byte_1 = dog + 1
+            dog_direction = random.randint(0,15)
+            dog_color = random.randint(0,15)
+            dog_byte_2 = (dog_direction << 4) | dog_color
+            rom.write_bytes(dog_address + dog*0x10, [dog_byte_1, dog_byte_2])
+
     # Make item descriptions into a single box
     short_item_descriptions = [0x92EC84, 0x92F9E3, 0x92F2B4, 0x92F37A, 0x92F513, 0x92F5C6, 0x92E93B, 0x92EA12]
     for address in short_item_descriptions:
@@ -1356,7 +1385,7 @@ def patch_rom(spoiler:Spoiler, world:World, rom:Rom):
             # We'll need to iterate more than once, so make a copy so we can iterate more than once.
             entrances = list(entrances)
             for entrance in entrances:
-                if entrance.type not in('ChildBoss', 'AdultBoss') or not entrance.replaces or 'patch_addresses' not in entrance.data:
+                if entrance.type not in('ChildBoss', 'AdultBoss', 'Ganon') or not entrance.replaces or 'patch_addresses' not in entrance.data:
                     continue
                 if entrance == entrance.replaces:
                     # This can happen if something is plando'd vanilla.
@@ -2075,7 +2104,7 @@ def patch_rom(spoiler:Spoiler, world:World, rom:Rom):
             patch_beehive(location, rom)
         patch_grotto_beehive_2(rom)
 
-    if world.settings.shuffle_pots_crates:
+    if len(world.settings.shuffle_pots_or_crates) > 0:
         pot_locations = [location for location in world.get_locations() if location.disabled == DisableType.ENABLED and location.type == 'Collectable' and ('Pot' in location.filter_tags)]
         flying_pot_locations = [location for location in world.get_locations() if location.disabled == DisableType.ENABLED and location.type == 'Collectable' and ('FlyingPot' in location.filter_tags)]
         crate_locations = [location for location in world.get_locations() if location.disabled == DisableType.ENABLED and location.type == 'Collectable' and ('Crate' in location.filter_tags)]
@@ -2547,7 +2576,8 @@ def patch_rom(spoiler:Spoiler, world:World, rom:Rom):
                        'Water Medallion':  "\x05\x43Water Medallion\x05\x40",
                        'Spirit Medallion': "\x05\x46Spirit Medallion\x05\x40",
                        'Shadow Medallion': "\x05\x45Shadow Medallion\x05\x40",
-                       'Light Medallion':  "\x05\x44Light Medallion\x05\x40"
+                       'Light Medallion':  "\x05\x44Light Medallion\x05\x40",
+                       'Triforce': "\x05\x44Triforce\x05\x40"
         }
         dungeon_list = {'Deku Tree':          ("the \x05\x42Deku Tree", 'Queen Gohma', 0x62, 0x88),
                         'Dodongos Cavern':    ("\x05\x41Dodongo\'s Cavern", 'King Dodongo', 0x63, 0x89),
@@ -2910,8 +2940,8 @@ def get_override_entry(location):
         if (location.type == "Collectable" and "Beehive" in location.filter_tags and location.disabled != DisableType.ENABLED):
             return None
 
-    #Don't add pots to the override table if they're disabled. We use this check to dtermine how to draw and interact with them
-    if not location.world.settings.shuffle_pots_crates:
+    #Don't add pots to the override table if they're disabled. We use this check to determine how to draw and interact with them
+    if len(location.world.settings.shuffle_pots_or_crates) == 0:
         if (location.type == "Collectable" and ("Pot" in location.filter_tags or "Crate" in location.filter_tags or "FlyingPot" in location.filter_tags or "SmallCrate" in location.filter_tags)) :
             return None
     else:
@@ -3305,12 +3335,11 @@ def boss_reward_index(world, boss_name):
 def configure_dungeon_info(rom, world):
     mq_enable = (world.settings.mq_dungeons_mode == 'random' or world.settings.mq_dungeons_count != 0 and world.settings.mq_dungeons_count != 12)
     enhance_map_compass = world.settings.enhance_map_compass
-
     boss_map = world.get_boss_map()
     bosses = ['Queen Gohma', 'King Dodongo', 'Barinade', 'Phantom Ganon',
             'Volvagia', 'Morpha', 'Twinrova', 'Bongo Bongo']
     dungeon_rewards = [
-        *(boss_reward_index(world, boss_map[boss]) for boss in bosses),
+        *(boss_reward_index(world, boss_map[boss]) for boss in bosses if boss_map[boss] != 'Ganon'),
         boss_reward_index(world, 'Links Pocket'),
     ]
 

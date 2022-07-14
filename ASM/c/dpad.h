@@ -16,7 +16,8 @@
                      0x00200000 | \
                      0x08000000)
 
-#define DISPLAY_DPAD        (((z64_file.iron_boots || z64_file.hover_boots) && (z64_file.link_age == 0 || CFG_AGELESS_BOOTS)) || \
+#define DISPLAY_DPAD        (((z64_file.iron_boots || z64_file.hover_boots || z64_file.mirror_shield || z64_file.hylian_shield || z64_file.goron_tunic || z64_file.zora_tunic) && (z64_file.link_age == 0)) || \
+                            (z64_file.deku_shield && (z64_file.link_age == 1)) || \
                             ((z64_file.items[Z64_SLOT_CHILD_TRADE] >= Z64_ITEM_WEIRD_EGG && z64_file.items[Z64_SLOT_CHILD_TRADE] <= Z64_ITEM_MASK_OF_TRUTH) && z64_file.link_age == 1) || \
                             z64_file.items[Z64_SLOT_OCARINA] == Z64_ITEM_FAIRY_OCARINA || z64_file.items[Z64_SLOT_OCARINA] == Z64_ITEM_OCARINA_OF_TIME)
 

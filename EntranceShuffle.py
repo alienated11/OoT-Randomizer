@@ -282,8 +282,8 @@ entrance_shuffle_table = [
     ('Dungeon',         ('Gerudo Fortress -> Gerudo Training Ground Lobby',                 { 'index': 0x0008 }),
                         ('Gerudo Training Ground Lobby -> Gerudo Fortress',                 { 'index': 0x03A8 })),
     ('Ganon Dungeon',   ('Ganons Castle Grounds -> Ganons Castle Lobby',                    { 'index': 0x0467 }),
-                        ('Ganons Castle Lobby -> Ganons Castle Grounds',                    { 'index': 0x023D }),
-                        ('Ganons Castle Lobby -> Castle Grounds',                           { 'index': 0x023F })),
+                        ('Ganons Castle Lobby -> Ganons Castle Grounds',                    { 'index': 0x023D, 'blue_warp':0x043F }),
+                        ('Ganons Castle Lobby -> Castle Grounds',                           { 'index': 0x023F, 'blue_warp':0x023F })),
     ('Ganon Interior',  ('Ganons Castle Lobby -> Ganons Castle Tower',                      { 'index': 0x041B }),
                         ('Ganons Castle Tower -> Ganons Castle Lobby',                      { 'index': 0x0534 })),
 
@@ -523,7 +523,7 @@ def _add_boss_entrances():
     # Compute this at load time to save a lot of duplication
     dungeon_data = {}
     for type, forward, *reverse in entrance_shuffle_table:
-        if type != 'Dungeon':
+        if type != 'Dungeon' and type != 'Ganon Dungeon':
             continue
         if not reverse:
             continue
@@ -577,6 +577,11 @@ def _add_boss_entrances():
             'AdultBoss', 'Shadow Temple Boss Door', 'Bongo Bongo Boss Room', 'Bongo Bongo',
             'Graveyard Warp Pad Region -> Shadow Temple Entryway',
             0x0413, 0x02B2, [ 0xB062FE, 0xBC61AA ]
+        ),
+        (
+            'Ganon', 'Ganons Castle Tower', 'Ganons Boss Room', 'Ganon',
+            'Ganons Castle Grounds -> Ganons Castle Lobby',
+            0x041F, 0x534, [0xB0626A, 0xB0630A, 0xBC61B6]
         )
     ]:
         d = {'index': index, 'patch_addresses': addresses, 'boss': boss}
@@ -652,10 +657,22 @@ def shuffle_random_entrances(worlds):
                 # In glitchless, there aren't any other ways to access these areas
                 one_way_priorities['Bolero'] = priority_entrance_table['Bolero']
                 one_way_priorities['Nocturne'] = priority_entrance_table['Nocturne']
-                if not worlds[0].settings.shuffle_dungeon_entrances and not worlds[0].settings.shuffle_overworld_entrances:
+                if not worlds[0].shuffle_dungeon_entrances and not worlds[0].settings.shuffle_overworld_entrances:
                     one_way_priorities['Requiem'] = priority_entrance_table['Requiem']
 
-        if worlds[0].settings.shuffle_dungeon_entrances:
+        elif worlds[0].settings.shuffle_dungeon_bosses == 'limited':
+            entrance_pools['ChildBoss'] = world.get_shufflable_entrances(type='ChildBoss', only_primary=True)
+            entrance_pools['AdultBoss'] = world.get_shufflable_entrances(type='AdultBoss', only_primary=True)
+        if worlds[0].settings.shuffle_dungeon_bosses == 'full':
+            entrance_pools['Boss'] = world.get_shufflable_entrances(type='ChildBoss', only_primary=True)
+            entrance_pools['Boss'] += world.get_shufflable_entrances(type='AdultBoss', only_primary=True)
+        if worlds[0].settings.shuffle_dungeon_bosses == "ganon":
+            entrance_pools['Boss'] = world.get_shufflable_entrances(type='ChildBoss', only_primary=True)
+            entrance_pools['Boss'] += world.get_shufflable_entrances(type='AdultBoss', only_primary=True)
+            entrance_pools['Boss'] += world.get_shufflable_entrances(type='Ganon', only_primary=True)
+            # entrance_pools['Boss'].append(world.get_entrance('Ganons Boss Room -> Ganons Castle Tower'))
+
+        if worlds[0].shuffle_dungeon_entrances:
             entrance_pools['Dungeon'] = world.get_shufflable_entrances(type='Dungeon', only_primary=True)
             if worlds[0].settings.shuffle_ganon_castle_entrances == 'separate':
                 entrance_pools['Dungeon'].append(world.get_entrance('Ganons Castle Grounds -> Ganons Castle Lobby'))
@@ -669,12 +686,6 @@ def shuffle_random_entrances(worlds):
                 entrance_pools['Dungeon'].remove(world.get_entrance('KF Outside Deku Tree -> Deku Tree Lobby'))
             if worlds[0].settings.decouple_entrances:
                 entrance_pools['DungeonReverse'] = [entrance.reverse for entrance in entrance_pools['Dungeon']]
-        if worlds[0].settings.shuffle_dungeon_bosses != "off":
-            entrance_pools['Boss'] = world.get_shufflable_entrances(type='Boss', only_primary=True)
-            if worlds[0].settings.shuffle_dungeon_bosses == "ganon":
-                entrance_pools['Boss'].append(world.get_entrance('Ganons Castle Tower -> Ganons Boss Room'))
-                # entrance_pools['Boss'].append(world.get_entrance('Ganons Boss Room -> Ganons Castle Tower'))
-
         if worlds[0].shuffle_interior_entrances:
             entrance_pools['Interior'] = world.get_shufflable_entrances(type='Interior', only_primary=True)
             if worlds[0].shuffle_special_interior_entrances:
@@ -950,7 +961,7 @@ def place_one_way_priority_entrance(worlds, world, priority_name, allowed_region
             if priority_name != 'Nocturne' or entrance.world.settings.hints == "mask":
                 continue
         # If not shuffling dungeons, Nocturne requires adult access.
-        if not entrance.world.settings.shuffle_dungeon_entrances and priority_name == 'Nocturne':
+        if not entrance.world.shuffle_dungeon_entrances and priority_name == 'Nocturne':
             if entrance.type != 'WarpSong' and entrance.parent_region.name != 'Adult Spawn':
                 continue
         for target in one_way_target_entrance_pools[entrance.type]:

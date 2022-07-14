@@ -547,16 +547,38 @@ def get_pool_core(world):
                 location.disabled = DisableType.DISABLED
 
         # Pots and Crates
-        elif location.type == 'Collectable' and ('Pot' in location.filter_tags or 'Crate' in location.filter_tags or 'FlyingPot' in location.filter_tags or 'SmallCrate' in location.filter_tags):
-            if world.settings.shuffle_pots_crates == 'all':
-                shuffle_item = True
-                item = get_new_junk()
-            elif world.settings.shuffle_pots_crates == 'dungeons' and location.dungeon is not None:
-                shuffle_item = True
-                item = get_new_junk()
-            elif world.settings.shuffle_pots_crates == 'overworld' and location.dungeon is None:
-                shuffle_item = True
-                item = get_new_junk()
+        elif location.type == 'Collectable' and ('Pot' in location.filter_tags or 'FlyingPot' in location.filter_tags):
+            if 'pots' in world.settings.shuffle_pots_or_crates:
+                if world.settings.shuffle_pots_crates == 'all':
+                    shuffle_item = True
+                    item = get_new_junk()
+                elif world.settings.shuffle_pots_crates == 'dungeons' and location.dungeon is not None:
+                    shuffle_item = True
+                    item = get_new_junk()
+                elif world.settings.shuffle_pots_crates == 'overworld' and location.dungeon is None:
+                    shuffle_item = True
+                    item = get_new_junk()
+                else:
+                    shuffle_item = False
+                    location.disabled = DisableType.DISABLED
+            else:
+                shuffle_item = False
+                location.disabled = DisableType.DISABLED
+
+        elif location.type == 'Collectable' and ('Crate' in location.filter_tags or 'SmallCrate' in location.filter_tags):
+            if 'crates' in world.settings.shuffle_pots_or_crates:
+                if world.settings.shuffle_pots_crates == 'all':
+                    shuffle_item = True
+                    item = get_new_junk()
+                elif world.settings.shuffle_pots_crates == 'dungeons' and location.dungeon is not None:
+                    shuffle_item = True
+                    item = get_new_junk()
+                elif world.settings.shuffle_pots_crates == 'overworld' and location.dungeon is None:
+                    shuffle_item = True
+                    item = get_new_junk()
+                else:
+                    shuffle_item = False
+                    location.disabled = DisableType.DISABLED
             else:
                 shuffle_item = False
                 location.disabled = DisableType.DISABLED

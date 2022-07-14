@@ -78,7 +78,7 @@
     "clearer_hints": true,
     "hints": "always",
     "hint_dist": "very_strong",
-    "misc_hints": true,
+    "misc_hints": ["altar","ganondorf","warp_songs"],
     "text_shuffle": "none",
     "damage_multiplier": "normal",
     "starting_tod": "default",
