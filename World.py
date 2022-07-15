@@ -92,10 +92,14 @@ class World(object):
             # (specifically, for randomize_settings)
             self.settings.shuffle_ganon_bosskey = 'triforce'
 
-        if len(self.settings.shuffle_ganon_arrows) > 0:
-            self.settings.shuffle_ganon_arrows = random.choice(self.settings.shuffle_ganon_arrows)
+        if isinstance(self.settings.shuffle_ganon_arrows, list):
+            if len(self.settings.shuffle_ganon_arrows) > 0:
+                self.settings.shuffle_ganon_arrows = random.choice(self.settings.shuffle_ganon_arrows)
+            else:
+                self.settings.shuffle_ganon_arrows = 'Light Arrows'
         else:
-            self.settings.shuffle_ganon_arrows = 'Light Arrows'
+            if self.settings.shuffle_ganon_arrows != 'Ice Arrows' and self.settings.shuffle_ganon_arrows != 'Fire Arrows':
+                self.settings.shuffle_ganon_arrows = 'Light Arrows'
 
         # trials that can be skipped will be decided later
         self.skipped_trials = {
