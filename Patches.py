@@ -1390,6 +1390,8 @@ def patch_rom(spoiler:Spoiler, world:World, rom:Rom):
                 if entrance == entrance.replaces:
                     # This can happen if something is plando'd vanilla.
                     continue
+                if entrance.replaces not in('ChildBoss', 'AdultBoss', 'Ganon'):
+                    continue
 
                 new_boss = entrance.replaces.data
                 original_boss = entrance.data

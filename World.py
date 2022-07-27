@@ -1152,7 +1152,7 @@ class World(object):
 
         for type in ('Boss', 'ChildBoss', 'AdultBoss'):
             for entrance in self.get_shuffled_entrances(type, True):
-                if 'boss' not in entrance.data:
+                if 'boss' not in entrance.data or 'boss' not in entrance.replaces.data:
                     continue
                 map[entrance.data['boss']] = entrance.replaces.data['boss']
         return map

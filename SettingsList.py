@@ -3929,33 +3929,36 @@ setting_infos = [
         },
     ),
     Combobox(
-        name           = 'mix_entrance_pools',
-        gui_text       = 'Mix Entrance Pools',
-        default        = 'off',
-        choices        = {
-            'off':       'Off',
-            'indoor':    'Indoor Entrances',
-            'all':       'All Entrances',
+        name            = 'mix_entrance_pools',
+        multiple_select = True,
+        gui_text        = 'Mix Entrance Pools',
+        choices         = {
+            'Interior': 'Interiors',
+            'GrottoGrave': 'Grottos',
+            'Dungeon': 'Dungeons',
+            'Boss': 'Bosses',
+            'Overworld': 'Overworld',
         },
         gui_tooltip    = '''\
-            Shuffle entrances into a mixed pool instead of separate ones.
+            Shuffle the selected entrances into a mixed pool
+            instead of separate ones. Has no effect on pools
+            whose entrances aren't shuffled.
 
-            'Indoor Entrances':
-            Mixes "Indoor" entrance pools, which correspond to entrances
-            of type Dungeon, Grotto, or Interior. Overworld entrances
-            are kept in their own separate pool if randomized.
-
-            'All Entrances':
-            Mixes all entrance pools, including both "Indoor" and
-            Overworld entrances.
+            For example, enabling the settings to shuffle
+            grotto, dungeon, and overworld entrances and
+            selecting grotto and dungeon entrances here will
+            allow a dungeon to be inside a grotto or vice
+            versa, while overworld entrances are shuffled in
+            their own separate pool and indoors stay vanilla.
         ''',
+        default        = [],
         shared         = True,
         gui_params     = {
             'randomize_key': 'randomize_settings',
             'distribution':  [
-                ('off', 2),
-                ('indoor', 1),
-                ('all', 1),
+                ([], 2),
+                (['Interior', 'GrottoGrave', 'Dungeon'], 1),
+                (['Interior', 'GrottoGrave', 'Dungeon', 'Overworld'], 1),
             ],
         },
     ),
